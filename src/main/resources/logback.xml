@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>	
+	
+	<!-- VARIABLES -->
+	<timestamp key="date" datePattern="dd-MM-yyyy" />
+			
+	<!-- MODIFICAR PROPIEDAD -->
+	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-logs/}logSpringT5-${date}.log}"/>
+
+	<!-- CONFIGURACIONES DE SPRING -->
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+	<include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+	
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+	
+</configuration>
