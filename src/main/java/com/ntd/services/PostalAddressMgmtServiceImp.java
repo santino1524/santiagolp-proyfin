@@ -130,4 +130,17 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 		return DTOMapperI.MAPPER.mapPostalAddressToDTO(postalAddress);
 	}
 
+	@Override
+	public void deleteRelationPostalAddress(Long userId, String city, String directionLine, String province)
+			throws InternalException {
+
+		// Validar campos del id
+		ValidateParams.isNullObject(userId);
+		ValidateParams.isNullObject(city);
+		ValidateParams.isNullObject(directionLine);
+		ValidateParams.isNullObject(province);
+
+		postalAddressRepository.deleteRelationPostalAddress(userId, city, directionLine, province);
+	}
+
 }

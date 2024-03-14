@@ -21,6 +21,8 @@ public record UserDTO(Long userId,
 		@NotBlank(message = Constants.MSG_SURNAMES_NOT_VALID) @Pattern(regexp = Constants.REGEXP_NAMES, message = Constants.MSG_SURNAMES_NOT_VALID) String surname,
 		@NotBlank(message = Constants.MSG_SURNAMES_NOT_VALID) @Pattern(regexp = Constants.REGEXP_NAMES, message = Constants.MSG_SURNAMES_NOT_VALID) String secondSurname,
 
+		boolean blocked,
+
 		// Validar DNI
 		@NotBlank(message = Constants.MSG_DNI_NOT_VALID) @Pattern(regexp = Constants.REGEXP_DNI, message = Constants.MSG_DNI_NOT_VALID) String dni,
 
@@ -37,8 +39,6 @@ public record UserDTO(Long userId,
 		@ValidUserRol String role,
 
 		List<PostalAddressDTO> addressesDto,
-
-		List<CardDTO> cardsDto,
 
 		List<OrderDTO> ordersDto) {
 }

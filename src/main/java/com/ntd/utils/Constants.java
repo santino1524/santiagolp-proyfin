@@ -16,6 +16,15 @@ public class Constants {
 	private Constants() {
 	}
 
+	/** URL vista error */
+	public static final String URL_ERROR_VIEW = "error";
+
+	/** Variable para mensaje growl */
+	public static final String MESSAGE_GROWL = "error";
+
+	/** Variable para mensaje vista ERROR */
+	public static final String VIEW_ERROR_MESSAGE = "message";
+
 	/** Msg InternalException */
 	public static final String MSG_INTERNAL_EXC = "Error interno, contacta con el administrador del sistema.";
 
@@ -59,7 +68,10 @@ public class Constants {
 	public static final String MSG_PHONE_EXISTS = "El número de teléfono introducido ya está registrado";
 
 	/** Msg de producto duplicado */
-	public static final String MSG_PRODUCT_DATA_EXISTS = "Existe un producto registrado con los datos introducidos";
+	public static final String MSG_PRODUCT_DATA_EXISTS = "Existe más de un producto registrado con los datos introducidos";
+
+	/** Msg de Productreview no registrado */
+	public static final String MSG_PRODUCT_REVIEW_NON_EXISTENT = "La crítica no está registrada";
 
 	/** Msg de nombre de producto duplicado */
 	public static final String MSG_PRODUCT_NAME_EXISTS = "El nombre de producto introducido ya está registrado";
@@ -142,11 +154,11 @@ public class Constants {
 	/** Msg de total NotValid */
 	public static final String MSG_TOTAL_NOT_VALID = "El total del pedido no es válido";
 
-	/** Roles de usuario */
+	/** Estados de pedido */
 	private static final List<String> ORDER_STATUSES = Arrays.asList("CREADO", "ENVIADO", "ENTREGADO");
 
 	/** Estados de los pedidos */
-	private static final List<String> USER_ROLE = Arrays.asList("ADMIN", "CUSTOMER", "GUEST");
+	private static final List<String> USER_ROLE = Arrays.asList("SELLER", "BUYER");
 
 	/** Msg de order NotValid */
 	public static final String MSG_ORDER_NOT_VALID = "Producto vendido sin asignar a un pedido";
@@ -200,7 +212,7 @@ public class Constants {
 	public static final String REGEXP_CARD = "^(\\d{4}[- ]?){3}\\d{4}$";
 
 	/** Msg violacion de CONSTRAINT EN BBDD */
-	public static final String MSG_VIOLATION_CONSTRAINT = "Se ha violado una restricción de inserción de datos en la BBDD";
+	public static final String MSG_VIOLATION_CONSTRAINT = "No se pudo completar la operación debido a un problema con los datos proporcionados";
 
 	/** Msg status NotValid */
 	public static final String MSG_STATUS_NOT_VALID = "Estado de pedido no válido";

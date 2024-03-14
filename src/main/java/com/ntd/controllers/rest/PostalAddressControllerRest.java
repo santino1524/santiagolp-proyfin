@@ -1,12 +1,15 @@
-package com.ntd.controllers;
+package com.ntd.controllers.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ntd.dto.PostalAddressDTO;
 import com.ntd.exceptions.InternalException;
@@ -25,9 +28,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author SLP
  */
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/addresses")
-public class PostalAddressController {
+public class PostalAddressControllerRest {
 
 	/** Dependencia del servicio de gestion de direcciones */
 	private final PostalAddressMgmtServiceI postalAddressMgmtService;
@@ -37,7 +40,7 @@ public class PostalAddressController {
 	 * 
 	 * @param postalAddressMgmtService
 	 */
-	public PostalAddressController(final PostalAddressMgmtServiceI postalAddressMgmtService) {
+	public PostalAddressControllerRest(final PostalAddressMgmtServiceI postalAddressMgmtService) {
 		this.postalAddressMgmtService = postalAddressMgmtService;
 	}
 
@@ -45,43 +48,41 @@ public class PostalAddressController {
 	 * Guardar direccion
 	 * 
 	 * @param postalAddressDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String savePostalAddress(@RequestBody @Valid final PostalAddressDTO postalAddressDto, final Model model)
+	public ResponseEntity<String> savePostalAddress(@RequestBody @Valid final PostalAddressDTO postalAddressDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Guardar direccion");
 
-		String result = null;
+		ResponseEntity<String> result = null;
 
 		// Guardar direccion
 		if (postalAddressMgmtService.insertPostalAddress(postalAddressDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
+			// Devolver una respuesta con codigo de estado 202
+			result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_UNEXPECTED_ERROR);
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESULTADO DE DIRECCION GUARDADA";
+		return result;
 	}
 
 	/**
 	 * Eliminar direccion
 	 * 
-	 * @param model
 	 * @param postalAddressDto
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping
-	public String deletePostalAddress(@RequestBody @NotNull final PostalAddressDTO postalAddressDto,
-			@NotNull final Long userId, final Model model) throws InternalException {
+	public ResponseEntity<String> deletePostalAddress(@RequestBody @NotNull final PostalAddressDTO postalAddressDto,
+			@NotNull final Long userId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar direccion");
 
@@ -95,24 +96,22 @@ public class PostalAddressController {
 				postalAddressDto.directionLine(), postalAddressDto.province());
 		postalAddressMgmtService.deletePostalAddress(postalAddressDto);
 
-		// Devolver una respuesta
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE DIRECCION eliminado";
+		// Devolver una respuesta con codigo de estado 202
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 	}
 
 	/**
 	 * Eliminar relacion de direccion con usuario
 	 * 
-	 * @param model
 	 * @param postalAddressDto
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping
-	public String deleteRelationPostalAddress(@RequestBody @NotNull final PostalAddressDTO postalAddressDto,
-			@NotNull final Long userId, final Model model) throws InternalException {
+	public ResponseEntity<String> deleteRelationPostalAddress(
+			@RequestBody @NotNull final PostalAddressDTO postalAddressDto, @NotNull final Long userId)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar direccion");
 
@@ -125,40 +124,34 @@ public class PostalAddressController {
 		postalAddressMgmtService.deleteRelationPostalAddress(userId, postalAddressDto.city(),
 				postalAddressDto.directionLine(), postalAddressDto.province());
 
-		// Devolver una respuesta
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE RELACION DE DIRECCION eliminado";
+		// Devolver una respuesta con codigo de estado 202
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 	}
 
 	/**
 	 * Buscar todos las direcciones
 	 * 
-	 * @param model
-	 * @return String
+	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showPostalAddress(final Model model) throws InternalException {
+	public List<PostalAddressDTO> showOrders() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos las direcciones");
 
 		// Retornar lista de direcciones
-		model.addAttribute("addresses", postalAddressMgmtService.searchAll());
-
-		return "VISTA MOSTRAR todas las direcciones";
+		return postalAddressMgmtService.searchAll();
 	}
 
 	/**
 	 * Buscar por direccion por id
 	 * 
-	 * @param model
 	 * @param postalAddressDto
 	 * @return PostalAddressDTO
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchById")
-	public String searchById(@RequestBody @NotNull final PostalAddressDTO postalAddressDto, final Model model)
+	public PostalAddressDTO searchById(@RequestBody @NotNull final PostalAddressDTO postalAddressDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar por id");
@@ -169,8 +162,6 @@ public class PostalAddressController {
 		ValidateParams.isNullObject(postalAddressDto.province());
 
 		// Retornar direccion
-		model.addAttribute("addresses", postalAddressMgmtService.searchById(postalAddressDto));
-
-		return "VISTA MOSTRAR la direccion";
+		return postalAddressMgmtService.searchById(postalAddressDto);
 	}
 }

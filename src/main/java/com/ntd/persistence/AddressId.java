@@ -24,7 +24,7 @@ import lombok.Setter;
 public class AddressId implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4158714121514155824L;
 
 	/** Linea de direccion */
 	@Column(name = "C_DIRECTION_LINE", nullable = false)

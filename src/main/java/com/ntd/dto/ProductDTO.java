@@ -1,7 +1,7 @@
 package com.ntd.dto;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 import com.ntd.utils.Constants;
 
@@ -35,7 +35,7 @@ public record ProductDTO(Long productId,
 		@NotBlank(message = Constants.MSG_CATEGORY_NOT_VALID) String productCategory,
 
 		// Validar lista de urls de imagenes
-		@NotEmpty(message = Constants.MSG_IMAGE_URL_NOT_VALID) Set<String> imageUrls,
+		@NotEmpty(message = Constants.MSG_IMAGE_URL_NOT_VALID) List<String> imageUrls,
 
 		// Validar iva
 		@Digits(integer = 2, fraction = 2, message = Constants.MSG_IVA_NOT_VALID) BigDecimal iva,
@@ -44,6 +44,8 @@ public record ProductDTO(Long productId,
 		@DecimalMin(value = "0.01", message = Constants.MSG_PRICE_NOT_VALID) BigDecimal basePrice,
 
 		// Validar precio PVP
-		@DecimalMin(value = "0.01", message = Constants.MSG_PRICE_NOT_VALID) BigDecimal pvpPrice) {
+		@DecimalMin(value = "0.01", message = Constants.MSG_PRICE_NOT_VALID) BigDecimal pvpPrice,
+
+		List<ProductReviewDTO> reviewsDto) {
 
 }

@@ -3,7 +3,6 @@ package com.ntd.persistence;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -33,7 +32,7 @@ import lombok.Setter;
 public class Product implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7965646309397013032L;
 
 	/** Identificador (PK) */
 	@Id
@@ -70,7 +69,7 @@ public class Product implements Serializable {
 	@Cascade(value = { CascadeType.ALL })
 	@CollectionTable(name = "T_IMAGES_URL", joinColumns = @JoinColumn(name = "C_PRODUCT_ID"))
 	@Column(name = "C_IMAGE_URL", nullable = false)
-	private Set<String> imageUrls;
+	private List<String> imageUrls;
 
 	/** IVA */
 	@Column(name = "C_IVA", nullable = false)
@@ -87,5 +86,9 @@ public class Product implements Serializable {
 	/** Productos vendidos FK */
 	@OneToMany(mappedBy = "product")
 	private List<ProductSold> soldProducts;
+
+	/** Critica de producto */
+	@OneToMany(mappedBy = "product")
+	private List<ProductReview> reviews;
 
 }

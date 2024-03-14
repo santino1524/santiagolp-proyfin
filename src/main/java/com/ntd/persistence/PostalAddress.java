@@ -23,7 +23,7 @@ import lombok.Setter;
 public class PostalAddress implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3576682110116222618L;
 
 	/** Identificador (PK) */
 	@EmbeddedId

@@ -8,17 +8,19 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import com.ntd.dto.CardDTO;
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.PostalAddressDTO;
 import com.ntd.dto.ProductDTO;
+import com.ntd.dto.ProductReviewDTO;
 import com.ntd.dto.ProductSoldDTO;
+import com.ntd.dto.ReportDTO;
 import com.ntd.dto.UserDTO;
-import com.ntd.persistence.Card;
 import com.ntd.persistence.Order;
 import com.ntd.persistence.PostalAddress;
 import com.ntd.persistence.Product;
+import com.ntd.persistence.ProductReview;
 import com.ntd.persistence.ProductSold;
+import com.ntd.persistence.Report;
 import com.ntd.persistence.User;
 
 /**
@@ -29,24 +31,6 @@ public interface DTOMapperI {
 
 	/** Dependencia de DTOMapper */
 	public static final DTOMapperI MAPPER = Mappers.getMapper(DTOMapperI.class);
-
-	/**
-	 * Mapear Tarjeta a DTO
-	 * 
-	 * @param card
-	 * @return CardDTO
-	 */
-	@Mapping(target = "userDto", ignore = true)
-	public CardDTO mapCardToDTO(Card card);
-
-	/**
-	 * Mapear DTO a Tarjeta
-	 * 
-	 * @param cardDto
-	 * @return Card
-	 */
-	@Mapping(target = "user", source = "userDto")
-	public Card mapDTOToCard(CardDTO cardDto);
 
 	/**
 	 * Mapear Producto vendido a DTO
@@ -67,6 +51,47 @@ public interface DTOMapperI {
 	@Mapping(target = "order", source = "orderDto")
 	@Mapping(target = "product", source = "productDto")
 	public ProductSold mapDTOToProductSold(ProductSoldDTO productSoldDto);
+
+	/**
+	 * Mapear Reporte a DTO
+	 * 
+	 * @param report
+	 * @return ReportDTO
+	 */
+	@Mapping(target = "reviewDto", source = "review")
+	@Mapping(target = "reporterDto", source = "reporter")
+	public ReportDTO mapReportToDTO(Report report);
+
+	/**
+	 * Mapear DTO a Reporte
+	 * 
+	 * @param reportDTO
+	 * @return Report
+	 */
+	@Mapping(target = "review", source = "reviewDto")
+	@Mapping(target = "reporter", source = "reporterDto")
+	public Report mapDTOToReport(ReportDTO reportDto);
+
+	/**
+	 * Mapear ProductReview a DTO
+	 * 
+	 * @param productReview
+	 * @return ProductReviewDTO
+	 */
+	@Mapping(target = "userDto", ignore = true)
+	@Mapping(target = "productDto", ignore = true)
+	public ProductReviewDTO mapProductReviewToDTO(ProductReview productReview);
+
+	/**
+	 * Mapear DTO a ProductReview
+	 * 
+	 * @param productReviewDto
+	 * @return ProductReview
+	 */
+	@Mapping(target = "user", source = "userDto")
+	@Mapping(target = "product", source = "productDto")
+	@Mapping(target = "reports", ignore = true)
+	public ProductReview mapDTOToProductReview(ProductReviewDTO productReviewDto);
 
 	/**
 	 * Mapear Order a DTO
@@ -160,7 +185,29 @@ public interface DTOMapperI {
 	 * @param product
 	 * @return ProductDTO
 	 */
+	@Mapping(target = "reviewsDto", expression = "java(listProductReviewToDTO(product.getReviews()))")
 	public ProductDTO mapProductToDTO(Product product);
+
+	/**
+	 * Mapear lista de DTO a ProductReview
+	 * 
+	 * @param reviews
+	 * @return List
+	 */
+	default List<ProductReviewDTO> listProductReviewToDTO(List<ProductReview> reviews) {
+		List<ProductReviewDTO> reviewsDto = new ArrayList<>();
+
+		// Comprobar nulidad
+		if (reviews != null) {
+
+			// Mapear datos
+			for (ProductReview review : reviews) {
+				reviewsDto.add(mapProductReviewToDTO(review));
+			}
+		}
+
+		return reviewsDto;
+	}
 
 	/**
 	 * Mapear DTO a Product
@@ -169,6 +216,7 @@ public interface DTOMapperI {
 	 * @return Product
 	 */
 	@Mapping(target = "soldProducts", ignore = true)
+	@Mapping(target = "reviews", ignore = true)
 	@Mapping(target = "pvpPrice", expression = "java(calculatePvp(productDto))")
 	public Product mapDTOToProduct(ProductDTO productDto);
 
@@ -198,7 +246,6 @@ public interface DTOMapperI {
 	 * @return UserDTO
 	 */
 	@Mapping(target = "addressesDto", expression = "java(listPostalAddressToDTO(user.getAddresses()))")
-	@Mapping(target = "cardsDto", expression = "java(listCardToDTO(user.getCards()))")
 	@Mapping(target = "ordersDto", expression = "java(listOrderToDTO(user.getOrders()))")
 	public UserDTO mapUserToDTO(User user);
 
@@ -245,34 +292,13 @@ public interface DTOMapperI {
 	}
 
 	/**
-	 * Mapear lista de DTO a Card
-	 * 
-	 * @param cards
-	 * @return List
-	 */
-	default List<CardDTO> listCardToDTO(List<Card> cards) {
-		List<CardDTO> cardsDto = new ArrayList<>();
-
-		// Comprobar nulidad
-		if (cards != null) {
-
-			// Mapear datos
-			for (Card card : cards) {
-				cardsDto.add(mapCardToDTO(card));
-			}
-		}
-
-		return cardsDto;
-	}
-
-	/**
 	 * Mapear DTO a User
 	 * 
 	 * @param userDto
 	 * @return User
 	 */
+	@Mapping(target = "reportedReviews", ignore = true)
 	@Mapping(target = "addresses", expression = "java(dtoToListPostalAddress(userDto.addressesDto()))")
-	@Mapping(target = "cards", expression = "java(dtoToListCard(userDto.cardsDto()))")
 	@Mapping(target = "orders", expression = "java(dtoToListOrder(userDto.ordersDto()))")
 	public User mapDTOToUser(UserDTO userDto);
 
@@ -316,27 +342,6 @@ public interface DTOMapperI {
 		}
 
 		return addresses;
-	}
-
-	/**
-	 * Mapear lista de Card a DTO
-	 * 
-	 * @param cardsDto
-	 * @return List
-	 */
-	default List<Card> dtoToListCard(List<CardDTO> cardsDto) {
-		List<Card> cards = new ArrayList<>();
-
-		// Comprobar nulidad
-		if (cardsDto != null) {
-
-			// Mapear datos
-			for (CardDTO cardDto : cardsDto) {
-				cards.add(mapDTOToCard(cardDto));
-			}
-		}
-
-		return cards;
 	}
 
 }

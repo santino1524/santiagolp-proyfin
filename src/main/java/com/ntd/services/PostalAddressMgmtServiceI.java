@@ -30,6 +30,18 @@ public interface PostalAddressMgmtServiceI {
 	public void deletePostalAddress(final PostalAddressDTO postalAddressDto) throws InternalException;
 
 	/**
+	 * Eliminar asociacion con direccion del usuario
+	 * 
+	 * @param userId
+	 * @param city
+	 * @param directionLine
+	 * @param province
+	 * @throws InternalException
+	 */
+	public void deleteRelationPostalAddress(final Long userId, final String city, final String directionLine,
+			final String province) throws InternalException;
+
+	/**
 	 * Buscar todas las direcciones del usuario
 	 * 
 	 * @return List

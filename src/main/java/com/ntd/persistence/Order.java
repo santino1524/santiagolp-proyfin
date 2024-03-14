@@ -31,7 +31,7 @@ import lombok.Setter;
 public class Order implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -595996262186024802L;
 
 	/** Identificador (PK) */
 	@Id

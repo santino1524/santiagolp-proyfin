@@ -1,10 +1,10 @@
-package com.ntd.controllers;
+package com.ntd.controllers.rest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.ProductDTO;
@@ -35,11 +36,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author SLP
  */
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/orders")
-public class OrderController {
-
-	private static final String ORDERS_DTO = "ordersDto";
+public class OrderControllerRest {
 
 	/** Dependencia del servicio de gestion de tarjetas */
 	private final OrderMgmtServiceI orderMgmtService;
@@ -57,7 +56,7 @@ public class OrderController {
 	 * @param productMgmtService
 	 * @param productSoldMgmtService
 	 */
-	public OrderController(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService,
+	public OrderControllerRest(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService,
 			ProductSoldMgmtServiceI productSoldMgmtService) {
 		this.orderMgmtService = orderMgmtService;
 		this.productMgmtService = productMgmtService;
@@ -67,20 +66,16 @@ public class OrderController {
 	/**
 	 * Buscar todos los pedidos
 	 * 
-	 * @param model
-	 * @return String
+	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showOrders(final Model model) throws InternalException {
+	public List<OrderDTO> showOrders() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos los pedidos");
 
-		// Insertar en el Model la lista de clientes
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchAllOrders());
-
 		// Retornar lista de pedidos
-		return "VISTA MOSTRAR PEDIDOS";
+		return orderMgmtService.searchAllOrders();
 	}
 
 	/**
@@ -91,17 +86,18 @@ public class OrderController {
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String saveOrder(@RequestBody @Valid final OrderDTO orderDto, final Model model) throws InternalException {
+	public ResponseEntity<String> saveOrder(@RequestBody @Valid final OrderDTO orderDto) throws InternalException {
 		log.info("Guardar pedido");
 
 		// Validar datos de productos a comprar
 		productSoldMgmtService.validateProductsToBuy(orderDto.soldProductsDto());
 
-		String result = null;
+		ResponseEntity<String> result = null;
 
 		// Comprobar si el pedido existe
 		if (orderMgmtService.existsOrder(orderDto.orderNumber())) {
-			result = Constants.MSG_ORDER_EXISTS;
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_ORDER_EXISTS);
 		} else {
 
 			// Confirmar productos a comprar
@@ -109,9 +105,12 @@ public class OrderController {
 			if (productsDtoNotFound.isEmpty()) {
 				// Guardar pedido
 				if (orderMgmtService.insertOrder(orderDto) != null) {
-					result = Constants.MSG_SUCCESSFUL_OPERATION;
+					// Devolver una respuesta con codigo de estado 202
+					result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 				} else {
-					result = Constants.MSG_UNEXPECTED_ERROR;
+					// Devolver una respuesta con codigo de estado 422
+					result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+							.body(Constants.MSG_UNEXPECTED_ERROR);
 				}
 			} else {
 				log.info("Retorno de productos con stock insuficiente");
@@ -130,16 +129,14 @@ public class OrderController {
 					builder.append("\n");
 				}
 
-				// Devolver una respuesta
-				result = builder.toString();
+				// Devolver una respuesta con codigo de estado 404
+				result = ResponseEntity.status(HttpStatus.NOT_FOUND).body(builder.toString());
 			}
 
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE PEDIDO REALIZADO";
+		return result;
 	}
 
 	/**
@@ -148,46 +145,43 @@ public class OrderController {
 	 * 
 	 * @param orderId
 	 * @param status
-	 * @param model
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@PutMapping
-	public String updateOrderStatus(@RequestParam @NotNull final Long orderId,
-			@RequestParam @NotBlank final String status, final Model model) throws InternalException {
+	public ResponseEntity<String> updateOrderStatus(@RequestParam @NotNull final Long orderId,
+			@RequestParam @NotBlank final String status) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar estado de pedido");
 
-		String result = null;
+		ResponseEntity<String> result = null;
 
 		// Actualizar pedido
 		final OrderDTO orderUpdated = orderMgmtService.updateOrderStatus(orderId, status);
 
 		// Verificar retorno de actualizacion
 		if (orderUpdated != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
+			// Devolver una respuesta con codigo de estado 202
+			result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_UNEXPECTED_ERROR);
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE PEDIDO ACTUALIZADO";
+		return result;
 	}
 
 	/**
 	 * Eliminar pedido
 	 * 
 	 * @param orderDto
-	 * @param model
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping
-	public String deleteOrder(@RequestBody @NotNull final OrderDTO orderDto, final Model model)
-			throws InternalException {
+	public ResponseEntity<String> deleteOrder(@RequestBody @NotNull final OrderDTO orderDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar pedido");
 
@@ -197,10 +191,8 @@ public class OrderController {
 		// Eliminar pedido
 		orderMgmtService.deleteOrder(orderDto.orderId());
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE PEDIDO eliminado";
+		// Devolver una respuesta con codigo de estado 202
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 	}
 
 	/**
@@ -208,116 +200,95 @@ public class OrderController {
 	 * 
 	 * @param startDate
 	 * @param endDate
-	 * @param model
 	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByDates")
-	public String searchByOrderDateBetween(@RequestParam @NotNull final LocalDateTime startDate,
-			@NotNull @RequestParam final LocalDateTime endDate, final Model model) throws InternalException {
+	public List<OrderDTO> searchByOrderDateBetween(@RequestParam @NotNull final LocalDateTime startDate,
+			@NotNull @RequestParam final LocalDateTime endDate) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar por numero de pedido");
 
-		// Retornar pedidos
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchByOrderDateBetween(startDate, endDate));
-
-		return "VISTA MOSTRAR Buscar pedidos entre dos fechas";
+		// Retornar la lista de clientes
+		return orderMgmtService.searchByOrderDateBetween(startDate, endDate);
 	}
 
 	/**
 	 * Buscar pedidos por fecha por orden ASC
 	 * 
-	 * @param model
 	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/sortDatesAsc")
-	public String searchByOrderByOrderDateAsc(final Model model) throws InternalException {
+	public List<OrderDTO> searchByOrderByOrderDateAsc() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos los pedidos ordenados por fecha ASC");
 
 		// Retornar lista de pedidos
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchByOrderByOrderDateAsc());
-
-		return "VISTA MOSTRAR Buscar pedidos por fecha por orden ASC";
+		return orderMgmtService.searchByOrderByOrderDateAsc();
 	}
 
 	/**
 	 * Buscar pedidos por fecha por orden DESC
 	 * 
-	 * @param model
 	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/sortDatesDesc")
-	public String searchByOrderByOrderDateDesc(final Model model) throws InternalException {
+	public List<OrderDTO> searchByOrderByOrderDateDesc() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos los pedidos ordenados por fecha DESC");
 
 		// Retornar lista de pedidos
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchByOrderByOrderDateDesc());
-
-		return "VISTA MOSTRAR pedidos por fecha por orden DESC";
+		return orderMgmtService.searchByOrderByOrderDateDesc();
 	}
 
 	/**
 	 * Buscar por numero de pedido
-	 *
-	 * @param model
+	 * 
 	 * @param orderNumber
-	 * @return OrderDTO
+	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByOrderNumber")
-	public String searchByOrderNumber(@RequestParam @NotNull final String orderNumber, final Model model)
-			throws InternalException {
+	public OrderDTO searchByOrderNumber(@RequestParam @NotNull final String orderNumber) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar por numero de pedido");
 
 		// Retornar pedido
-		model.addAttribute("orderDto", orderMgmtService.searchByOrderNumber(orderNumber));
-
-		return "VISTA MOSTRAR pedido por numero";
+		return orderMgmtService.searchByOrderNumber(orderNumber);
 	}
 
 	/**
 	 * Buscar por estado de pedido
 	 * 
-	 * @param model
 	 * @param status
 	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByStatus")
-	public String searchByStatus(@RequestParam @NotNull final String status, final Model model)
-			throws InternalException {
+	public List<OrderDTO> searchByStatus(@RequestParam @NotNull final String status) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar por estado de pedido");
 
 		// Retornar lista de pedidos
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchByStatus(status));
-
-		return "VISTA MOSTRAR pedidos por estado";
+		return orderMgmtService.searchByStatus(status);
 	}
 
 	/**
 	 * Buscar pedido por usuario
 	 * 
-	 * @param model
 	 * @param userDto
 	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByUser")
-	public String searchByUser(@RequestBody @NotNull final UserDTO userDto, final Model model)
-			throws InternalException {
+	public List<OrderDTO> searchByUser(@RequestBody @NotNull final UserDTO userDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar pedido por usuario");
 
 		// Retornar lista de pedidos
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchByUser(userDto));
-
-		return "VISTA MOSTRAR pedidos por usuario";
+		return orderMgmtService.searchByUser(userDto);
 	}
 
 }

@@ -1,8 +1,7 @@
 package com.ntd.controllers;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -29,87 +28,108 @@ public class ExceptionController {
 	 * Controlar excepciones no especificadas
 	 * 
 	 * @param e
-	 * @return ResponseEntity
+	 * @param model
+	 * @return String
 	 */
 	@ExceptionHandler()
-	public ResponseEntity<String> handleException(final Exception e) {
+	public String handleException(final Exception e, final Model model) {
 		if (log.isErrorEnabled())
 			log.error(e.getMessage());
 
-		// Devolver una respuesta con codigo de estado 500
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		// Retornar mensaje del error
+		StringBuilder builder = new StringBuilder();
+		builder.append(Constants.MSG_UNEXPECTED_ERROR);
+		builder.append(": ");
+		builder.append(e.getMessage());
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, builder.toString());
+
+		return Constants.URL_ERROR_VIEW;
 	}
 
 	/**
 	 * Controlar excepciones de validacion de atributos de Beans
 	 * 
+	 * @param model
 	 * @param br
-	 * @return ResponseEntity
+	 * @return String
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<String> handleException(final BindingResult br) {
-
-		ResponseEntity<String> result = null;
+	public String handleException(final Model model, final BindingResult br) {
 
 		for (ObjectError error : br.getAllErrors()) {
 			if (error instanceof FieldError) {
-				// Devolver una respuesta con codigo de estado 400
-				result = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.getDefaultMessage());
+				// Retornar mensaje de error
+				model.addAttribute(Constants.VIEW_ERROR_MESSAGE, error.getDefaultMessage());
+
+				if (log.isErrorEnabled())
+					log.error(error.getDefaultMessage());
 
 				break;
 			}
 		}
 
-		// Retornar mensaje del error
-		return result;
+		return Constants.URL_ERROR_VIEW;
 	}
 
 	/**
 	 * Controlar excepciones personalizadas
 	 * 
 	 * @param e
-	 * @return ResponseEntity
+	 * @param model
+	 * @return String
 	 */
 	@ExceptionHandler(CustomExceptions.class)
-	public ResponseEntity<String> handleException(final CustomExceptions e) {
+	public String handleException(final CustomExceptions e, final Model model) {
+
+		// Retornar mensaje del error
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, e.getMessage());
+
 		if (log.isErrorEnabled())
 			log.error(e.getMessage());
 
-		// Devolver una respuesta con codigo de estado 500
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-
+		return Constants.URL_ERROR_VIEW;
 	}
 
 	/**
 	 * Controlar excepciones por violacion de CONSTRAINTS
 	 * 
 	 * @param e
-	 * @return ResponseEntity
+	 * @param model
+	 * @return String
 	 */
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<String> handleException(final DataIntegrityViolationException e) {
+	public String handleException(final DataIntegrityViolationException e, final Model model) {
+
+		// Retornar mensaje del error
+		StringBuilder builder = new StringBuilder();
+		builder.append(Constants.MSG_VIOLATION_CONSTRAINT);
+		builder.append(": ");
+		builder.append(e.getMessage());
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, builder.toString());
+
 		if (log.isErrorEnabled())
 			log.error(e.getMessage());
 
-		// Devolver una respuesta con codigo de estado 422
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_VIOLATION_CONSTRAINT);
-
+		return Constants.URL_ERROR_VIEW;
 	}
 
 	/**
 	 * Controlar excepciones del Servidor
 	 * 
 	 * @param e
-	 * @return ResponseEntity
+	 * @param model
+	 * @return String
 	 */
 	@ExceptionHandler(ServletException.class)
-	public ResponseEntity<String> handleException(final ServletException e) {
+	public String handleException(final ServletException e, final Model model) {
+
+		// Retornar mensaje del error
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, Constants.MSG_ERR_SERVLET);
+
 		if (log.isErrorEnabled())
 			log.error(e.getMessage());
 
-		// Devolver una respuesta con codigo de estado 500
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Constants.MSG_ERR_SERVLET);
-
+		return Constants.URL_ERROR_VIEW;
 	}
 
 }

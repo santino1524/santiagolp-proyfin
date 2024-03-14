@@ -29,7 +29,7 @@ import lombok.Setter;
 public class User implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5240072470881647002L;
 
 	/** Identificador (PK) */
 	@Id
@@ -69,18 +69,21 @@ public class User implements Serializable {
 	@Column(name = "C_ROLE", nullable = false)
 	private String role;
 
+	/** Indica si el usuario esta bloqueado */
+	@Column(name = "C_BLOCKED", nullable = false)
+	private boolean blocked;
+
 	/** Direcciones */
 	@ManyToMany
 	@JoinTable(name = "T_USER_ADDRESS", joinColumns = @JoinColumn(name = "C_USER_ID"), inverseJoinColumns = {
 			@JoinColumn(name = "C_DIRECTION_LINE"), @JoinColumn(name = "C_PROVINCE"), @JoinColumn(name = "C_CITY") })
 	private List<PostalAddress> addresses;
 
-	/** Tarjetas bancarias */
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<Card> cards;
-
 	/** Pedidos */
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Order> orders;
 
+	/** Denuncias del usuario */
+	@OneToMany(mappedBy = "reporter")
+	private List<Report> reportedReviews;
 }

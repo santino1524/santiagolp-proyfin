@@ -26,7 +26,7 @@ import lombok.Setter;
 public class ProductSold implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4068389400504767369L;
 
 	/** Identificador (PK) */
 	@Id
