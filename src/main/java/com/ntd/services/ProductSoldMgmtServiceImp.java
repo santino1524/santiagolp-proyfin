@@ -51,18 +51,18 @@ public class ProductSoldMgmtServiceImp implements ProductSoldMgmtServiceI {
 	}
 
 	@Override
-	public ProductSoldDTO insertProductSold(ProductSoldDTO productSoldDto) throws InternalException {
+	public List<ProductSoldDTO> insertAllProductSold(List<ProductSoldDTO> soldProductsDto) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Insertar producto vendido");
+			log.info("Insertar productos vendido");
 
 		// Validar parametro
-		ValidateParams.isNullObject(productSoldDto);
+		ValidateParams.isNullObject(soldProductsDto);
 
 		// Mapear DTO y guardar
-		final ProductSold productSold = productSoldRepository
-				.save(DTOMapperI.MAPPER.mapDTOToProductSold(productSoldDto));
+		List<ProductSold> soldProducts = productSoldRepository
+				.saveAllAndFlush(DTOMapperI.MAPPER.dtoToListProductSold(soldProductsDto));
 
 		// Retornar DTO
-		return DTOMapperI.MAPPER.mapProductSoldToDTO(productSold);
+		return DTOMapperI.MAPPER.listProductSoldToDTO(soldProducts);
 	}
 }

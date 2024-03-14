@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/orders")
 public class OrderController {
 
+	/** Constante String ordersDto */
 	private static final String ORDERS_DTO = "ordersDto";
 
 	/** Dependencia del servicio de gestion de tarjetas */
@@ -108,11 +109,7 @@ public class OrderController {
 			final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto());
 			if (productsDtoNotFound.isEmpty()) {
 				// Guardar pedido
-				if (orderMgmtService.insertOrder(orderDto) != null) {
-					result = Constants.MSG_SUCCESSFUL_OPERATION;
-				} else {
-					result = Constants.MSG_UNEXPECTED_ERROR;
-				}
+				result = orderMgmtService.insertOrder(orderDto);
 			} else {
 				log.info("Retorno de productos con stock insuficiente");
 

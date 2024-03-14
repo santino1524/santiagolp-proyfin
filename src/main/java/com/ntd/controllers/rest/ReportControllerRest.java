@@ -1,13 +1,16 @@
-package com.ntd.controllers;
+package com.ntd.controllers.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ntd.dto.ReportDTO;
 import com.ntd.exceptions.InternalException;
@@ -26,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author SLP
  */
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/report")
-public class ReportController {
+public class ReportControllerRest {
 
 	/** Dependencia del servicio de gestion de productos */
 	private final ReportMgmtServiceI reportMgmtService;
@@ -38,7 +41,7 @@ public class ReportController {
 	 * 
 	 * @param reportMgmtService
 	 */
-	public ReportController(final ReportMgmtServiceI reportMgmtService) {
+	public ReportControllerRest(final ReportMgmtServiceI reportMgmtService) {
 		this.reportMgmtService = reportMgmtService;
 	}
 
@@ -46,41 +49,36 @@ public class ReportController {
 	 * Registrar Reporte
 	 * 
 	 * @param report
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String saveReport(@RequestBody @Valid final ReportDTO reportDto, final Model model)
-			throws InternalException {
+	public ResponseEntity<String> saveReport(@RequestBody @Valid final ReportDTO reportDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar Report");
 
-		String result = null;
+		ResponseEntity<String> result = null;
 
 		// Guardar Report
 		if (reportMgmtService.insertReport(reportDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
+			result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
+			result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_UNEXPECTED_ERROR);
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar Report";
+		return result;
 	}
 
 	/**
 	 * Eliminar Reporte
 	 * 
 	 * @param reportDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping
-	public String deleteReport(@RequestBody @NotNull final ReportDTO reportDto, final Model model)
+	public ResponseEntity<String> deleteReport(@RequestBody @NotNull final ReportDTO reportDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar Report");
@@ -91,45 +89,37 @@ public class ReportController {
 		// Eliminar Report
 		reportMgmtService.deleteReport(reportDto.reportId());
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE  Report ELIMINADO";
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 	}
 
 	/**
 	 * Buscar todos los Reportes
 	 * 
-	 * @param model
-	 * @return String
+	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showReport(final Model model) throws InternalException {
+	public List<ReportDTO> showReport() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos los Report");
 
 		// Retornar lista de Report
-		model.addAttribute("reviewsDto", reportMgmtService.searchAll());
-
-		return "VISTA BUSCAR TODOS LOS Report";
+		return reportMgmtService.searchAll();
 	}
 
 	/**
 	 * Buscar por id
 	 * 
-	 * @param model
 	 * @param id
-	 * @return String
+	 * @return ReportDTO
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchById")
-	public String searchById(@RequestParam @NotNull final Long id, final Model model) throws InternalException {
+	public ReportDTO searchById(@RequestParam @NotNull final Long id) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar Report por id");
 
 		// Retornar Report
-		model.addAttribute("reportDto", reportMgmtService.searchById(id));
-
-		return "VISTA BUSCAR Report POR id";
+		return reportMgmtService.searchById(id);
 	}
 }

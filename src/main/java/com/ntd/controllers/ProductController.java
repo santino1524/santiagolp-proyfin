@@ -31,6 +31,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/products")
 public class ProductController {
 
+	/** Constante String productsDto */
+	private static final String PRODUCTS_DTO = "productsDto";
+
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductMgmtServiceI productMgmtService;
 
@@ -153,7 +156,7 @@ public class ProductController {
 			log.info("Mostrar todos los productos");
 
 		// Retornar lista de productos
-		model.addAttribute("productsDto", productMgmtService.searchAll());
+		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchAll());
 
 		return "VISTA BUSCAR TODOS LOS PRODUCTOS";
 	}
@@ -173,7 +176,7 @@ public class ProductController {
 			log.info("Buscar producto por categoria");
 
 		// Retornar lista de productos
-		model.addAttribute("productsDto", productMgmtService.searchByCategory(category));
+		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByCategory(category));
 
 		return "VISTA BUSCAR PRODUCTOS POR CATEGORIA";
 	}
@@ -193,7 +196,7 @@ public class ProductController {
 			log.info("Buscar producto por su nombre");
 
 		// Retornar producto
-		model.addAttribute("productsDto", productMgmtService.searchByName(productName));
+		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByName(productName));
 
 		return "VISTA BUSCAR PRODUCTOS POR nombre";
 	}
@@ -213,7 +216,7 @@ public class ProductController {
 			log.info("Buscar producto por nombre ordenado por precio DESC");
 
 		// Retornar producto
-		model.addAttribute("productsDto", productMgmtService.searchByNameOrderPvpPriceDesc(productName));
+		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByNameOrderPvpPriceDesc(productName));
 
 		return "VISTA BUSCAR PRODUCTOS POR nombre ordenado por precio desc";
 	}
@@ -233,7 +236,7 @@ public class ProductController {
 			log.info("Buscar producto por nombre ordenado por precio ASC");
 
 		// Retornar producto
-		model.addAttribute("productsDto", productMgmtService.searchByNameOrderPvpPriceAsc(productName));
+		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByNameOrderPvpPriceAsc(productName));
 
 		return "VISTA BUSCAR PRODUCTOS POR nombre ordenado por precio asc";
 	}

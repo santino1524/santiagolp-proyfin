@@ -23,10 +23,11 @@ public interface ProductSoldMgmtServiceI {
 	/**
 	 * Insertar nuevo producto vendido
 	 * 
-	 * @param productSoldDto
-	 * @return ProductSoldDTO
+	 * @param soldProductsDto
+	 * @return List
 	 * @throws InternalException
 	 */
-	public ProductSoldDTO insertProductSold(final ProductSoldDTO productSoldDto) throws InternalException;
+	public List<ProductSoldDTO> insertAllProductSold(final List<ProductSoldDTO> soldProductsDto)
+			throws InternalException;
 
 }

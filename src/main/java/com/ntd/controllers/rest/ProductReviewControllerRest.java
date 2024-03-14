@@ -1,7 +1,9 @@
-package com.ntd.controllers;
+package com.ntd.controllers.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.exceptions.InternalException;
@@ -27,9 +30,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author SLP
  */
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/productReview")
-public class ProductReviewController {
+public class ProductReviewControllerRest {
 
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductReviewMgmtServiceI productReviewMgmtService;
@@ -39,7 +42,7 @@ public class ProductReviewController {
 	 * 
 	 * @param productReviewMgmtService
 	 */
-	public ProductReviewController(final ProductReviewMgmtServiceI productReviewMgmtService) {
+	public ProductReviewControllerRest(final ProductReviewMgmtServiceI productReviewMgmtService) {
 		this.productReviewMgmtService = productReviewMgmtService;
 	}
 
@@ -47,49 +50,46 @@ public class ProductReviewController {
 	 * Registrar ProductReview
 	 * 
 	 * @param productReviewDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String saveProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto, final Model model)
+	public ResponseEntity<String> saveProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar critica de producto");
 
-		String result = null;
+		ResponseEntity<String> result = null;
 
 		// Guardar ProductReview
 		if (productReviewMgmtService.insertProductReview(productReviewDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
+			result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
+			result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_UNEXPECTED_ERROR);
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar CRITICA DE PRODUCTO";
+		return result;
 	}
 
 	/**
 	 * Actualizar ProductReview
 	 * 
-	 * @param model
 	 * @param productReviewDto
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@PutMapping
-	public String updateProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto, final Model model)
+	public ResponseEntity<String> updateProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar critica de producto");
 
-		String result = null;
+		ResponseEntity<String> result = null;
 
 		// Comprobar si existe la critica
 		if (productReviewMgmtService.searchById(productReviewDto.productReviewId()) == null) {
-			result = Constants.MSG_PRODUCT_REVIEW_NON_EXISTENT;
+			result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+					.body(Constants.MSG_PRODUCT_REVIEW_NON_EXISTENT);
 		} else {
 			// Actualizar ProductReview
 			final ProductReviewDTO productReviewUpdated = productReviewMgmtService
@@ -97,29 +97,26 @@ public class ProductReviewController {
 
 			// Verificar retorno de actualizacion
 			if (productReviewUpdated != null) {
-				result = Constants.MSG_SUCCESSFUL_OPERATION;
+				result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 			} else {
-				result = Constants.MSG_UNEXPECTED_ERROR;
+				result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Constants.MSG_UNEXPECTED_ERROR);
 			}
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE CRITICA DE PRODUCTO ACTUALIZADO";
+		return result;
 	}
 
 	/**
 	 * Eliminar producto
 	 * 
 	 * @param productDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping
-	public String deleteProductReview(@RequestBody @NotNull final ProductReviewDTO productReviewDto, final Model model)
+	public ResponseEntity<String> deleteProductReview(@RequestBody @NotNull final ProductReviewDTO productReviewDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar ProductReview");
@@ -130,46 +127,37 @@ public class ProductReviewController {
 		// Eliminar ProductReview
 		productReviewMgmtService.deleteProductReview(productReviewDto.productReviewId());
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE  ProductReview ELIMINADO";
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
 	}
 
 	/**
 	 * Buscar todos los productos
 	 * 
-	 * @param model
-	 * @return String
+	 * @return List
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showProductReview(final Model model) throws InternalException {
+	public List<ProductReviewDTO> showProductReview() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos los ProductReview");
 
 		// Retornar lista de ProductReview
-		model.addAttribute("reviewsDto", productReviewMgmtService.searchAll());
-
-		return "VISTA BUSCAR TODOS LOS ProductReview";
+		return productReviewMgmtService.searchAll();
 	}
 
 	/**
 	 * Buscar por id
 	 * 
-	 * @param model
 	 * @param id
-	 * @return String
+	 * @return ProductReviewDTO
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchById")
-	public String searchByProductNumber(@RequestParam @NotNull final Long id, final Model model)
-			throws InternalException {
+	public ProductReviewDTO searchByProductNumber(@RequestParam @NotNull final Long id) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar ProductReview por id");
 
 		// Retornar ProductReview
-		model.addAttribute("productReviewDto", productReviewMgmtService.searchById(id));
-
-		return "VISTA BUSCAR PRODUCTOS POR id";
+		return productReviewMgmtService.searchById(id);
 	}
 }

@@ -18,10 +18,10 @@ public interface OrderMgmtServiceI {
 	 * Insertar nuevo pedido
 	 * 
 	 * @param orderDto
-	 * @return OrderDTO
+	 * @return String
 	 * @throws InternalException
 	 */
-	public OrderDTO insertOrder(final OrderDTO orderDto) throws InternalException;
+	public String insertOrder(final OrderDTO orderDto) throws InternalException;
 
 	/**
 	 * Actualizar pedido

@@ -104,14 +104,7 @@ public class OrderControllerRest {
 			final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto());
 			if (productsDtoNotFound.isEmpty()) {
 				// Guardar pedido
-				if (orderMgmtService.insertOrder(orderDto) != null) {
-					// Devolver una respuesta con codigo de estado 202
-					result = ResponseEntity.status(HttpStatus.ACCEPTED).body(Constants.MSG_SUCCESSFUL_OPERATION);
-				} else {
-					// Devolver una respuesta con codigo de estado 422
-					result = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-							.body(Constants.MSG_UNEXPECTED_ERROR);
-				}
+				result = ResponseEntity.status(HttpStatus.OK).body(orderMgmtService.insertOrder(orderDto));
 			} else {
 				log.info("Retorno de productos con stock insuficiente");
 

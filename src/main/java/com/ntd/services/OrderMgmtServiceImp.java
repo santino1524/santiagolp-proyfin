@@ -14,6 +14,7 @@ import com.ntd.dto.validators.OrderStatusValidator;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Order;
 import com.ntd.persistence.OrderRepositoryI;
+import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 	}
 
 	@Override
-	public OrderDTO insertOrder(OrderDTO orderDto) throws InternalException {
+	public String insertOrder(OrderDTO orderDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Insertar pedido");
 
@@ -63,17 +64,17 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		order = orderRepository.save(order);
 
 		// Guardar lista de productos vendidos
-		for (int i = 0; i < soldProductsDto.size(); i++) {
-			// Obtener producto vendido
-			ProductSoldDTO productSoldDTO = soldProductsDto.get(i);
+		List<ProductSoldDTO> soldProductsDtoRegistered = productSoldMgmtService.insertAllProductSold(soldProductsDto);
 
-			// Guardar
-			productSoldMgmtService.insertProductSold(new ProductSoldDTO(null, DTOMapperI.MAPPER.mapOrderToDTO(order),
-					productSoldDTO.productDto(), productSoldDTO.quantitySold()));
+		String result;
+		if (order != null && soldProductsDtoRegistered.size() == soldProductsDto.size()) {
+			result = Constants.MSG_SUCCESSFUL_OPERATION;
+		} else {
+			result = Constants.MSG_UNEXPECTED_ERROR;
 		}
 
-		// Retornar DTO
-		return DTOMapperI.MAPPER.mapOrderToDTO(order);
+		// Retornar mensaje de operacion
+		return result;
 
 	}
 
