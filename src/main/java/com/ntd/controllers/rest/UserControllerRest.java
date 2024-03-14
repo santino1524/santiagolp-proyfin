@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/rest/users")
 public class UserControllerRest {
 
 	/** Dependencia del servicio de gestion de usuarios */

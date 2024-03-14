@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/addresses")
+@RequestMapping("/rest/addresses")
 public class PostalAddressControllerRest {
 
 	/** Dependencia del servicio de gestion de direcciones */
@@ -80,7 +80,7 @@ public class PostalAddressControllerRest {
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
+	@DeleteMapping("/delete")
 	public ResponseEntity<String> deletePostalAddress(@RequestBody @NotNull final PostalAddressDTO postalAddressDto,
 			@NotNull final Long userId) throws InternalException {
 		if (log.isInfoEnabled())
@@ -108,7 +108,7 @@ public class PostalAddressControllerRest {
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
+	@DeleteMapping("/deleteRelation")
 	public ResponseEntity<String> deleteRelationPostalAddress(
 			@RequestBody @NotNull final PostalAddressDTO postalAddressDto, @NotNull final Long userId)
 			throws InternalException {

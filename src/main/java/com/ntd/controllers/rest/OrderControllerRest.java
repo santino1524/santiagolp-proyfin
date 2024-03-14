@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/rest/orders")
 public class OrderControllerRest {
 
 	/** Dependencia del servicio de gestion de tarjetas */

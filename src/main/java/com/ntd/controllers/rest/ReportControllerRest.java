@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/rest/report")
 public class ReportControllerRest {
 
 	/** Dependencia del servicio de gestion de productos */

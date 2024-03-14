@@ -79,7 +79,7 @@ public class PostalAddressController {
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
+	@DeleteMapping("/delete")
 	public String deletePostalAddress(@RequestBody @NotNull final PostalAddressDTO postalAddressDto,
 			@NotNull final Long userId, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
@@ -110,7 +110,7 @@ public class PostalAddressController {
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
+	@DeleteMapping("/deleteRelation")
 	public String deleteRelationPostalAddress(@RequestBody @NotNull final PostalAddressDTO postalAddressDto,
 			@NotNull final Long userId, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
