@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{general :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{general :: headerContent}">
+	</div>
+
+	<!-- CONTENIDO DE LA PAGINA -->
+	<div class="container text-center mt-5">
+		<h2 class="mb-3">Productos</h2>
+		<div class="row">
+			<div class="col-md-3 mx-auto">
+
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{general :: footSpace}">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{general :: footerContent}">
+	</div>
+
+</body>
+
+</html>

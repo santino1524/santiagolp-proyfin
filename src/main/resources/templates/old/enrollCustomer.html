@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{general :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{general :: headerContent}">
+	</div>
+
+	<div class="container mt-5">
+		<div class="main-container">
+			<div class="container">
+				<div class="main-content">
+					<h1 class="text-center">Nuevo cliente</h1>
+
+					<!-- FORMULARIO INSERTAR CLIENTES -->
+					<form action="enrollCustomer" method="POST" class="text-center mt-4">
+						<div class="form-group col-md-3 mx-auto">
+							<div class="mb-3">
+								<label for="name" class="form-label">Nombre:</label>
+								<input type="text" class="form-control" id="name" name="name" required
+									pattern="[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,25}" maxlength="25">
+							</div>
+							<div class="mb-3">
+								<label for="name" class="form-label">Primer apellido:</label>
+								<input type="text" class="form-control" id="surname" name="surname"
+									pattern="[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,25}" maxlength="25">
+							</div>
+							<div class="mb-3">
+								<label for="name" class="form-label">Segundo apellido:</label>
+								<input type="text" class="form-control" id="secondSurname" name="secondSurname"
+									pattern="[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,25}" maxlength="25">
+							</div>
+							<div class="mb-3">
+								<label for="name" class="form-label">Fecha de nacimiento:</label>
+								<input type="date" class="form-control" id="birthdate" name="birthdate"
+									pattern="\d{4}-\d{2}-\d{2}">
+							</div>
+							<div class="mb-3">
+								<label for="dni" class="form-label">DNI:</label> <input type="text" class="form-control"
+									id="dni" name="dni" pattern="[A-Za-z0-9]{9}" required>
+							</div>
+						</div>
+						<button type="submit" class="btn btn-primary">Guardar</button>
+					</form>
+
+					<!-- MENSAJE ORIENTATIVO -->
+					<div th:unless="${#strings.isEmpty(result)}" th:text="${result}"
+						class="alert alert-success mt-3 mx-auto col-md-3">
+					</div>
+
+					<!-- VOLVER A MENU -->
+					<p class="mt-3 text-center">
+						<a href="/" class="btn btn-primary">Volver</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{general :: footSpace}">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{general :: footerContent}">
+	</div>
+
+</body>
+
+</html>

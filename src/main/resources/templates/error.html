@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{general :: headers}">
+</head>
+
+<body>
+	
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{general :: headerContent}">
+	</div>
+
+	<div class="container mt-5">
+		<div class="main-container">
+			<div class="container">
+				<div class="main-content text-center">
+					<i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ffc107;"></i>
+					
+					<!-- MENSAJE DE ERROR-->
+					<h2 class="text-warning" th:text="${message}"></h2>
+					
+					<!-- VOLVER A MENU -->
+					<p class="mt-3 text-center">
+						<a th:href="@{/}" class="btn btn-dark">Volver</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{general :: footSpace}">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{general :: footerContent}">
+	</div>
+
+</body>
+
+</html>

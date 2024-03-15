@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- FRAGMENTO PARA HEAD DEL HTML DE LAS PAGINAS -->
+
+<head th:fragment="headers">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Luz Fuego Destrucción</title>
+	<link rel="icon" href="images/icons8-dragon-ball-24.png">
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+	<!-- FRAGMENTO PARA CONTENIDO DE CABECERA DE LAS PAGINAS -->
+	<div class="header" th:fragment="headerContent" id="header">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<a class="navbar-brand" href="/#" title="Página de inicio">
+				<img src="/images/logo.png" alt="Logo Tienda" style="max-height: 80px;">
+			</a>
+
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="/">Inicio<span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Tienda
+						</a>
+						<div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+							<a class="dropdown-item bg-dark text-white" th:href="@{/redirect/products}">Camisetas</a>
+							<a class="dropdown-item bg-dark text-white" href="#">Gorras</a>
+							<a class="dropdown-item bg-dark text-white" href="#">Figuras</a>
+							<a class="dropdown-item bg-dark text-white" href="#">Mochilas</a>
+						</div>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Acerca de</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" th:href="@{/redirect/admin}" id="adminLink">Administración</a>
+					</li>
+				</ul>
+
+
+				<ul class="navbar-nav ml-auto">
+					<form class="form-inline my-2 my-lg-0">
+						<input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search">
+						<button class="btn btn-outline-light my-2 my-sm-0 mr-sm-2" type="submit" title="Buscar"><i
+								class="fas fa-search"></i></button>
+					</form>
+					<li class="dropdown nav-item">
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false" href="#" title="Acceder">
+							<i class="fas fa-user fa-lg"></i>
+						</a>
+
+						<ul id="login-dp" class="dropdown-menu dropdown-menu-right">
+							<li>
+								<div class="row">
+									<div class="col-md-12">
+										Acceder
+										<form class="form" role="form" method="post" action="login"
+											accept-charset="UTF-8" id="login-nav">
+											<div class="form-group">
+												<label class="sr-only" for="inputEmail2">Correo electrónico</label>
+												<input type="email" class="form-control" id="inputEmail2"
+													placeholder="Correo electrónico" required autocomplete="username">
+											</div>
+											<div class="form-group">
+												<label class="sr-only" for="inputPassword2">Contraseña</label>
+												<input type="password" class="form-control" id="inputPassword2"
+													placeholder="Contraseña" required autocomplete="current-password">
+												<div class="help-block text-right"><a href="#">¿Haz olvidado tu
+														contraseña?</a>
+												</div>
+											</div>
+											<div class="form-group">
+												<button type="submit" class="btn btn-dark btn-block">Iniciar
+													sesión</button>
+											</div>
+
+										</form>
+									</div>
+									<div class="bottom text-center">
+										¿Eres nuevo por aquí? <a href="#"><b>Resgístrate</b></a>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+
+			<div class="navbar-nav">
+				<a class="nav-link" href="#" title="Cesta de compras">
+					<i class="fas fa-shopping-cart fa-lg"></i>
+				</a>
+			</div>
+		</nav>
+
+
+	</div>
+
+
+	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
+	<div class="d-flex flex-wrap  bg-dark text-white text-center py-3 fixed-bottom" th:fragment="footerContent" id="footer">
+			<div class="container">
+				<div class="row justify-content-between">
+					<div class="col-md-4 col-sm-6">
+						<div class="Shipping d-flex">
+							<p>Envíos con: &nbsp;</p>
+							<div class="card-wrap ps-2">
+								<img src="/images/dhl.png" alt="DHL" title="DHL" class="img-fluid" style="max-width: 100px;">
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-6">
+						<div class="payment-method d-flex">
+							<p>Opción de pago: &nbsp;</p>
+							<div class="card-wrap ps-2">
+								<img src="/images/paypal-icon-8.png" alt="PayPal" title="PayPal" class="img-fluid" style="max-width: 50px;">
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-6">
+						<div class="card-wrap ps-2">
+							<p>&copy; Copyright 2024</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		<script type="text/javascript" th:src="@{/js/main.js}"></script>
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+			crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+			integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+			crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+			integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+			crossorigin="anonymous"></script>
+	</div>
+
+	<!-- FRAGMENTO PARA MAQUETACION DE LAS PAGINAS -->
+	<div class="space" th:fragment="footSpace">
+		<div class="invisible d-md-block w-100" style="height: 70px; background-color: #f0f0f0;"></div>
+	</div>
+
+</body>
+
+</html>

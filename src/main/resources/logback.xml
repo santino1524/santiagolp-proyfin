@@ -6,7 +6,7 @@
 	<timestamp key="date" datePattern="dd-MM-yyyy" />
 			
 	<!-- MODIFICAR PROPIEDAD -->
-	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-logs/}logSpringT5-${date}.log}"/>
+	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-logs/}logLFD-${date}.log}"/>
 
 	<!-- CONFIGURACIONES DE SPRING -->
 	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{general :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{general :: headerContent}">
+	</div>
+
+	<h2 class="text-center mt-4">Actualizar datos</h2>
+
+	<!-- FORMULARIO PARA ACTUALIZAR CLIENTES -->
+	<form action="updateCustomer" method="POST" class="text-center mt-4">
+		<div class="form-group col-md-9 mx-auto">
+			<div class="table-responsive mt-5">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>Primer apellido</th>
+							<th>Segundo apellido</th>
+							<th>Fecha de nacimiento</th>
+							<th>DNI</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<input type="text" class="form-control" id="name" name="name"
+									th:value="${customer.name()}" required pattern="[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,25}"
+									oninput="toggleUpdateButton()">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="surname" name="surname"
+									th:value="${customer.surname()}" pattern="[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,25}"
+									oninput="toggleUpdateButton()">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="secondSurname" name="secondSurname"
+									th:value="${customer.secondSurname()}" pattern="[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,25}"
+									oninput="toggleUpdateButton()">
+							</td>
+							<td>
+								<input type="date" class="form-control" id="birthdate" name="birthdate"
+									pattern="\d{4}-\d{2}-\d{2}" required oninput="toggleUpdateButton()"
+									th:value="${customer.birthdate()}">
+							</td>
+							<td>
+								<input type="text" class="form-control" id="dni" name="dni" th:value="${customer.dni()}"
+									required pattern="[A-Za-z0-9]{9}" oninput="toggleUpdateButton()">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- INPUT OCULTO CON ID DE CLIENTE-->
+			<input type="hidden" id="id" name="id" th:value="${customer.id()}">
+
+			<input type="submit" name="updateButton" value="Actualizar" class="btn btn-primary mt-3 col-md-1 mx-auto"
+				style="visibility: hidden" />
+		</div>
+	</form>
+
+	<!-- MENSAJE ORIENTATIVO -->
+	<div th:if="${!#lists.isEmpty(param.updateButton)}" class="alert alert-success mt-3 mx-auto col-md-3">Se
+		han actualizado los datos.</div>
+	<p class="text-center mt-3">
+		<a th:href="@{/searchCustomers}" class="btn btn-primary">Volver</a>
+	</p>
+
+	<!-- VOLVER A MENU -->
+	<p class="text-center mt-3">
+		<a href="/" class="btn btn-primary">Inicio</a>
+	</p>
+
+	<div th:replace="~{general :: footSpace}">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{general :: footerContent}">
+	</div>
+
+</body>
+
+</html>

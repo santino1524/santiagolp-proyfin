@@ -28,6 +28,9 @@ public class Constants {
 	/** Msg InternalException */
 	public static final String MSG_INTERNAL_EXC = "Error interno, contacta con el administrador del sistema.";
 
+	/** Msg Pagina de Admin en movil */
+	public static final String MSG_ADMIN_RESPONSIVE_EXC = "La página de Administración no se puede abrir desde un dispositivo móvil.";
+
 	/** Msg IllegalDatesException */
 	public static final String MSG_ILLEGAL_DATES = "Los datos introducidos son incorrectos.";
 

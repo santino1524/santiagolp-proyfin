@@ -53,7 +53,7 @@ public class ProductSoldMgmtServiceImp implements ProductSoldMgmtServiceI {
 	@Override
 	public List<ProductSoldDTO> insertAllProductSold(List<ProductSoldDTO> soldProductsDto) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Insertar productos vendido");
+			log.info("Insertar producto vendido");
 
 		// Validar parametro
 		ValidateParams.isNullObject(soldProductsDto);
