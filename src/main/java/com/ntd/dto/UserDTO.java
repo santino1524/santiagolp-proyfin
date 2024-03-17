@@ -38,6 +38,8 @@ public record UserDTO(Long userId,
 		// Validar rol
 		@ValidUserRol String role,
 
+		List<PasswordResetQuestionDTO> questionsDto,
+
 		List<PostalAddressDTO> addressesDto,
 
 		List<OrderDTO> ordersDto) {

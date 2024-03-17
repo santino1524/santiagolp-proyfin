@@ -3,13 +3,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- HEAD DEL HTML -->
-<head th:replace="~{general :: headers}">
+<head th:replace="~{general-fragments :: headers}">
 </head>
 
 <body>
 	
 	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{general :: headerContent}">
+	<div th:replace="~{general-fragments :: headerContent}">
 	</div>
 
 	<div class="container mt-5">
@@ -30,11 +30,11 @@
 		</div>
 	</div>
 
-	<div th:replace="~{general :: footSpace}">
+	<div th:replace="~{general-fragments :: footSpace}">
 	</div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{general :: footerContent}">
+	<div th:replace="~{general-fragments :: footerContent}">
 	</div>
 
 </body>

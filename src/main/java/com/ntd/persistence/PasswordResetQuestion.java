@@ -15,37 +15,36 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Clase Producto
+ * Clase Preguntas para resetear contraseña
  * 
  * @author SLP
  */
 @Entity
 @Getter
 @Setter
-@Table(name = "T_REPORT")
-public class Report implements Serializable {
+@Table(name = "T_PASSWORD_RESET_QUESTION")
+public class PasswordResetQuestion implements Serializable {
 
 	/** Serial Version */
-	private static final long serialVersionUID = -8986203031939654575L;
+	private static final long serialVersionUID = -5335235112246467256L;
 
 	/** Identificador (PK) */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "C_REPORT_ID")
-	private Long reportId;
+	@Column(name = "C_QUESTION_ID")
+	private Long questionId;
 
-	/** Critica de producto */
+	/* Usuario */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PRODUCT_REVIEW_ID", nullable = false)
-	private ProductReview review;
+	@JoinColumn(name = "C_USER_ID", nullable = false)
+	private User user;
 
-	/** Usuario que reporta */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "REPORTER_USER_ID", nullable = false)
-	private User reporter;
+	/* Pregunta */
+	@Column(name = "C_QUESTION", nullable = false)
+	private String question;
 
-	/** Razon de la denuncia */
-	@Column(name = "C_REASON", nullable = false)
-	private String reason;
+	/* Respuesta */
+	@Column(name = "C_ANSWER", nullable = false)
+	private String answer;
 
 }

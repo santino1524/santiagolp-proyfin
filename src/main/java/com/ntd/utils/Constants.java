@@ -85,6 +85,15 @@ public class Constants {
 	/** Msg de name NotValid */
 	public static final String MSG_NAME_NOT_VALID = "El nombre introducido no es válido";
 
+	/** Msg de reason NotValid */
+	public static final String MSG_REASON_NOT_VALID = "Debe introducir la razón de la denuncia";
+
+	/** Msg de pregunta NotValid */
+	public static final String MSG_QUESTION_NOT_VALID = "Debe introducir la pregunta";
+
+	/** Msg de respuesta NotValid */
+	public static final String MSG_ANSWER_NOT_VALID = "Debe introducir la respuesta";
+
 	/** Msg de productSizes NotValid */
 	public static final String MSG_PRODUCT_SIZES_NOT_VALID = "Debe introducir la talla del producto";
 

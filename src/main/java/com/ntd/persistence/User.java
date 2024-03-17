@@ -84,6 +84,10 @@ public class User implements Serializable {
 	private List<Order> orders;
 
 	/** Denuncias del usuario */
-	@OneToMany(mappedBy = "reporter")
+	@OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL)
 	private List<Report> reportedReviews;
+
+	/** Listado de preguntas para resetear contrasena */
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<PasswordResetQuestion> questions;
 }

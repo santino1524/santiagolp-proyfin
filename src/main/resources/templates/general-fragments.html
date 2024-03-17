@@ -112,34 +112,78 @@
 
 	</div>
 
+	<!-- FRAGMENTO BARRA LATERAL DE ADMINISTRACION-->
+	<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark sidebar" style="max-width:200px;" 
+	th:fragment="sidebarAdmin">
+		<div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+			<i class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i>
+			<span class="fs-4">Gestionar tienda</span>
+		</div>
+		<hr>
+		<ul class="nav nav-pills flex-column mb-auto">
+			<li>
+				<a href="#" class="nav-link text-white">
+					<i class="fas fa-shopping-basket fa-sm"></i>
+					Pedidos
+				</a>
+			</li>
+			<li>
+				<a href="#" class="nav-link text-white">
+					<i class="fas fa-box-open fa-sm"></i>
+					Productos
+				</a>
+			</li>
+			<li>
+				<a href="#" class="nav-link text-white">
+					<i class="fas fa-exclamation-triangle fa-sm"></i>
+					Denuncias
+				</a>
+			</li>
+			<li>
+				<a href="#" class="nav-link text-white">
+					<i class="fas fa-truck fa-sm"></i>
+					Envíos
+				</a>
+			</li>
+			<li>
+				<a href="#" class="nav-link text-white">
+					<i class="fas fa-users fa-sm"></i>
+					Clientes
+				</a>
+			</li>
+		</ul>
+	</div>
 
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
-	<div class="d-flex flex-wrap  bg-dark text-white text-center py-3 fixed-bottom" th:fragment="footerContent" id="footer">
-			<div class="container">
-				<div class="row justify-content-between">
-					<div class="col-md-4 col-sm-6">
-						<div class="Shipping d-flex">
-							<p>Envíos con: &nbsp;</p>
-							<div class="card-wrap ps-2">
-								<img src="/images/dhl.png" alt="DHL" title="DHL" class="img-fluid" style="max-width: 100px;">
-							</div>
-						</div>
-					</div>
-					<div class="col-md-4 col-sm-6">
-						<div class="payment-method d-flex">
-							<p>Opción de pago: &nbsp;</p>
-							<div class="card-wrap ps-2">
-								<img src="/images/paypal-icon-8.png" alt="PayPal" title="PayPal" class="img-fluid" style="max-width: 50px;">
-							</div>
-						</div>
-					</div>
-					<div class="col-md-4 col-sm-6">
+	<div class="d-flex flex-wrap  bg-dark text-white text-center py-3 fixed-bottom" th:fragment="footerContent"
+		id="footer">
+		<div class="container">
+			<div class="row justify-content-between">
+				<div class="col-md-4 col-sm-6">
+					<div class="Shipping d-flex">
+						<p>Envíos con: &nbsp;</p>
 						<div class="card-wrap ps-2">
-							<p>&copy; Copyright 2024</p>
+							<img src="/images/dhl.png" alt="DHL" title="DHL" class="img-fluid"
+								style="max-width: 100px;">
 						</div>
 					</div>
 				</div>
+				<div class="col-md-4 col-sm-6">
+					<div class="payment-method d-flex">
+						<p>Opción de pago: &nbsp;</p>
+						<div class="card-wrap ps-2">
+							<img src="/images/paypal-icon-8.png" alt="PayPal" title="PayPal" class="img-fluid"
+								style="max-width: 50px;">
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6">
+					<div class="card-wrap ps-2">
+						<p>&copy; Copyright 2024</p>
+					</div>
+				</div>
 			</div>
+		</div>
 
 		<script type="text/javascript" th:src="@{/js/main.js}"></script>
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
