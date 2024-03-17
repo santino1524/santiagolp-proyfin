@@ -19,6 +19,84 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/redirect")
 public class RedirectController {
 
+	/* Constante String administration */
+	private static final String ADMINISTRATION = "administration";
+
+	/**
+	 * Mostrar AdminOrders
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/adminOrders")
+	public String showAdminOrders(final Model model) {
+		if (log.isInfoEnabled())
+			log.info("Mostrar AdminOrders");
+
+		model.addAttribute("showOrders", true);
+
+		return ADMINISTRATION;
+	}
+
+	/**
+	 * Mostrar AdminProducts
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/adminProducts")
+	public String showProducts(final Model model) {
+		if (log.isInfoEnabled())
+			log.info("Mostrar AdminProducts");
+
+		model.addAttribute("showProducts", true);
+
+		return ADMINISTRATION;
+	}
+
+	/**
+	 * Mostrar AdminComplaints
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/adminComplaints")
+	public String showComplaints(final Model model) {
+		if (log.isInfoEnabled())
+			log.info("Mostrar AdminComplaints");
+
+		model.addAttribute("showComplaints", true);
+
+		return ADMINISTRATION;
+	}
+
+	/**
+	 * Mostrar AdminSendings
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/adminSendings")
+	public String showSendings(final Model model) {
+		if (log.isInfoEnabled())
+			log.info("Mostrar AdminSendings");
+
+		model.addAttribute("showSendings", true);
+
+		return ADMINISTRATION;
+	}
+
+	/**
+	 * Mostrar AdminUsers
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/adminUsers")
+	public String showUsers(final Model model) {
+		if (log.isInfoEnabled())
+			log.info("Mostrar AdminUsers");
+
+		model.addAttribute("showUsers", true);
+
+		return ADMINISTRATION;
+	}
+
 	/**
 	 * Redireccionar a pagina productos
 	 * 
@@ -33,6 +111,58 @@ public class RedirectController {
 	}
 
 	/**
+	 * Redireccionar a pagina Acerca de
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/about")
+	public String goAbout() {
+		if (log.isInfoEnabled())
+			log.info("Redireccionar a pagina Acerca de");
+
+		return "about";
+	}
+
+	/**
+	 * Redireccionar a pagina Registro
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/register")
+	public String goRegister() {
+		if (log.isInfoEnabled())
+			log.info("Redireccionar a pagina Registro");
+
+		return "register";
+	}
+
+	/**
+	 * Redireccionar a pagina Reiniciar contrasena
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/resetPassword")
+	public String goResetPassword() {
+		if (log.isInfoEnabled())
+			log.info("Redireccionar a pagina Reiniciar contrasena");
+
+		return "reset-password";
+	}
+
+	/**
+	 * Redireccionar a pagina Carrito de compras
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/shoppingCart")
+	public String goShoppingCart() {
+		if (log.isInfoEnabled())
+			log.info("Redireccionar a pagina Carrito de compras");
+
+		return "shopping-cart";
+	}
+
+	/**
 	 * Redireccionar a pagina Admin
 	 * 
 	 * @return String
@@ -42,7 +172,7 @@ public class RedirectController {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Administracion");
 
-		return "administration";
+		return ADMINISTRATION;
 	}
 
 	/**

@@ -39,13 +39,13 @@
 						</a>
 						<div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white" th:href="@{/redirect/products}">Camisetas</a>
-							<a class="dropdown-item bg-dark text-white" href="#">Gorras</a>
-							<a class="dropdown-item bg-dark text-white" href="#">Figuras</a>
-							<a class="dropdown-item bg-dark text-white" href="#">Mochilas</a>
+							<a class="dropdown-item bg-dark text-white" th:href="@{/redirect/products}">Gorras</a>
+							<a class="dropdown-item bg-dark text-white" th:href="@{/redirect/products}">Figuras</a>
+							<a class="dropdown-item bg-dark text-white" th:href="@{/redirect/products}">Mochilas</a>
 						</div>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Acerca de</a>
+						<a class="nav-link"  th:href="@{/redirect/about}">Acerca de</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" th:href="@{/redirect/admin}" id="adminLink">Administración</a>
@@ -81,7 +81,7 @@
 												<label class="sr-only" for="inputPassword2">Contraseña</label>
 												<input type="password" class="form-control" id="inputPassword2"
 													placeholder="Contraseña" required autocomplete="current-password">
-												<div class="help-block text-right"><a href="#">¿Haz olvidado tu
+												<div class="help-block text-right"><a th:href="@{/redirect/resetPassword}">¿Haz olvidado tu
 														contraseña?</a>
 												</div>
 											</div>
@@ -93,7 +93,7 @@
 										</form>
 									</div>
 									<div class="bottom text-center">
-										¿Eres nuevo por aquí? <a href="#"><b>Resgístrate</b></a>
+										¿Eres nuevo por aquí? <a th:href="@{/redirect/register}"><b>Resgístrate</b></a>
 									</div>
 								</div>
 							</li>
@@ -103,55 +103,13 @@
 			</div>
 
 			<div class="navbar-nav">
-				<a class="nav-link" href="#" title="Cesta de compras">
+				<a class="nav-link" th:href="@{/redirect/shoppingCart}" title="Cesta de compras">
 					<i class="fas fa-shopping-cart fa-lg"></i>
 				</a>
 			</div>
 		</nav>
 
 
-	</div>
-
-	<!-- FRAGMENTO BARRA LATERAL DE ADMINISTRACION-->
-	<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark sidebar" style="max-width:200px;" 
-	th:fragment="sidebarAdmin">
-		<div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-			<i class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i>
-			<span class="fs-4">Gestionar tienda</span>
-		</div>
-		<hr>
-		<ul class="nav nav-pills flex-column mb-auto">
-			<li>
-				<a href="#" class="nav-link text-white">
-					<i class="fas fa-shopping-basket fa-sm"></i>
-					Pedidos
-				</a>
-			</li>
-			<li>
-				<a href="#" class="nav-link text-white">
-					<i class="fas fa-box-open fa-sm"></i>
-					Productos
-				</a>
-			</li>
-			<li>
-				<a href="#" class="nav-link text-white">
-					<i class="fas fa-exclamation-triangle fa-sm"></i>
-					Denuncias
-				</a>
-			</li>
-			<li>
-				<a href="#" class="nav-link text-white">
-					<i class="fas fa-truck fa-sm"></i>
-					Envíos
-				</a>
-			</li>
-			<li>
-				<a href="#" class="nav-link text-white">
-					<i class="fas fa-users fa-sm"></i>
-					Clientes
-				</a>
-			</li>
-		</ul>
 	</div>
 
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
@@ -163,8 +121,8 @@
 					<div class="Shipping d-flex">
 						<p>Envíos con: &nbsp;</p>
 						<div class="card-wrap ps-2">
-							<img src="/images/dhl.png" alt="DHL" title="DHL" class="img-fluid"
-								style="max-width: 100px;">
+							<a href="https://www.dhl.com/es-es/home.html" target="_blank"><img src="/images/dhl.png" alt="DHL" title="DHL" class="img-fluid"
+								style="max-width: 100px;"></a>
 						</div>
 					</div>
 				</div>
@@ -172,8 +130,8 @@
 					<div class="payment-method d-flex">
 						<p>Opción de pago: &nbsp;</p>
 						<div class="card-wrap ps-2">
-							<img src="/images/paypal-icon-8.png" alt="PayPal" title="PayPal" class="img-fluid"
-								style="max-width: 50px;">
+							<a href="https://www.paypal.com/es/home" target="_blank"><img src="/images/paypal-icon-8.png" alt="PayPal" title="PayPal" class="img-fluid"
+								style="max-width: 50px;"></a>
 						</div>
 					</div>
 				</div>

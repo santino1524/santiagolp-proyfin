@@ -4,25 +4,92 @@
 
 <!-- HEAD DEL HTML -->
 
-<head th:replace="~{general-fragments :: headers}">
+<head th:replace="~{fragments/general-fragments :: headers}">
 </head>
 
 <body>
 	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{general-fragments :: headerContent}">
-	</div>
-	
-	<!-- BARRA DE ADMINISTRACION -->
-	<div th:replace="~{sidebar-fragment :: sidebarAdmin}">
+	<div th:replace="~{fragments/general-fragments :: headerContent}">
 	</div>
 
-	<!-- ESPACIADO DE PIE DE PAGINA -->
-	<div th:replace="~{general-fragments :: footSpace}">
+	<div class="d-flex">
+		<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark sidebar d-inline-block"
+			style="max-width:200px;">
+			<div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+				<i class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i>
+				<span class="fs-4">Gestionar tienda</span>
+			</div>
+			<hr>
+			<ul class="nav nav-pills flex-column mb-auto">
+				<li>
+					<a th:href="@{/redirect/adminOrders}" class="nav-link text-white">
+						<i class="fas fa-shopping-basket fa-sm"></i>
+						Pedidos
+					</a>
+				</li>
+				<li>
+					<a th:href="@{/redirect/adminProducts}" class="nav-link text-white">
+						<i class="fas fa-box-open fa-sm"></i>
+						Productos
+					</a>
+				</li>
+				<li>
+					<a th:href="@{/redirect/adminComplaints}" class="nav-link text-white">
+						<i class="fas fa-exclamation-triangle fa-sm"></i>
+						Denuncias
+					</a>
+				</li>
+				<li>
+					<a th:href="@{/redirect/adminSendings}" class="nav-link text-white">
+						<i class="fas fa-truck fa-sm"></i>
+						Envíos
+					</a>
+				</li>
+				<li>
+					<a th:href="@{/redirect/adminUsers}" class="nav-link text-white">
+						<i class="fas fa-users fa-sm"></i>
+						Clientes
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- ADMIN PEDIDOS -->
+		<th:block th:if="${showOrders}">
+			<div th:replace="~{fragments/administration-fragments :: orders}">
+			</div>
+		</th:block>
+
+		<!-- ADMIN PRODUCTOS -->
+		<th:block th:if="${showProducts}">
+			<div th:replace="~{fragments/administration-fragments :: products}">
+			</div>
+		</th:block>
+
+		<!-- ADMIN DENUNCIAS -->
+		<th:block th:if="${showComplaints}">
+			<div th:replace="~{fragments/administration-fragments :: complaints}">
+			</div>
+		</th:block>
+
+		<!-- ADMIN ENVIOS -->
+		<th:block th:if="${showSendings}">
+			<div th:replace="~{fragments/administration-fragments :: sendings}">
+			</div>
+		</th:block>
+
+		<!-- ADMIN USUARIOS -->
+		<th:block th:if="${showUsers}">
+			<div th:replace="~{fragments/administration-fragments :: users}">
+			</div>
+		</th:block>
 	</div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{general-fragments :: footerContent}">
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
+
+
 
 </body>
 
