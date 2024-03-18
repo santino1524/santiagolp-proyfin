@@ -11,6 +11,7 @@ import org.mapstruct.factory.Mappers;
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.PasswordResetQuestionDTO;
 import com.ntd.dto.PostalAddressDTO;
+import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.dto.ProductSoldDTO;
@@ -20,6 +21,7 @@ import com.ntd.persistence.Order;
 import com.ntd.persistence.PasswordResetQuestion;
 import com.ntd.persistence.PostalAddress;
 import com.ntd.persistence.Product;
+import com.ntd.persistence.ProductCategory;
 import com.ntd.persistence.ProductReview;
 import com.ntd.persistence.ProductSold;
 import com.ntd.persistence.Report;
@@ -40,7 +42,7 @@ public interface DTOMapperI {
 	 * @param question
 	 * @return PasswordResetQuestionDTO
 	 */
-	@Mapping(target = "userDto", source = "user")
+	@Mapping(target = "userDto", ignore = true)
 	public PasswordResetQuestionDTO mapQuestionToDTO(PasswordResetQuestion question);
 
 	/**
@@ -207,6 +209,22 @@ public interface DTOMapperI {
 	 */
 	@Mapping(target = "reviewsDto", expression = "java(listProductReviewToDTO(product.getReviews()))")
 	public ProductDTO mapProductToDTO(Product product);
+
+	/**
+	 * Mapear ProductCategory a DTO
+	 * 
+	 * @param productCategory
+	 * @return ProductCategoryDTO
+	 */
+	public ProductCategoryDTO mapProductCategoryToDTO(ProductCategory productCategory);
+
+	/**
+	 * Mapear DTO a ProductCategory
+	 * 
+	 * @param productCategoryDto
+	 * @return ProductCategory
+	 */
+	public ProductCategory mapDTOtoProductCategory(ProductCategoryDTO productCategoryDto);
 
 	/**
 	 * Mapear lista de DTO a ProductReview

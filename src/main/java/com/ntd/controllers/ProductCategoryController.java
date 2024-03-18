@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.ntd.dto.ReportDTO;
+import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.exceptions.InternalException;
-import com.ntd.services.ReportMgmtServiceI;
+import com.ntd.services.ProductCategoryMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
@@ -21,45 +21,45 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Controlador de Reportes
+ * Controlador de Categorias de productos
  * 
  * @author SLP
  */
 @Slf4j
 @Controller
-@RequestMapping("/report")
-public class ReportController {
+@RequestMapping("/category")
+public class ProductCategoryController {
 
-	/** Dependencia del servicio de gestion de productos */
-	private final ReportMgmtServiceI reportMgmtService;
+	/** Dependencia del servicio de gategorias de productos */
+	private final ProductCategoryMgmtServiceI categoryMgmtService;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param reportMgmtService
+	 * @param categoryMgmtService
 	 */
-	public ReportController(final ReportMgmtServiceI reportMgmtService) {
-		this.reportMgmtService = reportMgmtService;
+	public ProductCategoryController(final ProductCategoryMgmtServiceI categoryMgmtService) {
+		this.categoryMgmtService = categoryMgmtService;
 	}
 
 	/**
-	 * Registrar Reporte
+	 * Registrar Categoria
 	 * 
-	 * @param reportDto
+	 * @param categoryDto
 	 * @param model
 	 * @return String
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String saveReport(@RequestBody @Valid final ReportDTO reportDto, final Model model)
+	public String saveCategory(@RequestBody @Valid final ProductCategoryDTO categoryDto, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Registrar Report");
+			log.info("Registrar Categoria");
 
 		String result = null;
 
 		// Guardar Report
-		if (reportMgmtService.insertReport(reportDto) != null) {
+		if (categoryMgmtService.insertProductCategory(categoryDto) != null) {
 			result = Constants.MSG_SUCCESSFUL_OPERATION;
 		} else {
 			result = Constants.MSG_UNEXPECTED_ERROR;
@@ -67,51 +67,51 @@ public class ReportController {
 
 		model.addAttribute(Constants.MESSAGE_GROWL, result);
 
-		return "VISTA MOSTRAR RESPUESTA DE guardar Report";
+		return "VISTA MOSTRAR RESPUESTA DE guardar Category";
 	}
 
 	/**
-	 * Eliminar Reporte
+	 * Eliminar Categoria
 	 * 
-	 * @param reportDto
+	 * @param categoryDto
 	 * @param model
 	 * @return String
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping
-	public String deleteReport(@RequestBody @NotNull final ReportDTO reportDto, final Model model)
+	public String deleteCategory(@RequestBody @NotNull final ProductCategoryDTO categoryDto, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar Report");
 
 		// Validar id
-		ValidateParams.isNullObject(reportDto.reportId());
+		ValidateParams.isNullObject(categoryDto.categoryId());
 
-		// Eliminar Report
-		reportMgmtService.deleteReport(reportDto.reportId());
+		// Eliminar Category
+		categoryMgmtService.deleteProductCategory(categoryDto.categoryId());
 
 		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
 
-		return "VISTA MOSTRAR RESPUESTA DE  Report ELIMINADO";
+		return "VISTA MOSTRAR RESPUESTA DE  Category ELIMINADO";
 	}
 
 	/**
-	 * Buscar todos los Reportes
+	 * Buscar todos las Categorias
 	 * 
 	 * @param model
 	 * @return String
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showReport(final Model model) throws InternalException {
+	public String showCategory(final Model model) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todos los Report");
 
-		// Retornar lista de Report
-		model.addAttribute("reviewsDto", reportMgmtService.searchAll());
+		// Retornar lista de Category
+		model.addAttribute("categoryDto", categoryMgmtService.searchAll());
 
-		return "VISTA BUSCAR TODOS LOS Report";
+		return "VISTA BUSCAR TODOS LOS Category";
 	}
 
 	/**
@@ -125,11 +125,11 @@ public class ReportController {
 	@GetMapping(path = "/searchById")
 	public String searchById(@RequestParam @NotNull final Long id, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Buscar Report por id");
+			log.info("Buscar Category por id");
 
 		// Retornar Report
-		model.addAttribute("reportDto", reportMgmtService.searchById(id));
+		model.addAttribute("categoryDto", categoryMgmtService.searchById(id));
 
-		return "VISTA BUSCAR Report POR id";
+		return "VISTA BUSCAR Category POR id";
 	}
 }

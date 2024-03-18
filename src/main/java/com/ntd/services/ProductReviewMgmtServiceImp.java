@@ -23,13 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductReviewMgmtServiceImp implements ProductReviewMgmtServiceI {
 
-	/** Dependencia de ReportRepository */
+	/** Dependencia de ProductReviewRepository */
 	private final ProductReviewRepositoryI productReviewRepository;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param reportRepository
+	 * @param productReviewRepository
 	 */
 	public ProductReviewMgmtServiceImp(final ProductReviewRepositoryI productReviewRepository) {
 		this.productReviewRepository = productReviewRepository;

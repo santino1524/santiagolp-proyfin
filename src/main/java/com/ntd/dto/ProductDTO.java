@@ -9,6 +9,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO Producto
@@ -32,7 +33,7 @@ public record ProductDTO(Long productId,
 		@DecimalMin(value = "0", message = Constants.MSG_QUANTITY_NOT_VALID) int productQuantity,
 
 		// Validar categoria del producto
-		@NotBlank(message = Constants.MSG_CATEGORY_NOT_VALID) String productCategory,
+		@NotNull(message = Constants.MSG_CATEGORY_NOT_VALID) ProductCategoryDTO productCategory,
 
 		// Validar lista de urls de imagenes
 		@NotEmpty(message = Constants.MSG_IMAGE_URL_NOT_VALID) List<String> imageUrls,
