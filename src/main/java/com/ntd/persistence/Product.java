@@ -92,6 +92,7 @@ public class Product implements Serializable {
 
 	/** Critica de producto */
 	@OneToMany(mappedBy = "product")
+	@Cascade(CascadeType.ALL)
 	private List<ProductReview> reviews;
 
 }
