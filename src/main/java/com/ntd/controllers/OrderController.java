@@ -42,7 +42,7 @@ public class OrderController {
 	/** Constante String ordersDto */
 	private static final String ORDERS_DTO = "ordersDto";
 
-	/** Dependencia del servicio de gestion de tarjetas */
+	/** Dependencia del servicio de gestion de pedidos */
 	private final OrderMgmtServiceI orderMgmtService;
 
 	/** Dependencia del servicio de gestion de productos */

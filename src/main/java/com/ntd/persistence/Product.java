@@ -56,7 +56,7 @@ public class Product implements Serializable {
 
 	/** Categoria del producto */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@Column(name = "C_CATEGORY_ID", nullable = false)
+	@JoinColumn(name = "C_CATEGORY_ID", nullable = false)
 	private ProductCategory productCategory;
 
 	/** Talla del producto */

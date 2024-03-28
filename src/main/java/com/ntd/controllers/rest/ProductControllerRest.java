@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductMgmtServiceI;
@@ -164,12 +165,13 @@ public class ProductControllerRest {
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByCategory")
-	public List<ProductDTO> searchByCategory(@RequestParam @NotNull final String category) throws InternalException {
+	public List<ProductDTO> searchByCategory(@RequestParam @NotNull final ProductCategoryDTO categoryDto)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por categoria");
 
 		// Retornar lista de productos
-		return productMgmtService.searchByCategory(category);
+		return productMgmtService.searchByCategory(categoryDto);
 	}
 
 	/**

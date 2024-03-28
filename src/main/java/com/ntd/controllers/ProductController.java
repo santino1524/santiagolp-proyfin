@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductMgmtServiceI;
@@ -170,13 +171,13 @@ public class ProductController {
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByCategory")
-	public String searchByCategory(@RequestParam @NotNull final String category, final Model model)
+	public String searchByCategory(@RequestParam @NotNull final ProductCategoryDTO categoryDto, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por categoria");
 
 		// Retornar lista de productos
-		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByCategory(category));
+		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByCategory(categoryDto));
 
 		return "VISTA BUSCAR PRODUCTOS POR CATEGORIA";
 	}

@@ -20,7 +20,7 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * @param productCategory
 	 * @return List
 	 */
-	public List<Product> findByProductCategoryIgnoreCase(String productCategory);
+	public List<Product> findByProductCategory(ProductCategory productCategory);
 
 	/**
 	 * Buscar por nombre de producto

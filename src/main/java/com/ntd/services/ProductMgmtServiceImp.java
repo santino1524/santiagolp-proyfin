@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.mapper.DTOMapperI;
@@ -100,15 +101,16 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public List<ProductDTO> searchByCategory(String productCategory) throws InternalException {
+	public List<ProductDTO> searchByCategory(ProductCategoryDTO productCategoryDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar productos por categoria");
 
 		// Validar parametro
-		ValidateParams.isNullObject(productCategory);
+		ValidateParams.isNullObject(productCategoryDto);
 
 		// Buscar por categoria
-		final List<Product> products = productRepository.findByProductCategoryIgnoreCase(productCategory);
+		final List<Product> products = productRepository
+				.findByProductCategory(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();

@@ -2,6 +2,7 @@ package com.ntd.services;
 
 import java.util.List;
 
+import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
 import com.ntd.exceptions.InternalException;
@@ -54,11 +55,11 @@ public interface ProductMgmtServiceI {
 	/**
 	 * Buscar productos por categoria
 	 * 
-	 * @param productCategory
+	 * @param productCategoryDto
 	 * @return List
 	 * @throws InternalException
 	 */
-	public List<ProductDTO> searchByCategory(final String productCategory) throws InternalException;
+	public List<ProductDTO> searchByCategory(final ProductCategoryDTO productCategoryDto) throws InternalException;
 
 	/**
 	 * Buscar productos por coincidencia en el nombre
