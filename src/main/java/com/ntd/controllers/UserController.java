@@ -1,5 +1,13 @@
 package com.ntd.controllers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,13 +42,48 @@ public class UserController {
 	/** Dependencia del servicio de gestion de usuarios */
 	private final UserMgmtServiceI userMgmtService;
 
+	/** Dependencia de SessionRegistry */
+	private final SessionRegistry sessionRegistry;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param userMgmtService
 	 */
-	public UserController(final UserMgmtServiceI userMgmtService) {
+	public UserController(final UserMgmtServiceI userMgmtService, final SessionRegistry sessionRegistry) {
 		this.userMgmtService = userMgmtService;
+		this.sessionRegistry = sessionRegistry;
+	}
+
+	/**
+	 * Retorna los datos de la session
+	 * 
+	 * @return ResponseEntity
+	 */
+	@GetMapping("/session")
+	public ResponseEntity<Map<String, Object>> getDetailSessions() {
+		String sessionId = "";
+		User userObject = null;
+
+		List<Object> sessions = sessionRegistry.getAllPrincipals();
+
+		for (Object session : sessions) {
+			if (session instanceof User user) {
+				userObject = user;
+			}
+
+			List<SessionInformation> sessionInformations = sessionRegistry.getAllSessions(session, false);
+
+			for (SessionInformation sessionInformation : sessionInformations) {
+				sessionId = sessionInformation.getSessionId();
+			}
+		}
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("sessionId", sessionId);
+		response.put("sessionUser", userObject);
+
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -77,7 +120,7 @@ public class UserController {
 		// Retornar respuesta
 		model.addAttribute(Constants.MESSAGE_GROWL, result);
 
-		return "VISTA MOSTRAR RESPUESTA DE registrar usuario";
+		return "register";
 	}
 
 	/**

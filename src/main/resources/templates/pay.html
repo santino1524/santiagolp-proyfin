@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{fragments/general-fragments :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{fragments/general-fragments :: headerContent}">
+	</div>
+
+	<!-- CONTENIDO DE LA PAGINA -->
+	<div class="container text-center mt-5">
+		<h2 class="mb-3">Pagar</h2>
+	</div>
+
+	<div th:replace="~{fragments/general-fragments :: footSpace}">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
+
+</body>
+
+</html>

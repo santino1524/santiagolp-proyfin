@@ -100,6 +100,15 @@ public interface UserMgmtServiceI {
 	public UserDTO searchByPhoneNumber(final String phoneNumber) throws InternalException;
 
 	/**
+	 * Buscar por rol
+	 * 
+	 * @param role
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<UserDTO> searchByRole(final Integer role) throws InternalException;
+
+	/**
 	 * Buscar por nombre y apellidos
 	 * 
 	 * @param name

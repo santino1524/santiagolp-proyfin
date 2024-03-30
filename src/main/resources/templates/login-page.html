@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{fragments/general-fragments :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{fragments/general-fragments :: headerContent}">
+	</div>
+
+	<!-- CONTENIDO DE LA PAGINA -->
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-md-6">
+				<h2 class="text-center mb-4">Identifícate</h2>
+				<form action="authentication" method="POST">
+					<div th:if="${param.error != null}" class="alert alert-danger"
+						role="alert">Nombre de usuario o contraseña incorrectos.</div>
+					<div class="form-group">
+						<label for="inputEmail">Correo electrónico</label> <input
+							type="email" name="username" class="form-control" id="inputEmail"
+							placeholder="Correo electrónico" required autocomplete="username">
+					</div>
+					<div class="form-group">
+						<label for="inputPassword">Contraseña</label> <input
+							type="password" name="password" class="form-control"
+							id="inputPassword" placeholder="Contraseña" required
+							autocomplete="current-password"> <small><a
+							href="/resetPassword">¿Haz olvidado tu contraseña?</a></small>
+					</div>
+					<button type="submit" value="Login" class="btn btn-dark btn-block">Iniciar
+						sesión</button>
+				</form>
+				<div class="text-center mt-3">
+					¿Eres nuevo por aquí? <a href="/register"><b>¡Regístrate!</b></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
+
+</body>
+
+</html>

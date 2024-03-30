@@ -1,5 +1,6 @@
 package com.ntd.controllers;
 
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Controller
-@RequestMapping("/redirect")
-public class RedirectController {
+@RequestMapping("/")
+public class RedirectController extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	/* Constante String administration */
 	private static final String ADMINISTRATION = "administration";
@@ -27,7 +28,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/adminOrders")
+	@GetMapping(path = "adminOrders")
 	public String showAdminOrders(final Model model) {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminOrders");
@@ -38,11 +39,24 @@ public class RedirectController {
 	}
 
 	/**
+	 * Mostrar formulario de inicio
+	 * 
+	 * @return ResponseEntity
+	 */
+	@GetMapping(path = "login-page")
+	public String showLoginForm() {
+		if (log.isInfoEnabled())
+			log.info("Mostrar pagina de login");
+
+		return "login-page";
+	}
+
+	/**
 	 * Mostrar AdminProducts
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/adminProducts")
+	@GetMapping(path = "adminProducts")
 	public String showProducts(final Model model) {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminProducts");
@@ -53,11 +67,24 @@ public class RedirectController {
 	}
 
 	/**
+	 * Mostrar Pagina de pagar
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "pay")
+	public String showPay() {
+		if (log.isInfoEnabled())
+			log.info("Mostrar Pagina de pagar");
+
+		return "pay";
+	}
+
+	/**
 	 * Mostrar AdminComplaints
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/adminComplaints")
+	@GetMapping(path = "adminComplaints")
 	public String showComplaints(final Model model) {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminComplaints");
@@ -72,7 +99,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/adminSendings")
+	@GetMapping(path = "adminSendings")
 	public String showSendings(final Model model) {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminSendings");
@@ -87,7 +114,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/adminUsers")
+	@GetMapping(path = "adminUsers")
 	public String showUsers(final Model model) {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminUsers");
@@ -102,7 +129,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/products")
+	@GetMapping(path = "products")
 	public String goEnrollCustomer() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina productos");
@@ -115,7 +142,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/about")
+	@GetMapping(path = "about")
 	public String goAbout() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Acerca de");
@@ -128,7 +155,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/register")
+	@GetMapping(path = "register")
 	public String goRegister() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Registro");
@@ -141,7 +168,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/resetPassword")
+	@GetMapping(path = "resetPassword")
 	public String goResetPassword() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Reiniciar contrasena");
@@ -154,7 +181,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/shoppingCart")
+	@GetMapping(path = "shoppingCart")
 	public String goShoppingCart() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Carrito de compras");
@@ -167,7 +194,7 @@ public class RedirectController {
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "/admin")
+	@GetMapping(path = "admin")
 	public String goAdmin() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Administracion");
@@ -181,7 +208,7 @@ public class RedirectController {
 	 * @param model
 	 * @return String
 	 */
-	@GetMapping(path = "/responsiveAdmin")
+	@GetMapping(path = "responsiveAdmin")
 	public String handleException(final Model model) {
 		if (log.isErrorEnabled())
 			log.error(Constants.MSG_ADMIN_RESPONSIVE_EXC);

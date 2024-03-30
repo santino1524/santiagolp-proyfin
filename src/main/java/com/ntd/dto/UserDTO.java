@@ -2,11 +2,11 @@ package com.ntd.dto;
 
 import java.util.List;
 
-import com.ntd.dto.validators.ValidUserRol;
 import com.ntd.utils.Constants;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
 /**
@@ -36,9 +36,10 @@ public record UserDTO(Long userId,
 		@NotBlank(message = Constants.MSG_PHONE_NUMBER_NOT_VALID) @Pattern(regexp = Constants.REGEXP_PHONE_NUMBER, message = Constants.MSG_PHONE_NUMBER_NOT_VALID) String phoneNumber,
 
 		// Validar rol
-		@ValidUserRol String role,
+		int role,
 
-		List<PasswordResetQuestionDTO> questionsDto,
+		// Validar lista de preguntas
+		@NotEmpty(message = Constants.MSG_QUESTIONS_NOT_VALID) List<PasswordResetQuestionDTO> questionsDto,
 
 		List<PostalAddressDTO> addressesDto,
 

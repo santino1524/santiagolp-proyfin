@@ -76,7 +76,7 @@ public interface UserRepositoryI extends JpaRepository<User, Long> {
 	 * @param role
 	 * @return List
 	 */
-	public List<User> findByRole(String role);
+	public List<User> findByRole(Integer role);
 
 	/**
 	 * Buscar usuarios por dni o email o telefono

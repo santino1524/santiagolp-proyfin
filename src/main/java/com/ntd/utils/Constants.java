@@ -82,6 +82,9 @@ public class Constants {
 	/** Msg de numero de producto duplicado */
 	public static final String MSG_PRODUCT_NUMBER_EXISTS = "El número de producto introducido ya está registrado";
 
+	/** Msg de preguntas NotValid */
+	public static final String MSG_QUESTIONS_NOT_VALID = "Debe introducir las preguntas y respuestas";
+
 	/** Msg de name NotValid */
 	public static final String MSG_NAME_NOT_VALID = "El nombre introducido no es válido";
 
@@ -172,6 +175,10 @@ public class Constants {
 	/** Estados de los pedidos */
 	private static final List<String> USER_ROLE = Arrays.asList("SELLER", "BUYER");
 
+	/** Endpoints protegidos */
+	private static final String[] PROTECTED_ENDPOINTS = { "/admin", "/pay", "/adminUsers", "/adminSendings",
+			"/adminComplaints", "/adminProducts", "/adminOrders" };
+
 	/** Msg de order NotValid */
 	public static final String MSG_ORDER_NOT_VALID = "Producto vendido sin asignar a un pedido";
 
@@ -235,13 +242,30 @@ public class Constants {
 	/** Msg error del servidor */
 	public static final String MSG_ERR_SERVLET = "Ha ocurrido un error en el servidor";
 
-	/** Devuelve los tipos de estados */
+	/**
+	 * Devuelve los tipos de estados
+	 * 
+	 * @return List
+	 */
 	public static List<String> getOrderStatuses() {
 		return ORDER_STATUSES;
 	}
 
-	/** Devuelve los roles de usuario */
+	/**
+	 * Devuelve los roles de usuario
+	 * 
+	 * @return List
+	 */
 	public static List<String> getRolesUser() {
 		return USER_ROLE;
+	}
+
+	/**
+	 * Devuelve los endpoints sin seguridad
+	 * 
+	 * @return String[]
+	 */
+	public static String[] getEndpoints() {
+		return PROTECTED_ENDPOINTS;
 	}
 }

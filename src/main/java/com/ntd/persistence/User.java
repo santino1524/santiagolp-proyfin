@@ -67,7 +67,7 @@ public class User implements Serializable {
 
 	/** Rol */
 	@Column(name = "C_ROLE", nullable = false)
-	private String role;
+	private Integer role;
 
 	/** Indica si el usuario esta bloqueado */
 	@Column(name = "C_BLOCKED", nullable = false)

@@ -239,4 +239,28 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 
 	}
 
+	@Override
+	public List<UserDTO> searchByRole(Integer role) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar usuario por dni o email o telefono");
+
+		// Validar parametros
+		ValidateParams.isNullObject(role);
+
+		// Buscar por rol
+		final List<User> users = userRepository.findByRole(role);
+
+		// Mapear DTO
+		final List<UserDTO> usersDto = new ArrayList<>();
+
+		if (!users.isEmpty()) {
+			for (User user : users) {
+				usersDto.add(DTOMapperI.MAPPER.mapUserToDTO(user));
+			}
+		}
+
+		// Retornar lista DTO
+		return usersDto;
+	}
+
 }
