@@ -95,7 +95,7 @@ public class UserController {
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String saveUser(@RequestBody @Valid final UserDTO userDto, final Model model) throws InternalException {
+	public String saveUser(@Valid final UserDTO userDto, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Guardar nuevo ususrio");
 
