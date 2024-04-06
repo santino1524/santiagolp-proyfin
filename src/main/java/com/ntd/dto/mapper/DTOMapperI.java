@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.ntd.dto.OrderDTO;
-import com.ntd.dto.PasswordResetQuestionDTO;
 import com.ntd.dto.PostalAddressDTO;
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
@@ -18,7 +17,6 @@ import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.ReportDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.persistence.Order;
-import com.ntd.persistence.PasswordResetQuestion;
 import com.ntd.persistence.PostalAddress;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductCategory;
@@ -30,29 +28,11 @@ import com.ntd.persistence.User;
 /**
  * Mapear DTO
  */
-@Mapper
+@Mapper(imports = com.ntd.security.UserRole.class)
 public interface DTOMapperI {
 
 	/** Dependencia de DTOMapper */
 	public static final DTOMapperI MAPPER = Mappers.getMapper(DTOMapperI.class);
-
-	/**
-	 * Mapear Preguntas a DTO
-	 * 
-	 * @param question
-	 * @return PasswordResetQuestionDTO
-	 */
-	@Mapping(target = "userDto", ignore = true)
-	public PasswordResetQuestionDTO mapQuestionToDTO(PasswordResetQuestion question);
-
-	/**
-	 * Mapear DTO a Preguntas
-	 * 
-	 * @param questionDto
-	 * @return PasswordResetQuestion
-	 */
-	@Mapping(target = "user", source = "userDto")
-	public PasswordResetQuestion mapDTOToQuestion(PasswordResetQuestionDTO questionDto);
 
 	/**
 	 * Mapear Producto vendido a DTO
@@ -285,29 +265,8 @@ public interface DTOMapperI {
 	 */
 	@Mapping(target = "addressesDto", expression = "java(listPostalAddressToDTO(user.getAddresses()))")
 	@Mapping(target = "ordersDto", expression = "java(listOrderToDTO(user.getOrders()))")
-	@Mapping(target = "questionsDto", expression = "java(listQuestionToDTO(user.getQuestions()))")
+	@Mapping(target = "role", expression = "java(user.getRole()==UserRole.BUYER ? 2 : 1)")
 	public UserDTO mapUserToDTO(User user);
-
-	/**
-	 * Mapear lista de Preguntas a DTO
-	 * 
-	 * @param questions
-	 * @return List
-	 */
-	default List<PasswordResetQuestionDTO> listQuestionToDTO(List<PasswordResetQuestion> questions) {
-		List<PasswordResetQuestionDTO> questionsDto = new ArrayList<>();
-
-		// Comprobar nulidad
-		if (questions != null) {
-
-			// Mapear datos
-			for (PasswordResetQuestion question : questions) {
-				questionsDto.add(mapQuestionToDTO(question));
-			}
-		}
-
-		return questionsDto;
-	}
 
 	/**
 	 * Mapear lista de DTO a Order
@@ -360,29 +319,8 @@ public interface DTOMapperI {
 	@Mapping(target = "reportedReviews", ignore = true)
 	@Mapping(target = "addresses", expression = "java(dtoToListPostalAddress(userDto.addressesDto()))")
 	@Mapping(target = "orders", expression = "java(dtoToListOrder(userDto.ordersDto()))")
-	@Mapping(target = "questions", expression = "java(listDTOToQuestion(userDto.questionsDto()))")
+	@Mapping(target = "role", expression = "java(userDto.role()==2 ? UserRole.BUYER : UserRole.SELLER)")
 	public User mapDTOToUser(UserDTO userDto);
-
-	/**
-	 * Mapear lista de DTO a Preguntas
-	 * 
-	 * @param questions
-	 * @return List
-	 */
-	default List<PasswordResetQuestion> listDTOToQuestion(List<PasswordResetQuestionDTO> questionsDto) {
-		List<PasswordResetQuestion> questions = new ArrayList<>();
-
-		// Comprobar nulidad
-		if (questionsDto != null) {
-
-			// Mapear datos
-			for (PasswordResetQuestionDTO questionDto : questionsDto) {
-				questions.add(mapDTOToQuestion(questionDto));
-			}
-		}
-
-		return questions;
-	}
 
 	/**
 	 * Mapear lista de Order a DTO

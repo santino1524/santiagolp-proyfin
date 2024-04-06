@@ -83,7 +83,7 @@ public class Constants {
 	public static final String MSG_PRODUCT_NUMBER_EXISTS = "El número de producto introducido ya está registrado";
 
 	/** Msg de preguntas NotValid */
-	public static final String MSG_QUESTIONS_NOT_VALID = "Debe introducir las preguntas y respuestas";
+	public static final String MSG_QUESTIONS_NOT_VALID = "Debe introducir las preguntas";
 
 	/** Msg de name NotValid */
 	public static final String MSG_NAME_NOT_VALID = "El nombre introducido no es válido";
@@ -95,7 +95,7 @@ public class Constants {
 	public static final String MSG_QUESTION_NOT_VALID = "Debe introducir la pregunta";
 
 	/** Msg de respuesta NotValid */
-	public static final String MSG_ANSWER_NOT_VALID = "Debe introducir la respuesta";
+	public static final String MSG_ANSWER_NOT_VALID = "Debe introducir la respuestas";
 
 	/** Msg de productSizes NotValid */
 	public static final String MSG_PRODUCT_SIZES_NOT_VALID = "Debe introducir la talla del producto";

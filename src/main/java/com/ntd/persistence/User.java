@@ -3,9 +3,17 @@ package com.ntd.persistence;
 import java.io.Serializable;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import com.ntd.security.UserRole;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,7 +22,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -25,6 +36,9 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "T_USER")
 public class User implements Serializable {
 
@@ -66,8 +80,9 @@ public class User implements Serializable {
 	private String phoneNumber;
 
 	/** Rol */
+	@Enumerated(EnumType.STRING)
 	@Column(name = "C_ROLE", nullable = false)
-	private Integer role;
+	private UserRole role;
 
 	/** Indica si el usuario esta bloqueado */
 	@Column(name = "C_BLOCKED", nullable = false)
@@ -80,14 +95,26 @@ public class User implements Serializable {
 	private List<PostalAddress> addresses;
 
 	/** Pedidos */
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user")
+	@Cascade(CascadeType.ALL)
 	private List<Order> orders;
 
 	/** Denuncias del usuario */
-	@OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "reporter")
+	@Cascade(CascadeType.ALL)
 	private List<Report> reportedReviews;
 
 	/** Listado de preguntas para resetear contrasena */
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<PasswordResetQuestion> questions;
+	@ElementCollection
+	@Cascade(value = { CascadeType.ALL })
+	@CollectionTable(name = "T_PASSWORD_RESET_QUESTION", joinColumns = @JoinColumn(name = "C_QUESTION_ID"))
+	@Column(name = "C_QUESTION", nullable = false)
+	private List<String> questions;
+
+	/** Listado de preguntas para resetear contrasena */
+	@ElementCollection
+	@Cascade(value = { CascadeType.ALL })
+	@CollectionTable(name = "T_PASSWORD_RESET_ANSWER", joinColumns = @JoinColumn(name = "C_USER_ID"))
+	@Column(name = "C_ANSWER", nullable = false)
+	private List<String> answers;
 }

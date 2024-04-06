@@ -60,21 +60,22 @@
 			</div>
 			<div class="form-group">
 				<label>Preguntas y Respuestas para resetear la contraseña</label>
-				<input type="hidden" name="questionsDto" value="new java.util.ArrayList()" />
+				<input type="hidden" name="questions" value="new java.util.ArrayList()" />
+				<input type="hidden" name="answers" value="new java.util.ArrayList()" />
 				<div class="form-row">
 					<div class="col-md-4">
-						<input type="text" class="form-control mb-2" id="question1" th:field="*{questionsDto[0].question}"
-							placeholder="Pregunta 1"> <input type="text" id="answer1" name="questionsDto[0].answer"
+						<input type="text" class="form-control mb-2" id="question1" name="questions[0]"
+							placeholder="Pregunta 1"> <input type="text" id="answer1" name="answers[0]"
 							class="form-control mb-2" placeholder="Respuesta 1">
 					</div>
 					<div class="col-md-4">
-						<input type="text" class="form-control mb-2" id="question2" name="questionsDto[1].question"
-							placeholder="Pregunta 2"> <input type="text" id="answer2" name="questionsDto[1].answer"
+						<input type="text" class="form-control mb-2" id="question2" name="questions[1]"
+							placeholder="Pregunta 2"> <input type="text" id="answer2" name="answers[1]"
 							class="form-control mb-2" placeholder="Respuesta 2">
 					</div>
 					<div class="col-md-4">
-						<input type="text" class="form-control mb-2" id="question3" name="questionsDto[2].question"
-							placeholder="Pregunta 3"> <input type="text" id="answer3" name="questionsDto[2].answer"
+						<input type="text" class="form-control mb-2" id="question3" name="questions[2]"
+							placeholder="Pregunta 3"> <input type="text" id="answer3" name="answers[2]"
 							class="form-control mb-2" placeholder="Respuesta 3">
 					</div>
 				</div>

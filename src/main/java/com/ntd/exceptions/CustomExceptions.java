@@ -9,10 +9,8 @@ package com.ntd.exceptions;
  */
 public class CustomExceptions extends Exception {
 
-	/**
-	 * SerialVersionUID
-	 */
-	private static final long serialVersionUID = 1L;
+	/** SerialVersion */
+	private static final long serialVersionUID = -3040245221253683688L;
 
 	/**
 	 * Constructor

@@ -120,7 +120,7 @@ public class UserController {
 		// Retornar respuesta
 		model.addAttribute(Constants.MESSAGE_GROWL, result);
 
-		return "register";
+		return "login-page";
 	}
 
 	/**

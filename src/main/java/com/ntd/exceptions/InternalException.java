@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class InternalException extends CustomExceptions {
 
 	/** SerialVersion */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -5141582286717035959L;
 
 	/**
 	 * Constructor con mensaje

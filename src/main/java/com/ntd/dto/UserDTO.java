@@ -39,7 +39,10 @@ public record UserDTO(Long userId,
 		int role,
 
 		// Validar lista de preguntas
-		@NotEmpty(message = Constants.MSG_QUESTIONS_NOT_VALID) List<PasswordResetQuestionDTO> questionsDto,
+		@NotEmpty(message = Constants.MSG_QUESTIONS_NOT_VALID) List<String> questions,
+
+		// Validar lista de respuestas
+		@NotEmpty(message = Constants.MSG_ANSWER_NOT_VALID) List<String> answers,
 
 		List<PostalAddressDTO> addressesDto,
 

@@ -3,6 +3,7 @@ package com.ntd.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ntd.dto.UserDTO;
@@ -26,13 +27,18 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 	/** Dependencia de UserRepository */
 	private final UserRepositoryI userRepository;
 
+	/** Cifrar passwd */
+	private final PasswordEncoder passwordEncoder;
+
 	/**
 	 * Constructor
 	 * 
+	 * @param passwordEncoder
 	 * @param userRepository
 	 */
-	public UserMgmtServiceImp(final UserRepositoryI userRepository) {
+	public UserMgmtServiceImp(final UserRepositoryI userRepository, final PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -43,8 +49,14 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		// Validar parametro
 		ValidateParams.isNullObject(userDto);
 
-		// Mapear DTO y guardar
-		final User user = userRepository.save(DTOMapperI.MAPPER.mapDTOToUser(userDto));
+		// Mapear DTO
+		User user = DTOMapperI.MAPPER.mapDTOToUser(userDto);
+
+		// Encriptar pass
+		user.setPasswd(passwordEncoder.encode(userDto.passwd()));
+
+		// Registrar usuario
+		user = userRepository.save(user);
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapUserToDTO(user);
