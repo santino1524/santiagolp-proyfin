@@ -97,7 +97,7 @@ public class UserController {
 	@PostMapping
 	public String saveUser(@Valid final UserDTO userDto, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Guardar nuevo ususrio");
+			log.info("Guardar nuevo usuario");
 
 		String result = null;
 

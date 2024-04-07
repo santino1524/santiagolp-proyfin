@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,8 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.ntd.security.filters.JwtAuthenticationFilter;
+import com.ntd.security.filters.JwtAuthorizationFilter;
 import com.ntd.security.jwt.JwtUtils;
 import com.ntd.security.service.UserDetailsServiceImpl;
 import com.ntd.utils.Constants;
@@ -30,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
+@EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -39,14 +43,19 @@ public class SecurityConfig {
 	/** Dependencia JwtUtils */
 	private JwtUtils jwtUtils;
 
+	/** Dependencia JwtAuthorizationFilter */
+	private JwtAuthorizationFilter authorizationFilter;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param userDetailsService
 	 */
-	public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtUtils jwtUtils) {
+	public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtUtils jwtUtils,
+			JwtAuthorizationFilter authorizationFilter) {
 		this.userDetailsService = userDetailsService;
 		this.jwtUtils = jwtUtils;
+		this.authorizationFilter = authorizationFilter;
 	}
 
 	/**
@@ -77,7 +86,8 @@ public class SecurityConfig {
 				.sessionManagement(sess -> sess.sessionFixation(SessionFixationConfigurer::migrateSession)
 						.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).invalidSessionUrl("/login-page")
 						.maximumSessions(2).expiredUrl("/login-page").sessionRegistry(sessionRegistry()))
-				.addFilter(jwtAuthenticationFilter);
+				.addFilter(jwtAuthenticationFilter)
+				.addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return httpSecurity.build();
 	}

@@ -1,5 +1,6 @@
 package com.ntd.controllers;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -195,6 +196,7 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * @return String
 	 */
 	@GetMapping(path = "admin")
+	@PreAuthorize("hasRole('SELLER')")
 	public String goAdmin() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Administracion");
