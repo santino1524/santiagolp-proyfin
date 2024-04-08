@@ -4,5 +4,8 @@ package com.ntd.security;
  * Roles de usuario
  */
 public enum UserRole {
-	SELLER, BUYER
+	// Usuario vendedor(admin)
+	SELLER,
+	// Usuario comprador
+	BUYER
 }

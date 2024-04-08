@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-@EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -77,17 +75,19 @@ public class SecurityConfig {
 		jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
 
 		// Configurar la seguridad de los endpoints HTTP
-		httpSecurity
-				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-						.requestMatchers(Constants.getEndpoints()).authenticated().anyRequest().permitAll())
+		httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+				// .requestMatchers(Constants.getEndpoints()).authenticated().anyRequest().permitAll())
+				.requestMatchers(Constants.getEndpointsAdmin()).hasRole("SELLER")
+				.requestMatchers(Constants.getEndpointsAuth()).authenticated().anyRequest().permitAll())
 				.csrf(AbstractHttpConfigurer::disable)
-				.formLogin(formLogin -> formLogin.loginPage("/login-page").loginProcessingUrl("/authentication")
+				.formLogin(formLogin -> formLogin.loginPage(Constants.LOGIN_PAGE).loginProcessingUrl("/authentication")
 						.permitAll())
 				.sessionManagement(sess -> sess.sessionFixation(SessionFixationConfigurer::migrateSession)
-						.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).invalidSessionUrl("/login-page")
-						.maximumSessions(2).expiredUrl("/login-page").sessionRegistry(sessionRegistry()))
+						.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).invalidSessionUrl(Constants.LOGIN_PAGE)
+						.maximumSessions(2).expiredUrl(Constants.LOGIN_PAGE).sessionRegistry(sessionRegistry()))
 				.addFilter(jwtAuthenticationFilter)
-				.addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class);
+				.addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
+				.exceptionHandling(handling -> handling.accessDeniedPage("/restricted"));
 
 		return httpSecurity.build();
 	}

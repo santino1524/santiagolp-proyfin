@@ -19,6 +19,12 @@ public class Constants {
 	/** URL vista error */
 	public static final String URL_ERROR_VIEW = "error";
 
+	/** URL vista login */
+	public static final String LOGIN_PAGE = "/login-page";
+
+	/** MSG Acceso denegado */
+	public static final String ACCESS_DENIEG = "Acceso denegado. No tienes permiso para acceder a esta página.";
+
 	/** Variable para mensaje growl */
 	public static final String MESSAGE_GROWL = "error";
 
@@ -36,6 +42,9 @@ public class Constants {
 
 	/** Msg de operacion exitosa */
 	public static final String MSG_SUCCESSFUL_OPERATION = "La operación se ha completado con éxito";
+
+	/** Msg de usuario registrado */
+	public static final String MSG_REGISTER_USER = "Se ha registrado el usuario satisfactoriamente";
 
 	/** Msg de error inesperado */
 	public static final String MSG_UNEXPECTED_ERROR = "Ha ocurrido un error inesperado";
@@ -176,8 +185,11 @@ public class Constants {
 	private static final List<String> USER_ROLE = Arrays.asList("SELLER", "BUYER");
 
 	/** Endpoints protegidos */
-	private static final String[] PROTECTED_ENDPOINTS = { "/admin", "/pay", "/adminUsers", "/adminSendings",
-			"/adminComplaints", "/adminProducts", "/adminOrders" };
+	private static final String[] AUTHENTICATED_ENDPOINTS = { "/pay", "/user-profile" };
+
+	/** Endpoints ADMIN */
+	private static final String[] ADMIN_ENDPOINTS = { "/admin", "/adminUsers", "/adminSendings", "/adminComplaints",
+			"/adminProducts", "/adminOrders", "/responsiveAdmin" };
 
 	/** Msg de order NotValid */
 	public static final String MSG_ORDER_NOT_VALID = "Producto vendido sin asignar a un pedido";
@@ -227,9 +239,6 @@ public class Constants {
 	/** REGEXP para numero telefonico */
 	public static final String REGEXP_PHONE_NUMBER = "^\\+34\s\\d{9}$";
 
-	/** REGEXP para tarjeta bancaria */
-	public static final String REGEXP_CARD = "^(\\d{4}[- ]?){3}\\d{4}$";
-
 	/** Msg violacion de CONSTRAINT EN BBDD */
 	public static final String MSG_VIOLATION_CONSTRAINT = "No se pudo completar la operación debido a un problema con los datos proporcionados";
 
@@ -261,11 +270,20 @@ public class Constants {
 	}
 
 	/**
-	 * Devuelve los endpoints sin seguridad
+	 * Devuelve los endpoints a autenticar
 	 * 
 	 * @return String[]
 	 */
-	public static String[] getEndpoints() {
-		return PROTECTED_ENDPOINTS;
+	public static String[] getEndpointsAuth() {
+		return AUTHENTICATED_ENDPOINTS;
+	}
+
+	/**
+	 * Devuelve los endpoints de administracion
+	 * 
+	 * @return String[]
+	 */
+	public static String[] getEndpointsAdmin() {
+		return ADMIN_ENDPOINTS;
 	}
 }

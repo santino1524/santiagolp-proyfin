@@ -16,73 +16,110 @@
 		<h2 class="mb-3">Registro de usuario</h2>
 
 		<form action="users" method="POST">
+			<div th:if="${message != null}" class="alert alert-danger"
+				role="alert">
+				<span th:text="${message}"></span>
+			</div>
 			<div class="form-row">
 				<div class="form-group col-md-4">
-					<label for="nombre">Nombre</label> <input type="text"
-						class="form-control" name="name" id="name" placeholder="Nombre">
+					<label for="nombre">Nombre *</label> <input type="text"
+						class="form-control" name="name" id="name" placeholder="Nombre"
+						required pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$"
+						title="Por favor, introduce tu nombre. Solo se permiten letras y espacios">
 				</div>
 				<div class="form-group col-md-4">
-					<label for="primerApellido">Primer Apellido</label> <input
+					<label for="primerApellido">Primer apellido *</label> <input
 						type="text" class="form-control" name="surname" id="surname"
-						placeholder="Primer Apellido">
+						placeholder="Primer Apellido" required
+						pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$"
+						title="Por favor, introduce tu nombre. Solo se permiten letras y espacios">
 				</div>
 				<div class="form-group col-md-4">
-					<label for="segundoApellido">Segundo Apellido</label> <input
-						type="text" class="form-control" name="secondSurname" id="secondSurname"
-						placeholder="Segundo Apellido">
+					<label for="segundoApellido">Segundo apellido *</label> <input
+						type="text" class="form-control" name="secondSurname"
+						id="secondSurname" placeholder="Segundo Apellido" required
+						pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$"
+						title="Por favor, introduce tu nombre. Solo se permiten letras y espacios">
 				</div>
 			</div>
 			<div class="form-row">
 				<div class="form-group col-md-4">
-					<label for="dni">DNI</label> <input type="text"
-						class="form-control" id="dni" name="dni" placeholder="DNI">
+					<label for="dni">DNI *</label> <input type="text"
+						class="form-control" id="dni" name="dni" placeholder="DNI"
+						required pattern="^[a-zA-Z0-9]{9}$"
+						title="Por favor, introduce tu DNI. Debe contener 8 dígitos seguidos de una letra">
 				</div>
 				<div class="form-group col-md-4">
-					<label for="movil">Número de Móvil</label> <input type="text"
-						class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Número de Móvil">
+					<label for="movil">Número de teléfono *</label> <input type="text"
+						class="form-control" id="phoneNumber" name="phoneNumber"
+						placeholder="Número de Móvil" required pattern="^\+34\s\d{9}$"
+						title="Por favor, introduce tu número de teléfono de España. Debe comenzar con el prefijo internacional +34 seguido de 9 dígitos">
 				</div>
 				<div class="form-group col-md-4">
-					<label for="email">Email</label> <input type="email"
-						class="form-control" name="email" id="email" placeholder="Email">
+					<label for="email">Email *</label> <input type="email"
+						class="form-control" name="email" id="email" placeholder="Email"
+						required
+						title="Por favor, introduce tu correo electrónico en un formato válido">
 				</div>
 			</div>
 			<div class="form-row">
 				<div class="form-group col-md-6">
-					<label for="passwd">Contraseña</label> <input type="password"
-						class="form-control" name="passwd" id="passwd" placeholder="Contraseña">
+					<label for="passwd">Contraseña *</label> <input type="password"
+						class="form-control" name="passwd" id="passwd"
+						autocomplete="new-password" placeholder="Contraseña" required
+						onblur="checkPasswords()"
+						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$"
+						title="La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un dígito, un carácter especial y tener al menos 7 caracteres">
 				</div>
 				<div class="form-group col-md-6">
-					<label for="confirmPasswd">Confirmar Contraseña</label> <input
+					<label for="confirmPasswd">Confirmar contraseña *</label> <input
 						type="password" class="form-control" id="confirmPasswd"
-						placeholder="Confirmar Contraseña">
-						<div id="passwordError" class="invalid-feedback">Las contraseñas no coinciden.</div>
+						placeholder="Confirmar Contraseña" required
+						onblur="checkPasswords()" autocomplete="new-password"
+						pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$"
+						title="La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un dígito, un carácter especial y tener al menos 7 caracteres">
 				</div>
 			</div>
+			<div id="passwordError" class="alert alert-danger d-none"
+				role="alert">Las contraseñas no coinciden</div>
 			<div class="form-group">
-				<label>Preguntas y Respuestas para resetear la contraseña</label>
-				<input type="hidden" name="questions" value="new java.util.ArrayList()" />
-				<input type="hidden" name="answers" value="new java.util.ArrayList()" />
+				<label>Preguntas y respuestas para resetear la contraseña *</label>
+				<input type="hidden" name="questions"
+					value="new java.util.ArrayList()" /> <input type="hidden"
+					name="answers" value="new java.util.ArrayList()" />
 				<div class="form-row">
 					<div class="col-md-4">
-						<input type="text" class="form-control mb-2" id="question1" name="questions[0]"
-							placeholder="Pregunta 1"> <input type="text" id="answer1" name="answers[0]"
-							class="form-control mb-2" placeholder="Respuesta 1">
+						<input type="text" class="form-control mb-2" id="question1"
+							name="questions[0]" placeholder="Pregunta 1" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"> <input type="text"
+							id="answer1" name="answers[0]" class="form-control mb-2"
+							placeholder="Respuesta 1" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$">
 					</div>
 					<div class="col-md-4">
-						<input type="text" class="form-control mb-2" id="question2" name="questions[1]"
-							placeholder="Pregunta 2"> <input type="text" id="answer2" name="answers[1]"
-							class="form-control mb-2" placeholder="Respuesta 2">
+						<input type="text" class="form-control mb-2" id="question2"
+							name="questions[1]" placeholder="Pregunta 2" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"> <input type="text"
+							id="answer2" name="answers[1]" class="form-control mb-2"
+							placeholder="Respuesta 2" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"
+							title="Por favor, introduce un valor que contenga letras, números y espacios">
 					</div>
 					<div class="col-md-4">
-						<input type="text" class="form-control mb-2" id="question3" name="questions[2]"
-							placeholder="Pregunta 3"> <input type="text" id="answer3" name="answers[2]"
-							class="form-control mb-2" placeholder="Respuesta 3">
+						<input type="text" class="form-control mb-2" id="question3"
+							name="questions[2]" placeholder="Pregunta 3" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"> <input type="text"
+							id="answer3" name="answers[2]" class="form-control mb-2"
+							placeholder="Respuesta 3" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"
+							title="Por favor, introduce un valor que contenga letras, números y espacios">
 					</div>
 				</div>
 			</div>
-			<input type="hidden" value=false name="blocked">
-			<input type="hidden" value="2" name="role">
-			<button type="submit" id="submitButton" class="btn btn-primary">Registrarse</button>
+			<input type="hidden" value=false name="blocked"> <input
+				type="hidden" value="2" name="role">
+			<button type="submit" id="submitButtonRegister"
+				class="btn btn-primary">Registrarse</button>
 		</form>
 	</div>
 

@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class JwtUtils {
 
-	/** Firmar token */
-	@Value("{jwt.secret.key}")
+	/** Clave secreta */
+	@Value("${jwt.secret.key}")
 	private String secretKey;
 
 	/** Tiempo de validez del token */

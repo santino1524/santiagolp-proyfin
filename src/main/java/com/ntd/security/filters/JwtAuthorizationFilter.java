@@ -39,18 +39,26 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
 
+		// Obtiene el token del encabezado "Authorization"
 		String tokenHeader = request.getHeader("Authorization");
 
+		// Verifica si el token está presente y comienza con "Bearer"
 		if (tokenHeader != null && tokenHeader.startsWith("Bearer")) {
+			// Extrae el token de autorización excluyendo el prefijo "Bearer"
 			String token = tokenHeader.substring(7);
 
+			// Verifica si el token es valido
 			if (jwtUtils.isTokenValid(token)) {
+				// Obtiene el nombre de usuario del token
 				String username = jwtUtils.getUsernameFromToken(token);
+				// Carga los detalles del usuario utilizando el servicio de detalles de usuario
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+				// Crea una autenticación de token de nombre de usuario y contrasenna
 				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 						username, null, userDetails.getAuthorities());
 
+				// Establece la autenticacion en el contexto de seguridad
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 			}
 		}

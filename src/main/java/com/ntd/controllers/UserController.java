@@ -111,16 +111,16 @@ public class UserController {
 		} else {
 			// Guardar usuario
 			if (userMgmtService.insertUser(userDto) != null) {
-				result = Constants.MSG_SUCCESSFUL_OPERATION;
+				result = Constants.MSG_REGISTER_USER;
 			} else {
 				result = Constants.MSG_UNEXPECTED_ERROR;
 			}
 		}
 
 		// Retornar respuesta
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
+		model.addAttribute("message", result);
 
-		return "login-page";
+		return result.equals(Constants.MSG_REGISTER_USER) ? "login-page" : "register";
 	}
 
 	/**

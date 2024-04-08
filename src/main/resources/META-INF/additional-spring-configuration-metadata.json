@@ -2,11 +2,31 @@
   {
     "name": "jwt.secret.key",
     "type": "java.lang.String",
-    "description": "A description for 'jwt.secret.key'"
+    "description": "Especifica la clave secreta utilizada para firmar y verificar los tokens JWT (JSON Web Tokens)"
   },
   {
     "name": "jwt.time.expiration",
     "type": "java.lang.String",
-    "description": "A description for 'jwt.time.expiration'"
+    "description": "Define el tiempo de expiración de los tokens JWT"
+  },
+  {
+    "name": "encryption.algorithm",
+    "type": "java.lang.String",
+    "description": "Especifica el algoritmo de cifrado utilizado para proteger datos sensibles"
+  },
+  {
+    "name": "encryption.charset",
+    "type": "java.lang.String",
+    "description": "Define el conjunto de caracteres utilizado para codificar y decodificar los datos cifrados."
+  },
+  {
+    "name": "encryption.transformation",
+    "type": "java.lang.String",
+    "description": "Describe la transformación utilizada en el proceso de cifrado, que incluye detalles sobre el algoritmo y el modo de operación."
+  },
+  {
+    "name": "encryption.secret.key",
+    "type": "java.lang.String",
+    "description": "Especifica la clave secreta utilizada para encriptar y desencriptar datos sencibles del usuarios"
   }
 ]}

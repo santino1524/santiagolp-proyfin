@@ -11,6 +11,7 @@ import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.User;
 import com.ntd.persistence.UserRepositoryI;
+import com.ntd.security.EncryptionUtils;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +31,20 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 	/** Cifrar passwd */
 	private final PasswordEncoder passwordEncoder;
 
+	/** Dependencia EncryptionUtils */
+	private final EncryptionUtils encryptionUtils;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param passwordEncoder
 	 * @param userRepository
 	 */
-	public UserMgmtServiceImp(final UserRepositoryI userRepository, final PasswordEncoder passwordEncoder) {
+	public UserMgmtServiceImp(final UserRepositoryI userRepository, final PasswordEncoder passwordEncoder,
+			final EncryptionUtils encryptionUtils) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.encryptionUtils = encryptionUtils;
 	}
 
 	@Override
@@ -52,8 +58,14 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		// Mapear DTO
 		User user = DTOMapperI.MAPPER.mapDTOToUser(userDto);
 
-		// Encriptar pass
+		// Encriptar contrasenna
 		user.setPasswd(passwordEncoder.encode(userDto.passwd()));
+
+		// Encriptar preguntas y respuestas
+		for (int j = 0; j < userDto.questions().size(); j++) {
+			user.getQuestions().set(j, encryptionUtils.encrypt(userDto.questions().get(j)));
+			user.getAnswers().set(j, encryptionUtils.encrypt(userDto.answers().get(j)));
+		}
 
 		// Registrar usuario
 		user = userRepository.save(user);

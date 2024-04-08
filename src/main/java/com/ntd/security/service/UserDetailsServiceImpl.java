@@ -1,9 +1,7 @@
 package com.ntd.security.service;
 
 import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.ntd.persistence.User;
 import com.ntd.persistence.UserRepositoryI;
-import com.ntd.security.UserRole;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,12 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 	/** Dependencia UserRepository */
 	private UserRepositoryI userRepository;
-
-	/** Obtener la lista de roles desde Constants.getRolesUser() */
-	private Set<UserRole> roles = EnumSet.of(UserRole.SELLER, UserRole.BUYER);
-
-	private Collection<? extends GrantedAuthority> authorities = roles.stream()
-			.map(role -> new SimpleGrantedAuthority("ROLE_".concat(role.name()))).collect(Collectors.toSet());
 
 	/**
 	 * Constructor
@@ -62,6 +53,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			// Lanza la excepcion UsernameNotFoundException con un mensaje descriptivo
 			throw new UsernameNotFoundException(builder.toString());
 		}
+
+		// Crear la autoridad con el rol del usuario
+		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+		// Crear la coleccion de autoridades con la unica autoridad
+		Collection<GrantedAuthority> authorities = Collections.singleton(authority);
 
 		// Construye y retorna un objeto UserDetails utilizando los detalles del usuario
 		// encontrado

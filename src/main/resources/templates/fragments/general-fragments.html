@@ -44,19 +44,16 @@
 							aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white"
 								th:href="@{/products}">Camisetas</a> <a
-								class="dropdown-item bg-dark text-white"
-								th:href="@{/products}">Gorras</a> <a
-								class="dropdown-item bg-dark text-white"
+								class="dropdown-item bg-dark text-white" th:href="@{/products}">Gorras</a>
+							<a class="dropdown-item bg-dark text-white"
 								th:href="@{/products}">Figuras</a> <a
-								class="dropdown-item bg-dark text-white"
-								th:href="@{/products}">Mochilas</a>
+								class="dropdown-item bg-dark text-white" th:href="@{/products}">Mochilas</a>
 						</div></li>
-					<li class="nav-item"><a class="nav-link"
-						th:href="@{/about}">Acerca de</a></li>
-					<li class="nav-item"><a class="nav-link"
-						th:href="@{/admin}" id="adminLink">Administración</a></li>
+					<li class="nav-item"><a class="nav-link" th:href="@{/about}">Acerca
+							de</a></li>
+					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
+						class="nav-link" th:href="@{/admin}" id="adminLink">Administración</a></li>
 				</ul>
-
 
 				<ul class="navbar-nav ml-auto">
 					<form class="form-inline my-2 my-lg-0">
@@ -67,13 +64,14 @@
 							<i class="fas fa-search"></i>
 						</button>
 					</form>
-					<li class="dropdown nav-item"><a
+					<li class="dropdown nav-item"
+						th:if="${#authorization.expression('!isAuthenticated()')}"><a
 						class="nav-link dropdown-toggle" data-toggle="dropdown"
 						aria-haspopup="true" aria-expanded="false" href="#"
 						title="Acceder"> <i class="fas fa-user fa-lg"></i>
 					</a>
-
-						<ul id="login-dp" class="dropdown-menu dropdown-menu-right">
+						<ul id="login-dp" class="dropdown-menu dropdown-menu-right"
+							sec:authorize="!isAuthenticated()">
 							<li>
 								<div class="row">
 									<div class="col-md-12">
@@ -96,8 +94,8 @@
 													id="inputPassword2" placeholder="Contraseña" required
 													autocomplete="current-password">
 												<div class="help-block text-right">
-													<a th:href="@{/resetPassword}">¿Haz olvidado
-														tu contraseña?</a>
+													<a th:href="@{/resetPassword}">¿Haz olvidado tu
+														contraseña?</a>
 												</div>
 											</div>
 											<div class="form-group">
@@ -113,6 +111,20 @@
 								</div>
 							</li>
 						</ul></li>
+
+					<li class="dropdown nav-item"
+						th:if="${#authorization.expression('isAuthenticated()')}"><a
+						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+						role="button" aria-haspopup="true" aria-expanded="false"
+						sec:authentication="name"> </a>
+						<div class="dropdown-menu dropdown-menu-right bg-dark"
+							aria-labelledby="navbarDropdown">
+							<a class="dropdown-item bg-dark text-white" th:href="@{/}">Mis
+								datos</a> <a class="dropdown-item bg-dark text-white" th:href="@{/}">Mis
+								compras</a> <a class="dropdown-item bg-dark text-white"
+								th:href="@{/logout}">Salir</a>
+						</div></li>
+
 				</ul>
 			</div>
 

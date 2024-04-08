@@ -1,6 +1,5 @@
 package com.ntd.controllers;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -196,7 +195,6 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * @return String
 	 */
 	@GetMapping(path = "admin")
-	@PreAuthorize("hasRole('SELLER')")
 	public String goAdmin() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Administracion");
@@ -217,6 +215,23 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 
 		// Retornar mensaje de error
 		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, Constants.MSG_ADMIN_RESPONSIVE_EXC);
+
+		return Constants.URL_ERROR_VIEW;
+	}
+
+	/**
+	 * Error al intentar acceder a una url sin permisos
+	 * 
+	 * @param model
+	 * @return String
+	 */
+	@GetMapping(path = "restricted")
+	public String restrictedPage(final Model model) {
+		if (log.isErrorEnabled())
+			log.error("Constants.ACCESS_DENIEG");
+
+		// Retornar mensaje de error
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, Constants.ACCESS_DENIEG);
 
 		return Constants.URL_ERROR_VIEW;
 	}
