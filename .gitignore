@@ -36,4 +36,4 @@ build/
 .vscode/
 
 ### Propiedades ###
-.env.properties
+env.properties
