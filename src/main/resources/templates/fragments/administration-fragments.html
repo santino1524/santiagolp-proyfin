@@ -12,22 +12,23 @@
 				<div class="form-group col-md-4">
 					<form action="products" method="POST" class="bg-light p-3">
 						<h5>Buscar producto</h5>
-						<label for="numeroProd">Número de producto</label> <input
-							type="text" class="form-control mb-3" id="numeroProd"
-							placeholder="Ingrese el número">
-
-						<button type="submit" class="btn btn-primary">Buscar</button>
+						<label for="numberProd">Número de producto</label> <input
+							type="number" class="form-control mb-3" id="numberProd"
+							placeholder="Ingrese el número" required pattern="^\d{13}$"
+							title="Número de producto: 13 dígitos numéricos">
+						<button type="submit" class="btn btn-secondary">Buscar</button>
 					</form>
 
 					<form action="category" method="POST" class="bg-light p-3 mt-2">
 						<h5>Categoría de producto</h5>
 						<label for="nombreCategoria">Nombre de la categoría</label> <input
 							type="text" class="form-control mb-3" id="nombreCategoria"
-							placeholder="Ingrese el nombre">
+							placeholder="Ingrese el nombre" required
+							pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$"
+							title="Nombre de la categoría: solo letras y espacios">
 
-						<button type="submit" class="btn btn-primary">Guardar</button>
-						<button type="submit" class="btn btn-danger">Eliminar
-						</button>
+						<button type="submit" class="btn btn-secondary">Guardar</button>
+						<button type="submit" class="btn btn-danger">Eliminar</button>
 					</form>
 				</div>
 				<div class="col-md-8">
@@ -37,15 +38,20 @@
 							<div class="form-group col-md-6">
 								<label for="numeroProducto">Número</label> <input type="text"
 									class="form-control mb-3" id="numeroProducto"
-									placeholder="Ingrese el número"> <label
-									for="nombreProducto">Nombre</label> <input type="text"
+									placeholder="Generar número" onclick="generarEAN13()" readonly>
+								<label for="nombreProducto">Nombre</label> <input type="text"
 									class="form-control mb-3" id="nombreProducto"
-									placeholder="Ingrese el nombre"> <label
+									placeholder="Ingrese el nombre" required
+									title="Nombre del producto: solo letras y espacios"
+									pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$"> <label
 									for="descripcionProducto">Descripción</label>
 								<textarea class="form-control mb-3" id="descripcionProducto"
-									rows="3" placeholder="Ingrese la descripción"></textarea>
+									rows="3" placeholder="Ingrese la descripción" required
+									pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"
+									title="Descripción del producto: letras, números y espacios"></textarea>
 								<label for="categoriaProducto">Categoría</label> <select
-									class="form-control" id="categoriaProducto">
+									class="form-control" id="categoriaProducto" required
+									title="Categoría del producto: selección de una lista">
 									<option value="">Seleccione</option>
 									<option value="categoria1">Categoría 1</option>
 									<option value="categoria2">Categoría 2</option>
@@ -54,26 +60,32 @@
 							<div class="form-group col-md-6">
 								<label for="tallaProducto">Tamaño</label> <input type="text"
 									class="form-control mb-3" id="tallaProducto"
-									placeholder="Ingrese la talla"> <label
+									title="Tamaño del producto: letras, números y espacios"
+									placeholder="Ingrese la talla" required
+									pattern="^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$"> <label
 									for="cantidadProducto">Cantidad</label> <input type="number"
+									title="Cantidad del producto: números"
 									class="form-control mb-3" id="cantidadProducto"
-									placeholder="Ingrese la cantidad"> <label
+									placeholder="Ingrese la cantidad" required> <label
 									for="imagenesProducto">Cargar imágenes</label> <input
+									title="Cargar imágenes del producto: archivos de imagen"
 									type="file" class="form-control-file mb-3"
-									id="imagenesProducto" multiple>
+									id="imagenesProducto" multiple required>
 								<div class="form-row justify-content-center">
 									<button type="submit" class="btn btn-danger mb-3">Eliminar
 										imágenes</button>
 								</div>
 								<label for="ivaProducto">IVA</label> <input type="number"
+									title="Impuesto sobre el valor agregado (IVA) del producto: números"
 									class="form-control mb-3" id="ivaProducto"
-									placeholder="Ingrese el IVA"> <label
+									placeholder="Ingrese el IVA" required> <label
 									for="precioBaseProducto">Precio base</label> <input
-									type="number" class="form-control mb-3" id="precioBaseProducto"
-									placeholder="Ingrese el precio base">
+									title="Precio base del producto: números" type="number"
+									class="form-control mb-3" id="precioBaseProducto"
+									placeholder="Ingrese el precio base" required>
 							</div>
 						</div>
-						<button type="submit" class="btn btn-primary">Guardar
+						<button type="submit" class="btn btn-secondary">Guardar
 							producto</button>
 						<button type="submit" class="btn btn-danger">Eliminar
 							producto</button>

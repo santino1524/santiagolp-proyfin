@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Comprobacion de contrasennas al enviar formulario 
 document.addEventListener("DOMContentLoaded", function() {
-	var submitButton = document.getElementById("submitButtonRegister");
+	let submitButton = document.getElementById("submitButtonRegister");
 	if (submitButton) {
 		submitButton.addEventListener("click", function(event) {
 			if (!checkPasswords()) {
@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Comprobacion de contrasennas
 function checkPasswords() {
-	var password = document.getElementById("passwd").value;
-	var confirmPassword = document.getElementById("confirmPasswd").value;
+	let password = document.getElementById("passwd").value;
+	let confirmPassword = document.getElementById("confirmPasswd").value;
 	if (password && confirmPassword && password !== confirmPassword) {
 		document.getElementById("passwordError").classList.remove("d-none");
 		return false;
@@ -75,4 +75,31 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 });
+
+// Genera codigo EAN-13
+function generarEAN13() {
+	let inputNumber = document.getElementById("numeroProducto");
+	let cuerpoEAN = '';
+	
+	for (let i = 0; i < 12; i++) {
+		cuerpoEAN += Math.floor(Math.random() * 10);
+	}
+
+	// Calcula el digito de control (ultimo digito) utilizando el algoritmo EAN-13
+	let sumaPares = 0;
+	let sumaImpares = 0;
+	for (let i = 0; i < cuerpoEAN.length; i++) {
+		if (i % 2 === 0) {
+			sumaPares += parseInt(cuerpoEAN[i]);
+		} else {
+			sumaImpares += parseInt(cuerpoEAN[i]);
+		}
+	}
+	let total = (sumaPares * 3) + sumaImpares;
+	let digitoControl = (10 - (total % 10)) % 10;
+
+	// Retorna el codigo EAN-13 completo
+	inputNumber.value = cuerpoEAN + digitoControl;
+}
+
 
