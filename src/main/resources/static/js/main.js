@@ -38,17 +38,19 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 
+// Comprobacion de contrasennas al enviar formulario 
 document.addEventListener("DOMContentLoaded", function() {
 	var submitButton = document.getElementById("submitButtonRegister");
 	if (submitButton) {
 		submitButton.addEventListener("click", function(event) {
 			if (!checkPasswords()) {
-				event.preventDefault(); // Evita que se envíe el formulario si las contraseñas no coinciden
+				event.preventDefault();
 			}
 		});
 	}
 });
 
+// Comprobacion de contrasennas
 function checkPasswords() {
 	var password = document.getElementById("passwd").value;
 	var confirmPassword = document.getElementById("confirmPasswd").value;
@@ -57,7 +59,20 @@ function checkPasswords() {
 		return false;
 	}
 	document.getElementById("passwordError").classList.add("d-none");
-	
+
 	return true;
 }
+
+// Ativar enlaces navlink
+document.addEventListener("DOMContentLoaded", function() {
+	const navLinks = document.querySelectorAll(".nav-link");
+	navLinks.forEach(function(navLink) {
+		navLink.addEventListener("click", function() {
+			navLinks.forEach(function(link) {
+				link.parentNode.classList.remove("active");
+			});
+			this.parentNode.classList.add("active");
+		});
+	});
+});
 

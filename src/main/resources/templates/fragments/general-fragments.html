@@ -34,9 +34,8 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active"><a class="nav-link" href="/">Inicio<span
-							class="sr-only">(current)</span></a></li>
-					<li class="nav-item dropdown"><a
+					<li class="nav-item mr-sm-4"><a class="nav-link" href="/">Inicio</a></li>
+					<li class="nav-item dropdown mr-sm-4"><a
 						class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
 						role="button" data-toggle="dropdown" aria-haspopup="true"
 						aria-expanded="false"> Tienda </a>
@@ -49,7 +48,7 @@
 								th:href="@{/products}">Figuras</a> <a
 								class="dropdown-item bg-dark text-white" th:href="@{/products}">Mochilas</a>
 						</div></li>
-					<li class="nav-item"><a class="nav-link" th:href="@{/about}">Acerca
+					<li class="nav-item mr-sm-4"><a class="nav-link" th:href="@{/about}">Acerca
 							de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
 						class="nav-link" th:href="@{/admin}" id="adminLink">Administración</a></li>
@@ -135,19 +134,11 @@
 			</div>
 		</nav>
 
-		<script>
-			// Ejecutar la funcion despues de que la pagina se haya cargado completamente
-			// window.onload = function() {
-			//   ejecutarDespuesDeRedireccion();
-			// };
-		</script>
-
-
 	</div>
 
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
 	<div
-		class="d-flex flex-wrap  bg-dark text-white text-center py-3 fixed-bottom"
+		class="d-flex flex-wrap  bg-dark text-white text-center py-3 bottom"
 		th:fragment="footerContent" id="footer">
 		<div class="container">
 			<div class="row justify-content-between">
