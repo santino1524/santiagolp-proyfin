@@ -87,7 +87,7 @@ public class ProductCategoryMgmtServiceImp implements ProductCategoryMgmtService
 	@Override
 	public ProductCategoryDTO searchById(Long id) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Buscar Categorias por id");
+			log.info("Buscar Categoria por id");
 
 		// Validar parametro
 		ValidateParams.isNullObject(id);
@@ -97,6 +97,34 @@ public class ProductCategoryMgmtServiceImp implements ProductCategoryMgmtService
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductCategoryToDTO(productCategory);
+	}
+
+	@Override
+	public ProductCategoryDTO searchByName(String categoryName) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar Categoria por nombre");
+
+		// Validar parametro
+		ValidateParams.isNullObject(categoryName);
+
+		// Buscar por id
+		final ProductCategory productCategory = categoryRepository.findByCategoryNameIgnoreCase(categoryName);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapProductCategoryToDTO(productCategory);
+
+	}
+
+	@Override
+	public boolean existsCategoryName(String categoryName) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Comprobar existencia de categoria");
+
+		// Validar parametro
+		ValidateParams.isNullObject(categoryName);
+
+		// Retornar si existe la categoria
+		return categoryRepository.existsByCategoryNameIgnoreCase(categoryName);
 	}
 
 }

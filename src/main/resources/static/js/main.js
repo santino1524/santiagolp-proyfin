@@ -1,6 +1,7 @@
 // Variables globales
 let flagSidebar = true;
-
+const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
+/*
 // Deshabilitar administracion en dispositivo movil
 document.addEventListener('DOMContentLoaded', function() {
 	const adminLink = document.getElementById('adminLink');
@@ -37,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		sidebar.style.height = `calc(100vh - ${footHeight}px - ${headHeight}px)`;
 	}
 });
-
+*/
 // Comprobacion de contrasennas al enviar formulario 
 document.addEventListener("DOMContentLoaded", function() {
 	let submitButton = document.getElementById("submitButtonRegister");
@@ -77,10 +78,10 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Genera codigo EAN-13
-function generarEAN13() {
-	let inputNumber = document.getElementById("numeroProducto");
+function generateEAN13() {
+	let inputNumber = document.getElementById("productNumber");
 	let cuerpoEAN = '';
-	
+
 	for (let i = 0; i < 12; i++) {
 		cuerpoEAN += Math.floor(Math.random() * 10);
 	}
@@ -102,4 +103,137 @@ function generarEAN13() {
 	inputNumber.value = cuerpoEAN + digitoControl;
 }
 
+// Guardar categorias	
+let form = document.getElementById("formCategory");
+let divMessageCategory = document.getElementById('messageCategory');
+let divMessageCategoryError = document.getElementById('messageCategoryError');
+let categoryName;
+function saveCategory() {
+	form = document.getElementById("formCategory");
+	divMessageCategory = document.getElementById('messageCategory');
+	divMessageCategoryError = document.getElementById('messageCategoryError');
 
+	// Obtener el nombre de la categoria desde el campo de entrada
+	categoryName = document.getElementById("categoryName").value;
+
+	if (regexOnlyWord.test(categoryName)) {
+		fetch("category/save", {
+			method: "POST",
+			headers: {
+				"Content-type": "application/json; charset=utf-8"
+			},
+			body: JSON.stringify({
+				categoryName: categoryName,
+			})
+		}).then(response => {
+			// Si la operacion a tenido exito recargar la pagina
+			if (response.status === 204) {
+				divMessageCategoryError.classList.add("d-none");
+				divMessageCategory.innerText = "La categoría se ha creado";
+				divMessageCategory.classList.remove("d-none");
+			} else if (response.status === 422) {
+				divMessageCategory.classList.add("d-none");
+				divMessageCategoryError.innerText = "Ya está registrada una categoría con ese nombre";
+				divMessageCategoryError.classList.remove("d-none");
+			} else {
+				window.location.href = "/internalError";
+			}
+		}).catch(() => window.location.href = "/internalError");
+
+		form.reset();
+
+		// Mostrar boton de eliminar categoria
+		showDeleteButton();
+	} else {
+		divMessageCategory.classList.add("d-none");
+		divMessageCategoryError.innerText = "El nombre solo pueden contener letras";
+		divMessageCategoryError.classList.remove("d-none");
+	}
+}
+
+// Comprobar si existe Categoria a eliminar
+function deleteCategory() {
+	form = document.getElementById("formCategory");
+	divMessageCategory = document.getElementById('messageCategory');
+	divMessageCategoryError = document.getElementById('messageCategoryError');
+
+	// Obtener el nombre de la categoria desde el campo de entrada
+	categoryName = document.getElementById("categoryName").value;
+
+	// Comprobar si el valor coincide con el patron
+	if (regexOnlyWord.test(categoryName)) {
+		fetch("category/searchByName", {
+			method: "POST",
+			headers: {
+				"Content-type": "application/json; charset=utf-8"
+			},
+			body: JSON.stringify({
+				categoryName: categoryName,
+			})
+		}).then(response => {
+			if (response.ok) {
+				// La solicitud se completo con exito
+				return response.json(); // Devuelve una promesa que se resuelve con el cuerpo de la respuesta como JSON
+			} else {
+				window.location.href = "/internalError"
+			}
+		}).then(responseData => {
+			// Manipular los datos de la respuesta
+			if (responseData.categoryId !== null) {
+				// Si se encontro la categoria, realizar la eliminacion
+				deleteCategoryById(responseData.categoryId);
+			} else {
+				divMessageCategory.classList.add("d-none");
+				divMessageCategoryError.innerText = "No se ha encontrado ninguna categoría con ese nombre";
+				divMessageCategoryError.classList.remove("d-none");
+			}
+		}).catch(() => window.location.href = "/internalError");
+
+		form.reset();
+
+		// Mostrar boton de eliminar categoria
+		showDeleteButton();
+	} else {
+		divMessageCategory.classList.add("d-none");
+		divMessageCategoryError.innerText = "El nombre solo pueden contener letras";
+		divMessageCategoryError.classList.remove("d-none");
+	}
+
+
+}
+
+// Eliminar categoria por ID
+function deleteCategoryById(categoryId) {
+	divMessageCategory = document.getElementById('messageCategory');
+	divMessageCategoryError = document.getElementById('messageCategoryError');
+
+	fetch("category/delete", {
+		method: "DELETE",
+		headers: {
+			"Content-type": "application/json; charset=utf-8"
+		},
+		body: JSON.stringify({
+			categoryId: categoryId
+		})
+	}).then(response => {
+		if (response.status === 204) {
+			divMessageCategoryError.classList.add("d-none");
+			divMessageCategory.innerText = "Se ha eliminado correctamente la categoría";
+			divMessageCategory.classList.remove("d-none");
+		} else {
+			window.location.href = "/internalError";
+		}
+	}).catch(() => window.location.href = "/internalError");
+}
+
+// Mostrar boton de eliminar categoria
+function showDeleteButton() {
+	const inputCategoryName = document.getElementById('categoryName');
+	const buttonDeleteCategory = document.getElementById('buttonDeleteCategory');
+
+	if (inputCategoryName.value) {
+		buttonDeleteCategory.classList.remove("d-none");
+	} else {
+		buttonDeleteCategory.classList.add("d-none");
+	}
+}

@@ -12,27 +12,38 @@
 	<div th:replace="~{fragments/general-fragments :: headerContent}">
 	</div>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark"
-		style="margin-top: 1px;">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active mr-sm-5">
-					<span class="nav-link"><i class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i> Gestionar tienda</span>
-			</li>
-			<li class="nav-item dropdown mr-sm-5"><a class="nav-link" th:href="@{/adminOrders}">
-					<i class="fas fa-shopping-basket fa-sm"></i> Pedidos
-			</a></li>
-			<li class="nav-item dropdown mr-sm-5"><a class="nav-link" th:href="@{/adminProducts}">
-					<i class="fas fa-box-open fa-sm"></i> Productos
-			</a></li>
-			<li class="nav-item dropdown mr-sm-5"><a class="nav-link" th:href="@{/adminComplaints}">
-					<i class="fas fa-exclamation-triangle fa-sm"></i> Denuncias
-			</a></li>
-			<li class="nav-item dropdown mr-sm-5"><a class="nav-link" th:href="@{/adminSendings}">
-					<i class="fas fa-truck fa-sm"></i> Envíos
-			</a></li>
-			<li class="nav-item dropdown mr-sm-5"><a class="nav-link" th:href="@{/adminUsers}">
-					<i class="fas fa-users fa-sm"></i> Clientes
-			</a></li>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContentAdmin"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<ul class="navbar-nav mr-auto mx-auto">
+			<li class="nav-item active mr-sm-5"><span class="nav-link"><i
+					class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i> Gestionar tienda</span></li>
+			<div class="collapse navbar-collapse" id="navbarSupportedContentAdmin">
+				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
+					th:href="@{/adminOrders}"> <i
+						class="fas fa-shopping-basket fa-sm"></i> Pedidos
+				</a></li>
+				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
+					th:href="@{/adminProducts}"> <i class="fas fa-box-open fa-sm"></i>
+						Productos
+				</a></li>
+				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
+					th:href="@{/adminComplaints}"> <i
+						class="fas fa-exclamation-triangle fa-sm"></i> Denuncias
+				</a></li>
+				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
+					th:href="@{/adminSendings}"> <i class="fas fa-truck fa-sm"></i>
+						Envíos
+				</a></li>
+				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
+					th:href="@{/adminUsers}"> <i class="fas fa-users fa-sm"></i>
+						Clientes
+				</a></li>
+			</div>
 		</ul>
 	</nav>
 

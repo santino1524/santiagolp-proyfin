@@ -246,20 +246,21 @@ public class ProductController {
 	 * Buscar por numero producto
 	 * 
 	 * @param model
-	 * @param productNumber
+	 * @param productDTO
 	 * @return String
 	 * @throws InternalException
 	 */
-	@GetMapping(path = "/searchByProductNumber")
-	public String searchByProductNumber(@RequestParam @NotNull final String productNumber, final Model model)
+	@PostMapping(path = "/searchByProductNumber")
+	public String searchByProductNumber(@RequestBody @Valid final ProductDTO productDTO, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por su numero");
 
 		// Retornar producto
-		model.addAttribute("productDto", productMgmtService.searchByProductNumber(productNumber));
+		model.addAttribute("productDto", productMgmtService.searchByProductNumber(productDTO.productNumber()));
+		model.addAttribute("showProducts", true);
 
-		return "VISTA BUSCAR PRODUCTOS POR numero";
+		return "administration";
 	}
 
 }

@@ -13,4 +13,5 @@ public record ProductCategoryDTO(Long categoryId,
 
 		// Validar nombre de producto
 		@NotBlank(message = Constants.MSG_CATEGORY_NOT_VALID) String categoryName) {
+
 }
