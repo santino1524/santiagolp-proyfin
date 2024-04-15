@@ -28,7 +28,7 @@ import com.ntd.persistence.User;
 /**
  * Mapear DTO
  */
-@Mapper(imports = com.ntd.security.UserRole.class)
+@Mapper(imports = { com.ntd.security.UserRole.class, java.util.Arrays.class })
 public interface DTOMapperI {
 
 	/** Dependencia de DTOMapper */
@@ -188,6 +188,7 @@ public interface DTOMapperI {
 	 * @return ProductDTO
 	 */
 	@Mapping(target = "reviewsDto", expression = "java(listProductReviewToDTO(product.getReviews()))")
+	@Mapping(target = "imageUrls", expression = "java(String.join(\",\", product.getImageUrls()))")
 	public ProductDTO mapProductToDTO(Product product);
 
 	/**
@@ -236,6 +237,7 @@ public interface DTOMapperI {
 	@Mapping(target = "soldProducts", ignore = true)
 	@Mapping(target = "reviews", ignore = true)
 	@Mapping(target = "pvpPrice", expression = "java(calculatePvp(productDto))")
+	@Mapping(target = "imageUrls", expression = "java(Arrays.asList(productDto.imageUrls().split(\",\")))")
 	public Product mapDTOToProduct(ProductDTO productDto);
 
 	/**

@@ -126,7 +126,6 @@ function saveCategory() {
 				categoryName: categoryName,
 			})
 		}).then(response => {
-			// Si la operacion a tenido exito recargar la pagina
 			if (response.status === 204) {
 				divMessageCategoryError.classList.add("d-none");
 				divMessageCategory.innerText = "La categoría se ha creado";
@@ -149,6 +148,9 @@ function saveCategory() {
 		divMessageCategoryError.innerText = "El nombre solo pueden contener letras";
 		divMessageCategoryError.classList.remove("d-none");
 	}
+
+	// Actualizar pagina
+	window.location.reload(true);
 }
 
 // Comprobar si existe Categoria a eliminar
@@ -199,7 +201,8 @@ function deleteCategory() {
 		divMessageCategoryError.classList.remove("d-none");
 	}
 
-
+	// Actualizar pagina
+	window.location.reload();
 }
 
 // Eliminar categoria por ID
@@ -237,3 +240,98 @@ function showDeleteButton() {
 		buttonDeleteCategory.classList.add("d-none");
 	}
 }
+
+// Mostrar todas las categorias
+function showCategories() {
+	selectCategories = document.getElementById('productCategory');
+
+	fetch("category/searchAll", {
+		method: "GET"
+	})
+		.then(response => {
+			if (response.ok) {
+				return response.json();
+			} else {
+				window.location.href = "/internalError"
+			}
+		})
+		.then(data => {
+			// Limpiar opciones existentes en el select
+			selectCategories.innerHTML = "";
+
+			// Agregar la opcion por defecto
+			const defaultOption = document.createElement("option");
+			defaultOption.value = "";
+			defaultOption.text = "Seleccione";
+			selectCategories.appendChild(defaultOption);
+
+			// Iterar sobre los datos y agregar opciones al select
+			if (data) {
+				data.productCategoryDto.forEach(category => {
+					const option = document.createElement("option");
+					option.value = category.categoryId;
+					option.text = category.categoryName;
+					selectCategories.appendChild(option);
+				});
+			}
+		})
+		.catch(() => window.location.href = "/internalError");
+}
+
+// Enviar formulario Producto
+let divMessageProduct = document.getElementById('messageProduct');
+let divMessageProductError = document.getElementById('messageProductError');
+function submitFormProduct(event) {
+	divMessageProduct = document.getElementById('messageProduct');
+	divMessageProductError = document.getElementById('messageProductError');
+	const form = document.getElementById('formProduct');
+	const inputFiles = document.getElementById('files');
+	const inputUrlsHidden = document.getElementById('imageUrls');
+	const formData = new FormData();
+
+	// Prevenir el envio del formulario
+	event.preventDefault();
+
+	// Agregar los archivos seleccionados al objeto FormData
+	for (const file of inputFiles.files) {
+		formData.append('files', file);
+	}
+
+	fetch("products/upload", {
+		method: "POST",
+		headers: {
+			"Content-type": "application/json; charset=utf-8"
+		},
+		body: files
+	}).then(response => {
+		if (response.ok) {
+			// La solicitud se completo con exito
+			return response.json(); // Devuelve una promesa que se resuelve con el cuerpo de la respuesta como JSON
+		} else {
+			window.location.href = "/internalError"
+		}
+	}).then(responseData => {
+		// Manipular los datos de la respuesta
+		if (responseData.imageUrls !== null && responseData.imageUrls.length > 0) {
+			inputUrlsHidden.value = responseData.imageUrls.join(',');
+		} else {
+			window.location.href = "/internalError";
+		}
+	}).catch(() => window.location.href = "/internalError");
+
+	// Enviar el formulario
+	form.submit();
+}
+
+
+//		if (response.status === 204) {
+//			divMessageProductError.classList.add("d-none");
+//			divMessageProduct.innerText = "El producto ha sido registrado";
+//			divMessageProduct.classList.remove("d-none");
+//		} else if (response.status === 422) {
+//			divMessageCategory.classList.add("d-none");
+//			divMessageProduct.innerText = "El número de producto introducido ya está registrado";
+//			divMessageProduct.classList.remove("d-none");
+//		} else {
+//			window.location.href = "/internalError";
+//		}

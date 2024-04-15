@@ -104,19 +104,17 @@ public class ProductCategoryController {
 	/**
 	 * Buscar todas las Categorias
 	 * 
-	 * 
 	 * @return String
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showCategory(final Model model) throws InternalException {
+	public ResponseEntity<Object> showCategory(final Model model) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todas las Categorias");
 
 		// Retornar lista de Category
-		model.addAttribute("categoryDto", categoryMgmtService.searchAll());
-
-		return "VISTA BUSCAR TODOS LOS Category";
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productCategoryDto", categoryMgmtService.searchAll()));
 	}
 
 	/**
@@ -163,4 +161,5 @@ public class ProductCategoryController {
 
 		return "VISTA BUSCAR Category POR id";
 	}
+
 }

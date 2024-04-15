@@ -1,5 +1,15 @@
 package com.ntd.controllers;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
@@ -52,32 +63,32 @@ public class ProductController {
 	 * 
 	 * @param productDto
 	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@PostMapping
-	public String saveProduct(@RequestBody @Valid final ProductDTO productDto, final Model model)
-			throws InternalException {
+	public ResponseEntity<Void> saveProduct(@RequestBody @Valid final ProductDTO productDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar producto");
 
-		String result = null;
+		ResponseEntity<Void> result = null;
 
 		// Comprobar si el producto existe
 		if (productMgmtService.existsProductNumber(productDto.productNumber())) {
-			result = Constants.MSG_PRODUCT_NUMBER_EXISTS;
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.unprocessableEntity().build();
 		} else {
 			// Guardar producto
 			if (productMgmtService.insertProduct(productDto) != null) {
-				result = Constants.MSG_SUCCESSFUL_OPERATION;
+				// Devolver una respuesta con codigo de estado 204
+				result = ResponseEntity.noContent().build();
 			} else {
-				result = Constants.MSG_UNEXPECTED_ERROR;
+				// Devolver una respuesta con codigo de estado 500
+				result = ResponseEntity.internalServerError().build();
 			}
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar PRODUCTO";
+		return result;
 	}
 
 	/**
@@ -263,4 +274,47 @@ public class ProductController {
 		return "administration";
 	}
 
+	/**
+	 * Cargar imagenes
+	 * 
+	 * @param file
+	 * @return String
+	 */
+	@PostMapping("/upload")
+	public List<String> handleFileUpload(@RequestParam("files") List<MultipartFile> files) {
+		List<String> imageUrls = new ArrayList<>();
+
+		if (!files.isEmpty()) {
+			try {
+				// Obtener el directorio de recursos estaticos
+				String staticDir = "src/main/resources/static/";
+
+				// Crear el directorio de imagenes si no existe
+				File imageDir = new File(staticDir + "images/");
+				if (!imageDir.exists()) {
+					imageDir.mkdirs();
+				}
+
+				// Guardar cada archivo en el directorio de imágenes
+				for (MultipartFile file : files) {
+					byte[] bytes = file.getBytes();
+					Path path = Paths.get(imageDir.getAbsolutePath() + "/" + file.getOriginalFilename());
+					Files.write(path, bytes);
+
+					// Obtener la URL de la imagen y agregarla a la lista
+					String imageUrl = "/images/" + file.getOriginalFilename(); // Ruta relativa al directorio /static
+					imageUrls.add(imageUrl);
+				}
+
+				return imageUrls;
+
+			} catch (IOException e) {
+				if (log.isErrorEnabled())
+					log.error(e.getMessage());
+				return Collections.emptyList();
+			}
+		} else {
+			return Collections.emptyList();
+		}
+	}
 }
