@@ -254,15 +254,15 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public boolean existsProductNumber(String productNumber) throws InternalException {
+	public boolean existsByProductName(String productName) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Verificar si existe el numero del producto");
+			log.info("Verificar si existe el nombre del producto");
 
 		// Validar parametro
-		ValidateParams.isNullObject(productNumber);
+		ValidateParams.isNullObject(productName);
 
-		// Retornar si existe el numero del producto en BBDD
-		return productRepository.existsByProductNumber(productNumber);
+		// Retornar si existe
+		return productRepository.existsByProductNameIgnoreCase(productName);
 	}
 
 	@Override

@@ -22,7 +22,8 @@
 		<ul class="navbar-nav mr-auto mx-auto">
 			<li class="nav-item active mr-sm-5"><span class="nav-link"><i
 					class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i> Gestionar tienda</span></li>
-			<div class="collapse navbar-collapse" id="navbarSupportedContentAdmin">
+			<div class="collapse navbar-collapse"
+				id="navbarSupportedContentAdmin">
 				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
 					th:href="@{/adminOrders}"> <i
 						class="fas fa-shopping-basket fa-sm"></i> Pedidos
@@ -47,39 +48,15 @@
 		</ul>
 	</nav>
 
-	<!-- 
-	<div class="d-flex">
-		<div
-			class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark sidebar d-inline-block"
-			style="max-width: 200px;" id="sidebar">
-			<div
-				class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-				<i class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i> <span
-					class="fs-4">Gestionar tienda</span>
-			</div>
-			<hr>
-			<ul class="nav nav-pills flex-column mb-auto">
-				<li><a th:href="@{/adminOrders}" class="nav-link text-white">
-						<i class="fas fa-shopping-basket fa-sm"></i> Pedidos
-				</a></li>
-				<li><a th:href="@{/adminProducts}" class="nav-link text-white">
-						<i class="fas fa-box-open fa-sm"></i> Productos
-				</a></li>
-				<li><a th:href="@{/adminComplaints}"
-					class="nav-link text-white"> <i
-						class="fas fa-exclamation-triangle fa-sm"></i> Denuncias
-				</a></li>
-				<li><a th:href="@{/adminSendings}" class="nav-link text-white">
-						<i class="fas fa-truck fa-sm"></i> Envíos
-				</a></li>
-				<li><a th:href="@{/adminUsers}" class="nav-link text-white">
-						<i class="fas fa-users fa-sm"></i> Clientes
-				</a></li>
-			</ul>
-			 -->
+	<div
+		th:if="${(showUsers == null and showOrders == null and showProducts == null and showComplaints == null and showSendings == null)}"
+		class="col text-center">
+		<img src="/images/admin.png" class="img-fluid"
+			alt="Panel de administración"
+			title="Gestiona en las diferentes opciones la tienda" id="adminImage">
 	</div>
 
-	<!-- ADMIN PEDIDOS -->
+	<!-- ADMIN PEDIDOS style="max-height: 80px;"-->
 	<th:block th:if="${showOrders}">
 		<div th:replace="~{fragments/administration-fragments :: orders}">
 		</div>

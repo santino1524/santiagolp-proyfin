@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -14,15 +12,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
+import com.ntd.exceptions.FileUploadException;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductMgmtServiceI;
 import com.ntd.utils.Constants;
@@ -66,15 +67,16 @@ public class ProductController {
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public ResponseEntity<Void> saveProduct(@RequestBody @Valid final ProductDTO productDto) throws InternalException {
+	@PostMapping(path = "/save")
+	public ResponseEntity<Void> saveProduct(@ModelAttribute @Valid final ProductDTO productDto)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar producto");
 
 		ResponseEntity<Void> result = null;
 
-		// Comprobar si el producto existe
-		if (productMgmtService.existsProductNumber(productDto.productNumber())) {
+		// Comprobar si el producto existe por el nombre
+		if (productMgmtService.existsByProductName(productDto.productName())) {
 			// Devolver una respuesta con codigo de estado 422
 			result = ResponseEntity.unprocessableEntity().build();
 		} else {
@@ -277,12 +279,13 @@ public class ProductController {
 	/**
 	 * Cargar imagenes
 	 * 
-	 * @param file
-	 * @return String
+	 * @param files
+	 * @return ResponseEntity
+	 * @throws FileUploadException
 	 */
-	@PostMapping("/upload")
-	public List<String> handleFileUpload(@RequestParam("files") List<MultipartFile> files) {
-		List<String> imageUrls = new ArrayList<>();
+	@PostMapping(path = "/upload")
+	public ResponseEntity<Void> handleFileUpload(@RequestPart("files") final List<MultipartFile> files)
+			throws FileUploadException {
 
 		if (!files.isEmpty()) {
 			try {
@@ -290,7 +293,7 @@ public class ProductController {
 				String staticDir = "src/main/resources/static/";
 
 				// Crear el directorio de imagenes si no existe
-				File imageDir = new File(staticDir + "images/");
+				File imageDir = new File(staticDir + "product_images/");
 				if (!imageDir.exists()) {
 					imageDir.mkdirs();
 				}
@@ -298,23 +301,27 @@ public class ProductController {
 				// Guardar cada archivo en el directorio de imágenes
 				for (MultipartFile file : files) {
 					byte[] bytes = file.getBytes();
-					Path path = Paths.get(imageDir.getAbsolutePath() + "/" + file.getOriginalFilename());
-					Files.write(path, bytes);
 
-					// Obtener la URL de la imagen y agregarla a la lista
-					String imageUrl = "/images/" + file.getOriginalFilename(); // Ruta relativa al directorio /static
-					imageUrls.add(imageUrl);
+					StringBuilder builder = new StringBuilder();
+					builder.append(imageDir.getAbsolutePath());
+					builder.append("/");
+					builder.append(file.getOriginalFilename());
+
+					Path path = Paths.get(builder.toString());
+					Files.write(path, bytes);
 				}
 
-				return imageUrls;
+				return ResponseEntity.ok().build();
 
 			} catch (IOException e) {
 				if (log.isErrorEnabled())
 					log.error(e.getMessage());
-				return Collections.emptyList();
+
+				throw new FileUploadException();
 			}
 		} else {
-			return Collections.emptyList();
+			return ResponseEntity.notFound().build();
+
 		}
 	}
 }

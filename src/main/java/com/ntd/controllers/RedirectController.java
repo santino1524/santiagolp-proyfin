@@ -41,7 +41,7 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	/**
 	 * Mostrar formulario de inicio
 	 * 
-	 * @return ResponseEntity
+	 * @return String
 	 */
 	@GetMapping(path = "login-page")
 	public String showLoginForm() {

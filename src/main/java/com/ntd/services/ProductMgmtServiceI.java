@@ -104,7 +104,7 @@ public interface ProductMgmtServiceI {
 	 * @return boolean
 	 * @throws InternalException
 	 */
-	public boolean existsProductNumber(final String productNumber) throws InternalException;
+	public boolean existsByProductName(final String productName) throws InternalException;
 
 	/**
 	 * Comprobar existencia por nombre de producto
