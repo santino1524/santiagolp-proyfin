@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 
 /**
  * Repositorio T_PRODUCT
@@ -78,6 +81,28 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * @return List
 	 */
 	public List<Product> findByProductNameIgnoreCaseOrProductNumber(String productName, String productNumber);
+
+	/**
+	 * Buscar las imagenes
+	 * 
+	 * @param productId
+	 * @return List
+	 */
+	@Transactional
+	@Modifying
+	@Query(value = "SELECT C_IMAGE_URL FROM T_IMAGES_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
+	public List<String> findImageUrlsByProductId(Long productId);
+
+	/**
+	 * Eliminar imagenes
+	 * 
+	 * @param productId
+	 * @return List
+	 */
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE FROM C_IMAGE_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
+	public void deleteImageUrlsByProductId(Long productId);
 
 	/**
 	 * Metodo para guardar o actualizar un producto

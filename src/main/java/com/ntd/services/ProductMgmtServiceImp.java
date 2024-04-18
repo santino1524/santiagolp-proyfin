@@ -1,5 +1,6 @@
 package com.ntd.services;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductRepositoryI;
+import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -311,4 +313,70 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		return productsDtoNotFound;
 	}
 
+	@Override
+	public void deleteImages(Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Eliminar imagenes");
+
+		// Validar parametro
+		ValidateParams.isNullObject(id);
+
+		// Buscar imagenes
+		List<String> urls = productRepository.findImageUrlsByProductId(id);
+
+		// Eliminar ficheros
+		// removeImages(urls);
+
+		// Eliminar imagenes
+		productRepository.deleteImageUrlsByProductId(id);
+
+		System.out.println(urls.toString());
+	}
+
+	@Override
+	public void removeImages(List<String> imagesUrls) {
+		// Crea un objeto File que representa el directorio
+		File directory = new File(Constants.PRODUCT_IMAGES);
+
+		// Verifica si el directorio existe
+		if (directory.exists() && directory.isDirectory()) {
+			// Obtiene una lista de archivos en el directorio
+			File[] files = directory.listFiles();
+
+			// Itera sobre los archivos en el directorio
+			for (File file : files) {
+				// Verifica si el nombre del archivo coincide con alguno de los nombres de
+				// imagen
+				for (String imageName : imagesUrls) {
+					if (file.getName().equals(imageName)) {
+						// Elimina el archivo si coincide con el nombre de la imagen
+						if (file.delete()) {
+							System.out.println("Imagen eliminada: " + file.getName());
+						} else {
+							System.out.println("No se pudo eliminar la imagen: " + file.getName());
+						}
+					}
+				}
+			}
+		} else {
+			System.out.println("El directorio no existe o no es un directorio válido.");
+		}
+	}
+
+	metodo para
+	agregar ruta
+	base a
+	cada archivo, borrar
+	el mapeo
+	de urlImage
+	ya que
+	se hara
+	en este metodo
+	{
+		List<String> urls = product.getImageUrls();
+		List<String> urlsConRutaBase = urls.stream().map(nombreArchivo -> context.getRealPath("") + Constants.SEPARATOR
+				+ Constants.PRODUCT_IMAGES + nombreArchivo).collect(Collectors.toList());
+
+		String urlsConcatenadas = String.join(",", urlsConRutaBase);
+	}
 }

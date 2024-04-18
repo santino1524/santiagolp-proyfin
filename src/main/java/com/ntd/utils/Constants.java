@@ -25,8 +25,14 @@ public class Constants {
 	/** MSG Acceso denegado */
 	public static final String ACCESS_DENIEG = "Acceso denegado. No tienes permiso para acceder a esta página.";
 
-	/** Variable para mensaje growl */
+	/** Constante para mensaje growl */
 	public static final String MESSAGE_GROWL = "error";
+
+	/** Separador para rutas */
+	public static final String SEPARATOR = "/";
+
+	/** Dir de imagenes del producto */
+	public static final String PRODUCT_IMAGES = "/product_images";
 
 	/** MSG Categoria creada */
 	public static final String MSG_SAVE_CATEGORY = "La categoría se ha creado";

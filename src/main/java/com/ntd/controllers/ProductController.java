@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ import com.ntd.services.ProductMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
+import jakarta.servlet.ServletContext;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -50,13 +52,18 @@ public class ProductController {
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductMgmtServiceI productMgmtService;
 
+	/** ServletContext */
+	private ServletContext context;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param productMgmtService
+	 * @param context
 	 */
-	public ProductController(final ProductMgmtServiceI productMgmtService) {
+	public ProductController(final ProductMgmtServiceI productMgmtService, final ServletContext context) {
 		this.productMgmtService = productMgmtService;
+		this.context = context;
 	}
 
 	/**
@@ -98,63 +105,88 @@ public class ProductController {
 	 * 
 	 * @param model
 	 * @param productDto
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PutMapping
-	public String updateOrder(@RequestBody @Valid final ProductDTO productDto, final Model model)
+	@PostMapping(path = "/update")
+	public ResponseEntity<Void> updateProduct(@RequestBody @Valid final ProductDTO productDto, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar producto");
 
-		String result = null;
+		ResponseEntity<Void> result = null;
 
 		// Comprobar si existe otro producto
 		if (productMgmtService.searchByProductNameOrProductNumber(productDto.productName(), productDto.productNumber())
 				.size() > 1) {
-			result = Constants.MSG_PRODUCT_DATA_EXISTS;
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.unprocessableEntity().build();
 		} else {
 			// Actualizar producto
 			final ProductDTO productUpdated = productMgmtService.updateProduct(productDto);
 
 			// Verificar retorno de actualizacion
 			if (productUpdated != null) {
-				result = Constants.MSG_SUCCESSFUL_OPERATION;
+				// Devolver una respuesta con codigo de estado 204
+				result = ResponseEntity.noContent().build();
 			} else {
-				result = Constants.MSG_UNEXPECTED_ERROR;
+				// Devolver una respuesta con codigo de estado 500
+				result = ResponseEntity.internalServerError().build();
 			}
 		}
 
 		model.addAttribute(Constants.MESSAGE_GROWL, result);
 
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE  PRODUCTO ACTUALIZADO";
+		return result;
 	}
 
 	/**
-	 * Eliminar producto
+	 * Eliminar imagenes
 	 * 
-	 * @param productDto
+	 * @param productId
 	 * @param model
 	 * @return String
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
-	public String deleteProduct(@RequestBody @NotNull final ProductDTO productDto, final Model model)
+	@DeleteMapping(path = "/deleteImages/{productId}")
+	public ResponseEntity<Void> deleteImages(@PathVariable final Long productId, final Model model)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Eliminar imagenes");
+
+		// Validar id
+		ValidateParams.isNullObject(productId);
+
+		// Eliminar producto
+		productMgmtService.deleteImages(productId);
+
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * Eliminar producto
+	 * 
+	 * @param productId
+	 * @param model
+	 * @return String
+	 * @throws InternalException
+	 */
+	@Transactional
+	@DeleteMapping(path = "/delete/{productId}")
+	public ResponseEntity<Void> deleteProduct(@PathVariable final Long productId, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar producto");
 
 		// Validar id
-		ValidateParams.isNullObject(productDto.productId());
+		ValidateParams.isNullObject(productId);
 
 		// Eliminar producto
-		productMgmtService.deleteProduct(productDto.productId());
+		productMgmtService.deleteProduct(productId);
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE  PRODUCTO ELIMINADO";
+		return ResponseEntity.ok().build();
 	}
 
 	/**
@@ -263,17 +295,15 @@ public class ProductController {
 	 * @return String
 	 * @throws InternalException
 	 */
-	@PostMapping(path = "/searchByProductNumber")
-	public String searchByProductNumber(@RequestBody @Valid final ProductDTO productDTO, final Model model)
-			throws InternalException {
+	@GetMapping(path = "/searchByProductNumber/{productNum}")
+	public ResponseEntity<Object> searchByProductNumber(@PathVariable @NotNull final String productNum,
+			final Model model) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por su numero");
 
-		// Retornar producto
-		model.addAttribute("productDto", productMgmtService.searchByProductNumber(productDTO.productNumber()));
-		model.addAttribute("showProducts", true);
-
-		return "administration";
+		// Retornar lista de Category
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productDto", productMgmtService.searchByProductNumber(productNum)));
 	}
 
 	/**
@@ -290,21 +320,23 @@ public class ProductController {
 		if (!files.isEmpty()) {
 			try {
 				// Obtener el directorio de recursos estaticos
-				String staticDir = "src/main/resources/static/";
+				// String staticDir = "src/main/resources/static/";
+				// File imageDir = new File(staticDir + Constants.PRODUCT_IMAGES);
 
 				// Crear el directorio de imagenes si no existe
-				File imageDir = new File(staticDir + "product_images/");
+				File imageDir = new File(context.getRealPath("") + Constants.SEPARATOR + Constants.PRODUCT_IMAGES);
+
 				if (!imageDir.exists()) {
 					imageDir.mkdirs();
 				}
 
-				// Guardar cada archivo en el directorio de imágenes
+				// Guardar cada archivo en el directorio de imagenes
 				for (MultipartFile file : files) {
 					byte[] bytes = file.getBytes();
 
 					StringBuilder builder = new StringBuilder();
 					builder.append(imageDir.getAbsolutePath());
-					builder.append("/");
+					builder.append(File.separatorChar);
 					builder.append(file.getOriginalFilename());
 
 					Path path = Paths.get(builder.toString());

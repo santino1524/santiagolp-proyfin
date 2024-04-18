@@ -46,6 +46,15 @@ public interface ProductMgmtServiceI {
 	public void deleteProduct(final Long id) throws InternalException;
 
 	/**
+	 * Eliminar imagenes
+	 * 
+	 * @param id
+	 * @throws InternalException
+	 */
+	@Transactional
+	public void deleteImages(final Long id) throws InternalException;
+
+	/**
 	 * Buscar todos los productos
 	 * 
 	 * @return List
@@ -135,5 +144,12 @@ public interface ProductMgmtServiceI {
 	 */
 	@Transactional
 	public List<ProductDTO> confirmOrder(final List<ProductSoldDTO> productsDtoToBuy) throws InternalException;
+
+	/**
+	 * Eliminar ficheros
+	 * 
+	 * @param imagesUrls
+	 */
+	public void removeImages(List<String> imagesUrls);
 
 }

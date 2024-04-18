@@ -12,7 +12,7 @@
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-5">
+	<div class="container text-center mt-3 mb-3">
 		<div class="col text-center">
 			<img src="/images/saludo.png" class="img-fluid"
 				style="max-height: 200px;" alt="Goku saluda"
@@ -86,7 +86,7 @@
 				</div>
 			</div>
 			<div id="passwordError" class="alert alert-danger d-none"
-				role="alert">Las contraseñas no coinciden</div>
+				role="alert"></div>
 			<div class="form-group">
 				<label>Preguntas y respuestas para resetear la contraseña *</label>
 				<input type="hidden" name="questions"
@@ -127,8 +127,6 @@
 				class="btn btn-primary">Registrarse</button>
 		</form>
 	</div>
-
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
