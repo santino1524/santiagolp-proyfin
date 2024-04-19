@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.ntd.persistence.User;
 import com.ntd.persistence.UserRepositoryI;
 import com.ntd.security.UserRole;
+import com.ntd.utils.Constants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,8 +58,9 @@ public class SantiagolpProyfinApplication {
 		// Crear usuario de inicio
 		return args -> {
 			if (userRepository.count() == 0) {
-				User userInit = User.builder().email("goku@mail.com").passwd(passwordEncoder.encode("goku"))
-						.name("Goku").surname("Goku").secondSurname("Goku").dni("11111111P").phoneNumber("123456789")
+				User userInit = User.builder().email(Constants.DEFAULT_USER)
+						.passwd(passwordEncoder.encode(Constants.DEFAULT_PASSWD)).name("Goku").surname("Goku")
+						.secondSurname("Goku").dni("11111111P").phoneNumber("123456789")
 						.role(UserRole.valueOf(UserRole.SELLER.name())).questions(Arrays.asList("1", "2", "3"))
 						.answers(Arrays.asList("1", "2", "3")).build();
 

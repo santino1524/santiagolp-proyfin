@@ -47,6 +47,7 @@ public class SecurityConfig {
 	/**
 	 * Constructor
 	 * 
+	 * @param jwtUtils
 	 * @param userDetailsService
 	 */
 	public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtUtils jwtUtils,

@@ -49,8 +49,9 @@ public class UserController {
 	 * Constructor
 	 * 
 	 * @param userMgmtService
+	 * @param sessionRegistry
 	 */
-	public UserController(final UserMgmtServiceI userMgmtService, final SessionRegistry sessionRegistry) {
+	public UserController(UserMgmtServiceI userMgmtService, SessionRegistry sessionRegistry) {
 		this.userMgmtService = userMgmtService;
 		this.sessionRegistry = sessionRegistry;
 	}

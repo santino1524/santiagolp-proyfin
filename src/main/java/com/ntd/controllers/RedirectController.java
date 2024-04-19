@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/")
 public class RedirectController extends SavedRequestAwareAuthenticationSuccessHandler {
 
-	/* Constante String administration */
+	/** Constante String administration */
 	private static final String ADMINISTRATION = "administration";
 
 	/**
@@ -138,6 +138,19 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	}
 
 	/**
+	 * Redireccionar a pagina reset-password
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "reset-password")
+	public String goResetPassword() {
+		if (log.isInfoEnabled())
+			log.info("Redireccionar a pagina reset-password");
+
+		return "reset-password";
+	}
+
+	/**
 	 * Redireccionar a pagina Acerca de
 	 * 
 	 * @return String
@@ -168,12 +181,12 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "resetPassword")
-	public String goResetPassword() {
+	@GetMapping(path = "recoverPassword")
+	public String goRecoverPassword() {
 		if (log.isInfoEnabled())
 			log.info("Redireccionar a pagina Reiniciar contrasena");
 
-		return "reset-password";
+		return "recover-password";
 	}
 
 	/**

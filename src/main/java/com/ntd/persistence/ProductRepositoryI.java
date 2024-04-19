@@ -88,8 +88,6 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * @param productId
 	 * @return List
 	 */
-	@Transactional
-	@Modifying
 	@Query(value = "SELECT C_IMAGE_URL FROM T_IMAGES_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
 	public List<String> findImageUrlsByProductId(Long productId);
 

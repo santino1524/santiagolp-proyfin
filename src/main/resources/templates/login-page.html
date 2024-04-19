@@ -21,7 +21,7 @@
 				</div>
 
 				<h2 class="text-center mb-4">Identifícate</h2>
-				<form action="authentication" method="POST">
+				<form action="authentication" method="POST" id="formLoginPage">
 					<div th:if="${param.error != null}" class="alert alert-danger"
 						role="alert">Nombre de usuario o contraseña incorrectos</div>
 					<div th:if="${message != null}" class="alert alert-success"
@@ -38,13 +38,33 @@
 							type="password" name="password" class="form-control"
 							id="inputPassword" placeholder="Contraseña" required
 							autocomplete="password"> <small><a
-							href="/resetPassword">¿Haz olvidado tu contraseña?</a></small>
+							href="/recoverPassword">¿Haz olvidado tu contraseña?</a></small>
 					</div>
-					<button type="submit" value="Login" class="btn btn-dark btn-block">Iniciar
-						sesión</button>
+					<button type="submit" value="Login" class="btn btn-dark btn-block"
+						onclick="submitLoginPage(event)">Iniciar sesión</button>
 				</form>
 				<div class="text-center mt-3">
 					¿Eres nuevo por aquí? <a href="/register"><b>¡Regístrate!</b></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Login -->
+	<div class="modal fade" id="loginPageModal" tabindex="-1" role="dialog"
+		aria-labelledby="generalModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Alerta de
+						Seguridad</h5>
+				</div>
+				<div class="modal-body">La contraseña
+					utilizada tiene como objetivo el primer inicio de sesión, debe cambiarla
+					de inmediato o la aplicación será expuesta a brechas de seguridad.</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" id="modalBtnOk" onclick="document.getElementById('formLoginPage').submit()">Aceptar</button>
 				</div>
 			</div>
 		</div>

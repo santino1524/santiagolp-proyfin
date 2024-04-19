@@ -87,4 +87,5 @@ public interface UserRepositoryI extends JpaRepository<User, Long> {
 	 * @return List
 	 */
 	public List<User> findByDniIgnoreCaseOrEmailIgnoreCaseOrPhoneNumber(String dni, String email, String phoneNumber);
+
 }

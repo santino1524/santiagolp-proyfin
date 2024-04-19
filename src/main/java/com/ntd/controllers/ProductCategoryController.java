@@ -52,21 +52,23 @@ public class ProductCategoryController {
 	 * @throws InternalException
 	 */
 	@PostMapping(path = "/save")
-	public ResponseEntity<Void> saveCategory(@RequestBody @Valid final ProductCategoryDTO categoryDto)
+	public ResponseEntity<Object> saveCategory(@RequestBody @Valid final ProductCategoryDTO categoryDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar Categoria");
 
-		ResponseEntity<Void> result = null;
+		ResponseEntity<Object> result = null;
 
 		// Guardar Categoria
 		if (categoryMgmtService.existsCategoryName(categoryDto.categoryName())) {
 			// Devolver una respuesta con codigo de estado 422
 			result = ResponseEntity.unprocessableEntity().build();
 		} else {
-			if (categoryMgmtService.insertProductCategory(categoryDto) != null) {
-				// Devolver una respuesta con codigo de estado 204
-				result = ResponseEntity.noContent().build();
+			ProductCategoryDTO savedCategoryDto = categoryMgmtService.insertProductCategory(categoryDto);
+
+			if (savedCategoryDto.categoryId() != null) {
+				// Devolver una respuesta con codigo de estado 200
+				result = ResponseEntity.ok().body(Collections.singletonMap("productCategoryDto", savedCategoryDto));
 			} else {
 				// Devolver una respuesta con codigo de estado 500
 				result = ResponseEntity.internalServerError().build();

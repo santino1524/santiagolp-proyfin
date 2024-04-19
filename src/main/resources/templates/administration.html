@@ -51,8 +51,8 @@
 	<div
 		th:if="${(showUsers == null and showOrders == null and showProducts == null and showComplaints == null and showSendings == null)}"
 		class="col text-center">
-		<img src="/images/admin.png" class="img-fluid" style="max-height:420px;"
-			alt="Panel de administración"
+		<img src="/images/admin.png" class="img-fluid"
+			style="max-height: 420px;" alt="Panel de administración"
 			title="Gestiona en las diferentes opciones la tienda" id="adminImage">
 	</div>
 
@@ -91,6 +91,24 @@
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
 
+	<!-- Modal Login -->
+	<div class="modal fade" id="adminModal" tabindex="-1" role="dialog"
+		aria-labelledby="generalModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Alerta de Seguridad</h5>
+				</div>
+				<div class="modal-body" id="adminModalBody"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger"
+						data-dismiss="modal" id="modalAdminBtnOk">Aceptar</button>
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" id="modalAdminBtnCancel">Cancelar</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 </body>

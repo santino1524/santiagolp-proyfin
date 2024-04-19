@@ -5,12 +5,10 @@ const ivaRegex = /^\d{1,2}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
 const numberProductRegex = /^\d{13}$/;
 const separatorsRegex = /[\\/]/;
-
 // Lista de extensiones permitidas
 const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 // Url error
 const urlError = "/internalError";
-
 
 // Comprobacion de contrasennas al enviar formulario 
 document.addEventListener("DOMContentLoaded", function() {
@@ -98,12 +96,17 @@ function saveCategory() {
 				categoryName: categoryName,
 			})
 		}).then(response => {
-			if (response.status === 204) {
+			if (response.status === 200) {
 				showMessage(divMessageCategory, "La categoría se ha creado");
+				return response.json();
 			} else if (response.status === 422) {
 				showMessage(divMessageCategoryError, "Ya está registrada una categoría con ese nombre");
 			} else {
 				window.location.href = urlError;
+			}
+		}).then(data => {
+			if (data) {
+				addOption(data.productCategoryDto.categoryId, data.productCategoryDto.categoryName);
 			}
 		}).catch(() => window.location.href = urlError);
 
@@ -114,7 +117,19 @@ function saveCategory() {
 	} else {
 		showMessage(divMessageCategoryError, "El nombre solo pueden contener letras");
 	}
+}
 
+// Agregar option
+function addOption(id, valor) {
+	let selectElement = document.getElementById("productCategory");
+
+	// Crear un nuevo elemento <option>
+	let newOption = document.createElement("option");
+	newOption.value = id;
+	newOption.text = valor;
+
+	// Agregar el nuevo <option> al final del <select>
+	selectElement.appendChild(newOption);
 }
 
 // Buscar producto por el nombre
@@ -184,53 +199,70 @@ function searchProduct() {
 
 // Comprobar si existe Categoria a eliminar
 function deleteCategory() {
+	//Mensaje de confirmacion
+	document.getElementById("adminModalBody").innerHTML = "¿Estás seguro que quieres eliminar la categoría?";
+	document.getElementById("modalAdminBtnOk").onclick = confirmDeleteCategory;
+	$('#adminModal').modal('show');
+}
+
+// Confirmar eliminar categoria
+function confirmDeleteCategory() {
 	let form = document.getElementById("formCategory");
 	let divMessageCategoryError = document.getElementById('messageCategoryError');
 
 	// Obtener el nombre de la categoria desde el campo de entrada
-	categoryName = document.getElementById("categoryName").value;
+	let categoryName = document.getElementById("categoryName").value;
 
-	//Mensaje de confirmacion
-	const result = confirm("¿Estás seguro que quieres eliminar la categoría?");
+	// Comprobar si el valor coincide con el patron
+	if (regexOnlyWord.test(categoryName)) {
+		fetch("category/searchByName", {
+			method: "POST",
+			headers: {
+				"Content-type": "application/json; charset=utf-8"
+			},
+			body: JSON.stringify({
+				categoryName: categoryName,
+			})
+		}).then(response => {
+			if (response.ok) {
+				// La solicitud se completo con exito
+				return response.json(); // Devuelve una promesa que se resuelve con el cuerpo de la respuesta como JSON
+			} else {
+				window.location.href = urlError
+			}
+		}).then(responseData => {
+			// Manipular los datos de la respuesta
+			if (responseData.categoryId !== null) {
+				// Si se encontro la categoria, realizar la eliminacion
+				deleteCategoryById(responseData.categoryId);
+			} else {
+				showMessage(divMessageCategoryError, "No se ha encontrado ninguna categoría con ese nombre");
+			}
+		}).catch(() => window.location.href = urlError);
 
-	if (result) {
-		// Comprobar si el valor coincide con el patron
-		if (regexOnlyWord.test(categoryName)) {
-			fetch("category/searchByName", {
-				method: "POST",
-				headers: {
-					"Content-type": "application/json; charset=utf-8"
-				},
-				body: JSON.stringify({
-					categoryName: categoryName,
-				})
-			}).then(response => {
-				if (response.ok) {
-					// La solicitud se completo con exito
-					return response.json(); // Devuelve una promesa que se resuelve con el cuerpo de la respuesta como JSON
-				} else {
-					window.location.href = urlError
-				}
-			}).then(responseData => {
-				// Manipular los datos de la respuesta
-				if (responseData.categoryId !== null) {
-					// Si se encontro la categoria, realizar la eliminacion
-					deleteCategoryById(responseData.categoryId);
-				} else {
-					showMessage(divMessageCategoryError, "No se ha encontrado ninguna categoría con ese nombre");
-				}
-			}).catch(() => window.location.href = urlError);
+		form.reset();
 
-			form.reset();
-
-			// Mostrar boton de eliminar categoria
-			showDeleteCategory();
-		} else {
-			showMessage(divMessageCategoryError, "El nombre solo pueden contener letras");
-		}
-
+		// Mostrar boton de eliminar categoria
+		showDeleteCategory();
+	} else {
+		showMessage(divMessageCategoryError, "El nombre solo pueden contener letras");
 	}
+}
 
+// Eliminar option del select Categorias
+function deleteOption(id) {
+	let selectElement = document.getElementById("productCategory");
+
+	for (let i = 0; i < selectElement.options.length; i++) {
+		let option = selectElement.options[i];
+
+		// Verificar si el valor del <option> coincide con el ID
+		if (option.value == id) {
+			// Eliminar el <option> del <select>
+			selectElement.remove(i);
+			break;
+		}
+	}
 }
 
 // Eliminar categoria por ID
@@ -248,6 +280,7 @@ function deleteCategoryById(categoryId) {
 	}).then(response => {
 		if (response.status === 204) {
 			showMessage(divMessageCategory, "Se ha eliminado correctamente la categoría");
+			deleteOption(categoryId);
 		} else {
 			window.location.href = urlError;
 		}
@@ -270,8 +303,9 @@ function showDeleteCategory() {
 function showDeleteImages() {
 	let inputProductId = document.getElementById('productId');
 	let buttonDeleteImages = document.getElementById('buttonDeleteImages');
+	let inputUrlsHidden = document.getElementById('imageUrls').value;
 
-	if (inputProductId.value) {
+	if (inputProductId.value && inputUrlsHidden) {
 		buttonDeleteImages.classList.remove("d-none");
 	} else {
 		buttonDeleteImages.classList.add("d-none");
@@ -288,6 +322,32 @@ function showDeleteProduct() {
 	} else {
 		buttonDeleteProduct.classList.add("d-none");
 	}
+}
+
+// Listar categorias en nav
+function listCategoriesInNav() {
+	let dropdownMenu = document.getElementById('categoriesMenu');
+
+	fetch("category/searchAll", {
+		method: "GET"
+	}).then(response => {
+		if (response.ok) {
+			return response.json();
+		} else {
+			window.location.href = urlError;
+		}
+	}).then(data => {
+		if (data) {
+			// Crear menu de categorias dinamicamente
+			data.productCategoryDto.forEach(category => {
+				let link = document.createElement('a');
+				link.classList.add('dropdown-item', 'bg-dark', 'text-white');
+				link.href = "/products/searchByCategory/" + encodeURIComponent(category.categoryId);
+				link.textContent = category.categoryName;
+				dropdownMenu.appendChild(link);
+			});
+		}
+	}).catch(() => window.location.href = urlError);
 }
 
 // Mostrar todas las categorias
@@ -485,7 +545,7 @@ function uploadImages(productName, productId) {
 
 			result = onlyFileNames + ',' + result;
 		}
-		
+
 		inputUrlsHidden.value = result;
 
 
@@ -530,15 +590,20 @@ function showMessage(div, message) {
 
 // Eliminar producto
 function deleteProduct() {
+	//Mensaje de confirmacion
+	document.getElementById("adminModalBody").innerHTML = "¿Estás seguro que quieres eliminar el producto?";
+	document.getElementById("modalAdminBtnOk").onclick = confirmDeleteProduct;
+	$('#adminModal').modal('show');
+}
+
+// Eliminar producto confirmado
+function confirmDeleteProduct() {
 	let divProductId = document.getElementById("productId");
 	let productId = divProductId.value;
 	let form = document.getElementById("formProduct");
 	let divMessageProduct = document.getElementById("messageProduct");
 
-	//Mensaje de confirmacion
-	const result = confirm("¿Estás seguro que quieres eliminar el producto?");
-
-	if (result && productId) {
+	if (productId) {
 		fetch("products/delete/" + encodeURIComponent(productId), {
 			method: "DELETE",
 			headers: {
@@ -565,16 +630,22 @@ function deleteProduct() {
 
 // Eliminar imagenes
 function deleteImages() {
+
+
+	//Mensaje de confirmacion
+	document.getElementById("adminModalBody").innerHTML = "¿Estás seguro que quieres eliminar todas las imágenes del producto?";
+	document.getElementById("modalAdminBtnOk").onclick = confirmDeleteImages;
+	$('#adminModal').modal('show');
+}
+
+// Eliminar imagenes confirmado
+function confirmDeleteImages() {
 	let inputUrlsHidden = document.getElementById('imageUrls');
 	let divProductId = document.getElementById("productId");
 	let productId = divProductId.value;
-	let form = document.getElementById("formProduct");
 	let divMessageProduct = document.getElementById("messageProduct");
 
-	//Mensaje de confirmacion
-	const result = confirm("¿Estás seguro que quieres eliminar todas las imágenes del producto?");
-
-	if (result && productId) {
+	if (productId) {
 		fetch("products/deleteImages/" + encodeURIComponent(productId), {
 			method: "DELETE",
 			headers: {
@@ -593,10 +664,40 @@ function deleteImages() {
 	}
 
 	// Ocultar botones de eliminar
-	form.reset();
 	divProductId.value = "";
 	inputUrlsHidden.value = "";
 	showDeleteImages();
 	showDeleteProduct();
 }
+
+
+// Autenticacion de usuarios en el login pagina
+function submitLoginPage(event) {
+	let user = document.getElementById('inputEmail').value;
+	let password = document.getElementById('inputPassword').value;
+
+	if (verifyUserPass(user, password)) {
+		event.preventDefault();
+		$('#loginPageModal').modal('show');
+	}
+}
+
+// Autenticacion de usuarios en el login nav
+function submitLoginNav(event) {
+	let user = document.getElementById('inputEmail2').value;
+	let password = document.getElementById('inputPassword2').value;
+
+	if (verifyUserPass(user, password)) {
+		event.preventDefault();
+		$('#loginModal').modal('show');
+	}
+}
+
+// Verificar usuario y passwd
+function verifyUserPass(user, password) {
+	return user === "goku@mail.com" && password === "goku";
+}
+
+
+
 

@@ -16,6 +16,12 @@ public class Constants {
 	private Constants() {
 	}
 
+	/** Usuario predeterminado SELLER */
+	public static final String DEFAULT_USER = "goku@mail.com";
+
+	/** Contrasenna predeterminada del usuario goku */
+	public static final String DEFAULT_PASSWD = "goku";
+
 	/** URL vista error */
 	public static final String URL_ERROR_VIEW = "error";
 

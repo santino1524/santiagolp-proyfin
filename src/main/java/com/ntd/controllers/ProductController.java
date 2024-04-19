@@ -228,20 +228,22 @@ public class ProductController {
 	 * Buscar producto por categoria
 	 * 
 	 * @param model
-	 * @param category
+	 * @param categoryId
 	 * @return String
 	 * @throws InternalException
 	 */
-	@GetMapping(path = "/searchByCategory")
-	public String searchByCategory(@RequestParam @NotNull final ProductCategoryDTO categoryDto, final Model model)
+	@GetMapping(path = "/searchByCategory/{categoryId}")
+	public String searchByCategory(@PathVariable @NotNull final Long categoryId, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por categoria");
 
+		ProductCategoryDTO categoryDto = new ProductCategoryDTO(categoryId, null);
+
 		// Retornar lista de productos
 		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByCategory(categoryDto));
 
-		return "VISTA BUSCAR PRODUCTOS POR CATEGORIA";
+		return "products";
 	}
 
 	/**
