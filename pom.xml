@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	
-	<!-- INFO DEL PROYECTO -->
+	<!-- INFORMACION DEL PROYECTO -->
 	<groupId>com.ntd</groupId>
 	<artifactId>santiagolp-proyfin</artifactId>
 	<version>3.4.0-SNAPSHOT</version>
