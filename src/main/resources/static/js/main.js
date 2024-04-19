@@ -149,6 +149,7 @@ function searchProduct() {
 				document.getElementById('productNumber').value = responseData.productDto.productNumber;
 				document.getElementById('productDescription').value = responseData.productDto.productDescription;
 				document.getElementById('productSize').value = responseData.productDto.productSize;
+				document.getElementById('imageUrls').value = responseData.productDto.imageUrls;
 				document.getElementById('productQuantity').value = responseData.productDto.productQuantity;
 				document.getElementById('iva').value = responseData.productDto.iva;
 				document.getElementById('basePrice').value = responseData.productDto.basePrice;
@@ -341,10 +342,11 @@ function submitFormProduct(form) {
 	let files = document.getElementById('files').value;
 	let iva = document.getElementById('iva').value;
 	let basePrice = document.getElementById('basePrice').value;
+	let imageUrls = document.getElementById('imageUrls').value;
 	let formData = new FormData();
 
 	if (productName && productNumber && selectedCategory && selectedCategory
-		&& productSize && productQuantity && files && iva && basePrice) {
+		&& productSize && productQuantity && (files || imageUrls) && iva && basePrice) {
 
 		// Validar los valores usando el patron
 		let isValidProductName = onlyWordsNumbersSpaces.test(productName);
@@ -421,8 +423,6 @@ function submitFormProduct(form) {
 				}).catch(() => window.location.href = urlError);
 			}
 
-
-
 			form.reset();
 
 		} else {
@@ -480,12 +480,13 @@ function uploadImages(productName, productId) {
 		}).catch(() => window.location.href = urlError);
 
 		// Guardar las url en el input oculto
-		if (productId) {
+		if (productId && inputUrlsHidden.value) {
 			let onlyFileNames = extractFileName(inputUrlsHidden.value);
-			onlyFileNames = onlyFileNames + ',' + result;
-		} else {
-			inputUrlsHidden.value = result;
+
+			result = onlyFileNames + ',' + result;
 		}
+		
+		inputUrlsHidden.value = result;
 
 
 		return result;

@@ -32,7 +32,7 @@ public class Constants {
 	public static final String SEPARATOR = "/";
 
 	/** Dir de imagenes del producto */
-	public static final String PRODUCT_IMAGES = "/product_images";
+	public static final String PRODUCT_IMAGES = "product_images";
 
 	/** MSG Categoria creada */
 	public static final String MSG_SAVE_CATEGORY = "La categoría se ha creado";
@@ -48,6 +48,9 @@ public class Constants {
 
 	/** Variable para mensaje vista ERROR */
 	public static final String VIEW_ERROR_MESSAGE = "message";
+
+	/** Msg ExceptionDeleteFiles */
+	public static final String MSG_DELETE_FILES_EXC = "Error al eliminar los archivo correspondientes a las imágenes de productos";
 
 	/** Msg InternalException */
 	public static final String MSG_INTERNAL_EXC = "Error interno, contacta con el administrador del sistema.";

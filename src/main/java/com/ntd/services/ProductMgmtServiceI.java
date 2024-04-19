@@ -5,6 +5,7 @@ import java.util.List;
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
+import com.ntd.exceptions.DeleteFilesException;
 import com.ntd.exceptions.InternalException;
 
 import jakarta.transaction.Transactional;
@@ -41,25 +42,28 @@ public interface ProductMgmtServiceI {
 	 * 
 	 * @param id
 	 * @throws InternalException
+	 * @throws DeleteFilesException
 	 */
 	@Transactional
-	public void deleteProduct(final Long id) throws InternalException;
+	public void deleteProduct(final Long id) throws InternalException, DeleteFilesException;
 
 	/**
 	 * Eliminar imagenes
 	 * 
 	 * @param id
 	 * @throws InternalException
+	 * @throws DeleteFilesException
 	 */
 	@Transactional
-	public void deleteImages(final Long id) throws InternalException;
+	public void deleteImages(final Long id) throws InternalException, DeleteFilesException;
 
 	/**
 	 * Buscar todos los productos
 	 * 
 	 * @return List
+	 * @throws InternalException
 	 */
-	public List<ProductDTO> searchAll();
+	public List<ProductDTO> searchAll() throws InternalException;
 
 	/**
 	 * Buscar productos por categoria
@@ -116,15 +120,6 @@ public interface ProductMgmtServiceI {
 	public boolean existsByProductName(final String productName) throws InternalException;
 
 	/**
-	 * Comprobar existencia por nombre de producto
-	 * 
-	 * @param productName
-	 * @return boolean
-	 * @throws InternalException
-	 */
-	public boolean existsProductName(final String productName) throws InternalException;
-
-	/**
 	 * Buscar por numero de producto y nombre
 	 * 
 	 * @param productName
@@ -149,7 +144,17 @@ public interface ProductMgmtServiceI {
 	 * Eliminar ficheros
 	 * 
 	 * @param imagesUrls
+	 * @throws DeleteFilesException
+	 * @throws InternalException
 	 */
-	public void removeImages(List<String> imagesUrls);
+	public void removeImages(final List<String> imagesUrls) throws DeleteFilesException, InternalException;
+
+	/**
+	 * Agregar ruta base a cada archivo
+	 * 
+	 * @param fileNames
+	 * @throws InternalException
+	 */
+	public void addRoutes(final List<String> fileNames) throws InternalException;
 
 }

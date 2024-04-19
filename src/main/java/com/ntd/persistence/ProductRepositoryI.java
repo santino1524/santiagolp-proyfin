@@ -101,7 +101,7 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 */
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE FROM C_IMAGE_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
+	@Query(value = "DELETE FROM T_IMAGES_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
 	public void deleteImageUrlsByProductId(Long productId);
 
 	/**

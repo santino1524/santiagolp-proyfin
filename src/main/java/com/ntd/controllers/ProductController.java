@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -24,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
+import com.ntd.exceptions.DeleteFilesException;
 import com.ntd.exceptions.FileUploadException;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductMgmtServiceI;
@@ -53,7 +53,7 @@ public class ProductController {
 	private final ProductMgmtServiceI productMgmtService;
 
 	/** ServletContext */
-	private ServletContext context;
+	private final ServletContext context;
 
 	/**
 	 * Constructor
@@ -109,7 +109,7 @@ public class ProductController {
 	 * @throws InternalException
 	 */
 	@PostMapping(path = "/update")
-	public ResponseEntity<Void> updateProduct(@RequestBody @Valid final ProductDTO productDto, final Model model)
+	public ResponseEntity<Void> updateProduct(@ModelAttribute @Valid final ProductDTO productDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar producto");
@@ -135,8 +135,6 @@ public class ProductController {
 			}
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
 		return result;
 	}
@@ -148,19 +146,30 @@ public class ProductController {
 	 * @param model
 	 * @return String
 	 * @throws InternalException
+	 * @throws DeleteFilesException
 	 */
 	@Transactional
 	@DeleteMapping(path = "/deleteImages/{productId}")
 	public ResponseEntity<Void> deleteImages(@PathVariable final Long productId, final Model model)
-			throws InternalException {
+			throws InternalException, DeleteFilesException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar imagenes");
 
 		// Validar id
 		ValidateParams.isNullObject(productId);
 
-		// Eliminar producto
-		productMgmtService.deleteImages(productId);
+		try {
+			// Validar id
+			ValidateParams.isNullObject(productId);
+
+			// Eliminar imagen
+			productMgmtService.deleteImages(productId);
+
+		} catch (InternalException e) {
+			throw new InternalException();
+		} catch (DeleteFilesException e) {
+			throw new DeleteFilesException();
+		}
 
 		return ResponseEntity.ok().build();
 	}
@@ -172,19 +181,27 @@ public class ProductController {
 	 * @param model
 	 * @return String
 	 * @throws InternalException
+	 * @throws DeleteFilesException
 	 */
 	@Transactional
 	@DeleteMapping(path = "/delete/{productId}")
 	public ResponseEntity<Void> deleteProduct(@PathVariable final Long productId, final Model model)
-			throws InternalException {
+			throws InternalException, DeleteFilesException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar producto");
 
-		// Validar id
-		ValidateParams.isNullObject(productId);
+		try {
+			// Validar id
+			ValidateParams.isNullObject(productId);
 
-		// Eliminar producto
-		productMgmtService.deleteProduct(productId);
+			// Eliminar producto
+			productMgmtService.deleteProduct(productId);
+
+		} catch (InternalException e) {
+			throw new InternalException();
+		} catch (DeleteFilesException e) {
+			throw new DeleteFilesException();
+		}
 
 		return ResponseEntity.ok().build();
 	}
@@ -324,7 +341,7 @@ public class ProductController {
 				// File imageDir = new File(staticDir + Constants.PRODUCT_IMAGES);
 
 				// Crear el directorio de imagenes si no existe
-				File imageDir = new File(context.getRealPath("") + Constants.SEPARATOR + Constants.PRODUCT_IMAGES);
+				File imageDir = new File(context.getRealPath("") + File.separatorChar + Constants.PRODUCT_IMAGES);
 
 				if (!imageDir.exists()) {
 					imageDir.mkdirs();
