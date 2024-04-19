@@ -1,6 +1,6 @@
 //Expresiones regulares
 const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
-const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s]*$/;
+const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const ivaRegex = /^\d{1,2}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
 const numberProductRegex = /^\d{13}$/;
@@ -34,9 +34,9 @@ function checkPasswords() {
 	return true;
 }
 
-// Ativar enlaces navlink
+// Activar enlaces navlink
 document.addEventListener("DOMContentLoaded", function() {
-	const navLinks = document.querySelectorAll(".nav-link");
+	const navLinks = document.querySelectorAll(".act");
 	navLinks.forEach(function(navLink) {
 		navLink.addEventListener("click", function() {
 			navLinks.forEach(function(link) {
@@ -410,7 +410,6 @@ function submitFormProduct(form) {
 
 		// Validar los valores usando el patron
 		let isValidProductName = onlyWordsNumbersSpaces.test(productName);
-		let isValidProductDescription = onlyWordsNumbersSpaces.test(productDescription);
 		let isValidProductSize = onlyWordsNumbersSpaces.test(productSize);
 		let isValidIva = ivaRegex.test(iva);
 		let isValidBasePrice = basePriceRegex.test(basePrice) && parseFloat(basePrice) >= 0.01;
@@ -429,7 +428,7 @@ function submitFormProduct(form) {
 			return;
 		}
 
-		if (!isValidProductName || !isValidProductDescription || !isValidProductSize) {
+		if (!isValidProductName || !isValidProductSize) {
 			// Mensaje no cumple con el patron
 			showMessage(divMessageProductError, "Las entradas de datos solo permiten letras,números y espacios");
 
@@ -483,7 +482,11 @@ function submitFormProduct(form) {
 				}).catch(() => window.location.href = urlError);
 			}
 
+			imageUrls = document.getElementById('imageUrls').value ="";
+			productId = document.getElementById('productId').value="";
 			form.reset();
+			showDeleteImages();
+			showDeleteProduct();
 
 		} else {
 			// Mostrar error de archivo no valido
@@ -664,7 +667,6 @@ function confirmDeleteImages() {
 	}
 
 	// Ocultar botones de eliminar
-	divProductId.value = "";
 	inputUrlsHidden.value = "";
 	showDeleteImages();
 	showDeleteProduct();
