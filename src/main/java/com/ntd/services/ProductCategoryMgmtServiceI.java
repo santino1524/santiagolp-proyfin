@@ -46,4 +46,22 @@ public interface ProductCategoryMgmtServiceI {
 	 */
 	public ProductCategoryDTO searchById(final Long id) throws InternalException;
 
+	/**
+	 * Buscar Categoria por id
+	 * 
+	 * @param categoryName
+	 * @return ProductCategoryDTO
+	 * @throws InternalException
+	 */
+	public ProductCategoryDTO searchByName(final String categoryName) throws InternalException;
+
+	/**
+	 * Comprobar existencia por nombre de categoria
+	 * 
+	 * @param categoryName
+	 * @return boolean
+	 * @throws InternalException
+	 */
+	public boolean existsCategoryName(final String categoryName) throws InternalException;
+
 }

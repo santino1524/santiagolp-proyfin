@@ -1,5 +1,10 @@
 package com.ntd.services;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,11 +14,14 @@ import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.mapper.DTOMapperI;
+import com.ntd.exceptions.DeleteFilesException;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductRepositoryI;
+import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
+import jakarta.servlet.ServletContext;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,13 +36,18 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	/** Dependencia de ProductRepository */
 	private final ProductRepositoryI productRepository;
 
+	/** ServletContext */
+	private final ServletContext context;
+
 	/**
 	 * Constructor
 	 * 
+	 * @param context
 	 * @param productRepository
 	 */
-	public ProductMgmtServiceImp(final ProductRepositoryI productRepository) {
+	public ProductMgmtServiceImp(final ProductRepositoryI productRepository, final ServletContext context) {
 		this.productRepository = productRepository;
+		this.context = context;
 	}
 
 	@Override
@@ -68,24 +81,34 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public void deleteProduct(Long id) throws InternalException {
+	public void deleteProduct(Long id) throws InternalException, DeleteFilesException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar producto");
 
 		// Validar parametro
 		ValidateParams.isNullObject(id);
 
+		// Eliminar imagenes
+		deleteImages(id);
+
 		// Eliminar por Id
 		productRepository.deleteById(id);
 	}
 
 	@Override
-	public List<ProductDTO> searchAll() {
+	public List<ProductDTO> searchAll() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar todos los productos");
 
 		// Buscar todos los productos
 		final List<Product> products = productRepository.findAll();
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -112,6 +135,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductCategory(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -135,6 +165,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		// Buscar por nombre
 		final List<Product> products = productRepository.findByProductNameIgnoreCaseContaining(productName);
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -161,6 +198,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductNameIgnoreCaseContainingOrderByPvpPriceDesc(productName);
 
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -186,6 +230,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductNameIgnoreCaseContainingOrderByPvpPriceAsc(productName);
 
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -210,20 +261,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Buscar por numero de producto
 		final Product product = productRepository.findByProductNumber(productNumber);
 
+		// Agregar rutas a las imagenes
+		if (product != null) {
+			addRoutes(product.getImageUrls());
+		}
+
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductToDTO(product);
-	}
-
-	@Override
-	public boolean existsProductName(String productName) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Verificar si existe el nombre del producto");
-
-		// Validar parametro
-		ValidateParams.isNullObject(productName);
-
-		// Retornar si existe el nombre del producto en BBDD
-		return productRepository.existsByProductNameIgnoreCase(productName);
 	}
 
 	@Override
@@ -240,6 +284,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository.findByProductNameIgnoreCaseOrProductNumber(productName,
 				productNumber);
 
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -254,15 +305,15 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public boolean existsProductNumber(String productNumber) throws InternalException {
+	public boolean existsByProductName(String productName) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Verificar si existe el numero del producto");
+			log.info("Verificar si existe el nombre del producto");
 
 		// Validar parametro
-		ValidateParams.isNullObject(productNumber);
+		ValidateParams.isNullObject(productName);
 
-		// Retornar si existe el numero del producto en BBDD
-		return productRepository.existsByProductNumber(productNumber);
+		// Retornar si existe
+		return productRepository.existsByProductNameIgnoreCase(productName);
 	}
 
 	@Override
@@ -311,4 +362,87 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		return productsDtoNotFound;
 	}
 
+	@Override
+	public void deleteImages(Long id) throws InternalException, DeleteFilesException {
+		if (log.isInfoEnabled())
+			log.info("Eliminar imagenes");
+
+		// Validar parametro
+		ValidateParams.isNullObject(id);
+
+		// Buscar imagenes
+		List<String> fileNames = productRepository.findImageUrlsByProductId(id);
+
+		// Eliminar ficheros
+		removeImages(fileNames);
+
+		// Eliminar imagenes
+		productRepository.deleteImageUrlsByProductId(id);
+	}
+
+	@Override
+	public void removeImages(List<String> fileNames) throws DeleteFilesException, InternalException {
+		// Crea un objeto File que representa el directorio
+		String baseDirectory = context.getRealPath("") + Constants.SEPARATOR + Constants.PRODUCT_IMAGES;
+		File directory = new File(baseDirectory);
+
+		// Verifica si el directorio existe
+		if (directory.exists() && directory.isDirectory()) {
+			// Obtiene una lista de archivos en el directorio
+			File[] files = directory.listFiles();
+
+			// Itera sobre los archivos en el directorio
+			for (File file : files) {
+				// Verifica si el nombre del archivo coincide con alguno de los nombres de
+				// imagen
+				findFileNameForImageName(fileNames, baseDirectory, file);
+			}
+		} else {
+			if (log.isErrorEnabled())
+				log.error("El directorio de imagenes de productos debe existir");
+
+			throw new InternalException();
+		}
+	}
+
+	/**
+	 * Verifica si el nombre del archivo coincide con alguno de los nombres de
+	 * imagen
+	 * 
+	 * @param fileNames
+	 * @param baseDirectory
+	 * @param file
+	 * @throws DeleteFilesException
+	 */
+	private void findFileNameForImageName(List<String> fileNames, String baseDirectory, File file)
+			throws DeleteFilesException {
+
+		for (String imageName : fileNames) {
+			if (file.getName().equals(imageName)) {
+				// Obtener el path
+				Path filePath = Paths.get(baseDirectory, file.getName());
+
+				// Elimina el archivo si coincide con el nombre de la imagen
+				try {
+					Files.delete(filePath);
+				} catch (IOException e) {
+					if (log.isErrorEnabled())
+						log.error(e.getMessage());
+
+					throw new DeleteFilesException();
+				}
+			}
+		}
+	}
+
+	@Override
+	public void addRoutes(List<String> fileNames) throws InternalException {
+
+		// Validar parametro
+		ValidateParams.isNullObject(fileNames);
+
+		fileNames.replaceAll(filename -> context.getRealPath("") + File.separatorChar + Constants.PRODUCT_IMAGES
+				+ File.separator + filename);
+
+	}
 }

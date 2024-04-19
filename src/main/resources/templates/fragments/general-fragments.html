@@ -20,7 +20,7 @@
 <body>
 	<!-- FRAGMENTO PARA CONTENIDO DE CABECERA DE LAS PAGINAS -->
 	<div class="header" th:fragment="headerContent" id="header">
-		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarSupportedContent"
 				aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -34,9 +34,8 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active"><a class="nav-link" href="/">Inicio<span
-							class="sr-only">(current)</span></a></li>
-					<li class="nav-item dropdown"><a
+					<li class="nav-item mr-sm-4"><a class="nav-link" href="/">Inicio</a></li>
+					<li class="nav-item dropdown mr-sm-4"><a
 						class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
 						role="button" data-toggle="dropdown" aria-haspopup="true"
 						aria-expanded="false"> Tienda </a>
@@ -49,15 +48,15 @@
 								th:href="@{/products}">Figuras</a> <a
 								class="dropdown-item bg-dark text-white" th:href="@{/products}">Mochilas</a>
 						</div></li>
-					<li class="nav-item"><a class="nav-link" th:href="@{/about}">Acerca
-							de</a></li>
+					<li class="nav-item mr-sm-4"><a class="nav-link"
+						th:href="@{/about}">Acerca de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
 						class="nav-link" th:href="@{/admin}" id="adminLink">Administración</a></li>
 				</ul>
 
 				<ul class="navbar-nav ml-auto">
 					<form class="form-inline my-2 my-lg-0">
-						<input class="form-control mr-sm-2" type="search"
+						<input class="form-control mr-sm-2" type="search" name="productName"
 							placeholder="Buscar" aria-label="Search">
 						<button class="btn btn-outline-light my-2 my-sm-0 mr-sm-2"
 							type="submit" title="Buscar">
@@ -92,7 +91,7 @@
 												<label class="sr-only" for="inputPassword2">Contraseña</label>
 												<input type="password" name="password" class="form-control"
 													id="inputPassword2" placeholder="Contraseña" required
-													autocomplete="current-password">
+													autocomplete="password">
 												<div class="help-block text-right">
 													<a th:href="@{/resetPassword}">¿Haz olvidado tu
 														contraseña?</a>
@@ -134,20 +133,13 @@
 				</a>
 			</div>
 		</nav>
-
-		<script>
-			// Ejecutar la funcion despues de que la pagina se haya cargado completamente
-			// window.onload = function() {
-			//   ejecutarDespuesDeRedireccion();
-			// };
-		</script>
-
-
+		<div class="invisible d-md-block w-100"
+			style="height: 107px; background-color: #f0f0f0;"></div>
 	</div>
 
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
 	<div
-		class="d-flex flex-wrap  bg-dark text-white text-center py-3 fixed-bottom"
+		class="d-flex flex-wrap  bg-dark text-white text-center py-3 bottom"
 		th:fragment="footerContent" id="footer">
 		<div class="container">
 			<div class="row justify-content-between">

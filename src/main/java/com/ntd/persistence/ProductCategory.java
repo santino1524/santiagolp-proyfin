@@ -32,7 +32,7 @@ public class ProductCategory implements Serializable {
 	private Long categoryId;
 
 	/** Nombre de categoria */
-	@Column(name = "C_CATEGORY_NAME")
+	@Column(name = "C_CATEGORY_NAME", nullable = false, unique = true)
 	private String categoryName;
 
 }

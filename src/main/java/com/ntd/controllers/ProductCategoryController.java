@@ -1,5 +1,8 @@
 package com.ntd.controllers;
 
+import java.util.Collections;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductCategoryMgmtServiceI;
-import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
@@ -46,28 +48,33 @@ public class ProductCategoryController {
 	 * Registrar Categoria
 	 * 
 	 * @param categoryDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public String saveCategory(@RequestBody @Valid final ProductCategoryDTO categoryDto, final Model model)
+	@PostMapping(path = "/save")
+	public ResponseEntity<Void> saveCategory(@RequestBody @Valid final ProductCategoryDTO categoryDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar Categoria");
 
-		String result = null;
+		ResponseEntity<Void> result = null;
 
-		// Guardar Report
-		if (categoryMgmtService.insertProductCategory(categoryDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
+		// Guardar Categoria
+		if (categoryMgmtService.existsCategoryName(categoryDto.categoryName())) {
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.unprocessableEntity().build();
 		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
+			if (categoryMgmtService.insertProductCategory(categoryDto) != null) {
+				// Devolver una respuesta con codigo de estado 204
+				result = ResponseEntity.noContent().build();
+			} else {
+				// Devolver una respuesta con codigo de estado 500
+				result = ResponseEntity.internalServerError().build();
+			}
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar Category";
+		// Retornar respuesta
+		return result;
 	}
 
 	/**
@@ -79,11 +86,11 @@ public class ProductCategoryController {
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
-	public String deleteCategory(@RequestBody @NotNull final ProductCategoryDTO categoryDto, final Model model)
+	@DeleteMapping(path = "/delete")
+	public ResponseEntity<Void> deleteCategory(@RequestBody @NotNull final ProductCategoryDTO categoryDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Eliminar Report");
+			log.info("Eliminar Categoria");
 
 		// Validar id
 		ValidateParams.isNullObject(categoryDto.categoryId());
@@ -91,27 +98,49 @@ public class ProductCategoryController {
 		// Eliminar Category
 		categoryMgmtService.deleteProductCategory(categoryDto.categoryId());
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE  Category ELIMINADO";
+		return ResponseEntity.noContent().build();
 	}
 
 	/**
-	 * Buscar todos las Categorias
+	 * Buscar todas las Categorias
 	 * 
-	 * @param model
 	 * @return String
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public String showCategory(final Model model) throws InternalException {
+	public ResponseEntity<Object> showCategory(final Model model) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Mostrar todos los Report");
+			log.info("Mostrar todas las Categorias");
 
 		// Retornar lista de Category
-		model.addAttribute("categoryDto", categoryMgmtService.searchAll());
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productCategoryDto", categoryMgmtService.searchAll()));
+	}
 
-		return "VISTA BUSCAR TODOS LOS Category";
+	/**
+	 * Buscar por nombre
+	 * 
+	 * @param categoryDto
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping(path = "/searchByName")
+	public ResponseEntity<Object> searchByName(@RequestBody @NotNull final ProductCategoryDTO categoryDto)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar categoria por nombre");
+
+		ResponseEntity<Object> result = null;
+
+		ProductCategoryDTO categoryDtoFound = categoryMgmtService.searchByName(categoryDto.categoryName());
+
+		if (categoryDtoFound != null && categoryDtoFound.categoryId() != null) {
+			result = ResponseEntity.ok().body(Collections.singletonMap("categoryId", categoryDtoFound.categoryId()));
+		} else {
+			result = ResponseEntity.ok().body(Collections.singletonMap("categoryId", null));
+		}
+
+		return result;
 	}
 
 	/**
@@ -132,4 +161,5 @@ public class ProductCategoryController {
 
 		return "VISTA BUSCAR Category POR id";
 	}
+
 }

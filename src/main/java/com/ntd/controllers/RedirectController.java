@@ -41,7 +41,7 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	/**
 	 * Mostrar formulario de inicio
 	 * 
-	 * @return ResponseEntity
+	 * @return String
 	 */
 	@GetMapping(path = "login-page")
 	public String showLoginForm() {
@@ -209,12 +209,29 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * @return String
 	 */
 	@GetMapping(path = "responsiveAdmin")
-	public String handleException(final Model model) {
+	public String restrictedResponsive(final Model model) {
 		if (log.isErrorEnabled())
 			log.error(Constants.MSG_ADMIN_RESPONSIVE_EXC);
 
 		// Retornar mensaje de error
 		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, Constants.MSG_ADMIN_RESPONSIVE_EXC);
+
+		return Constants.URL_ERROR_VIEW;
+	}
+
+	/**
+	 * Error interno
+	 * 
+	 * @param model
+	 * @return String
+	 */
+	@GetMapping(path = "internalError")
+	public String redInternalError(final Model model) {
+		if (log.isErrorEnabled())
+			log.error(Constants.MSG_ERR_SERVLET);
+
+		// Retornar mensaje de error
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, Constants.MSG_ERR_SERVLET);
 
 		return Constants.URL_ERROR_VIEW;
 	}

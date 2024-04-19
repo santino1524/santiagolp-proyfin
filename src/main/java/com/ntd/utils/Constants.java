@@ -25,11 +25,32 @@ public class Constants {
 	/** MSG Acceso denegado */
 	public static final String ACCESS_DENIEG = "Acceso denegado. No tienes permiso para acceder a esta página.";
 
-	/** Variable para mensaje growl */
+	/** Constante para mensaje growl */
 	public static final String MESSAGE_GROWL = "error";
+
+	/** Separador para rutas */
+	public static final String SEPARATOR = "/";
+
+	/** Dir de imagenes del producto */
+	public static final String PRODUCT_IMAGES = "product_images";
+
+	/** MSG Categoria creada */
+	public static final String MSG_SAVE_CATEGORY = "La categoría se ha creado";
+
+	/** MSG Categoria existente */
+	public static final String MSG_EXISTS_CATEGORY = "Ya está registrada una categoría con ese nombre";
+
+	/** MSG Categoria eliminada */
+	public static final String MSG_DELETE_CATEGORY = "La categoría se ha eliminado";
+
+	/** MSG Categoria no encontrada */
+	public static final String MSG_NOT_FOUND_CATEGORY = "No se ha encontrado ninguna categoría con ese nombre";
 
 	/** Variable para mensaje vista ERROR */
 	public static final String VIEW_ERROR_MESSAGE = "message";
+
+	/** Msg ExceptionDeleteFiles */
+	public static final String MSG_DELETE_FILES_EXC = "Error al eliminar los archivo correspondientes a las imágenes de productos";
 
 	/** Msg InternalException */
 	public static final String MSG_INTERNAL_EXC = "Error interno, contacta con el administrador del sistema.";
@@ -63,9 +84,6 @@ public class Constants {
 
 	/** Msg de datos Duplicado */
 	public static final String MSG_USER_DATA_EXISTS = "Existe un cliente registrado con los datos introducidos";
-
-	/** Msg de Tarjeta bancaria duplicada */
-	public static final String MSG_CARD_EXISTS = "El número de tarjeta introducido ya está registrado";
 
 	/** Msg de direccion duplicada */
 	public static final String MSG_POSTAL_ADDRESS_EXISTS = "La dirección introducida ya está registrada";

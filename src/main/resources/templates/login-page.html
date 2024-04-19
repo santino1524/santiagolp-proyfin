@@ -12,16 +12,20 @@
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container mt-5">
+	<div class="container mt-3  mb-3">
 		<div class="row justify-content-center">
 			<div class="col-md-6">
+				<div class="col text-center">
+					<img src="/images/login.png" class="img-fluid"
+						style="max-height: 150px;" alt="Login" title="Login">
+				</div>
+
 				<h2 class="text-center mb-4">Identifícate</h2>
 				<form action="authentication" method="POST">
-					<div th:if="${param.error != null}"
-						class="alert alert-danger" role="alert">Nombre de usuario o contraseña incorrectos
-					</div>
-					<div th:if="${message != null}"
-						class="alert alert-success" role="alert">
+					<div th:if="${param.error != null}" class="alert alert-danger"
+						role="alert">Nombre de usuario o contraseña incorrectos</div>
+					<div th:if="${message != null}" class="alert alert-success"
+						role="alert">
 						<span th:text="${message}"></span>
 					</div>
 					<div class="form-group">
@@ -33,7 +37,7 @@
 						<label for="inputPassword">Contraseña</label> <input
 							type="password" name="password" class="form-control"
 							id="inputPassword" placeholder="Contraseña" required
-							autocomplete="current-password"> <small><a
+							autocomplete="password"> <small><a
 							href="/resetPassword">¿Haz olvidado tu contraseña?</a></small>
 					</div>
 					<button type="submit" value="Login" class="btn btn-dark btn-block">Iniciar
@@ -45,8 +49,6 @@
 			</div>
 		</div>
 	</div>
-
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">

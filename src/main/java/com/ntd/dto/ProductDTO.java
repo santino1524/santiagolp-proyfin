@@ -33,10 +33,10 @@ public record ProductDTO(Long productId,
 		@DecimalMin(value = "0", message = Constants.MSG_QUANTITY_NOT_VALID) int productQuantity,
 
 		// Validar categoria del producto
-		@NotNull(message = Constants.MSG_CATEGORY_NOT_VALID) ProductCategoryDTO productCategory,
+		@NotNull(message = Constants.MSG_CATEGORY_NOT_VALID) Long categoryId,
 
 		// Validar lista de urls de imagenes
-		@NotEmpty(message = Constants.MSG_IMAGE_URL_NOT_VALID) List<String> imageUrls,
+		@NotEmpty(message = Constants.MSG_IMAGE_URL_NOT_VALID) String imageUrls,
 
 		// Validar iva
 		@Digits(integer = 2, fraction = 2, message = Constants.MSG_IVA_NOT_VALID) BigDecimal iva,
