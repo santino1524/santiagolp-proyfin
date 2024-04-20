@@ -12,19 +12,35 @@
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3">
-		<h2 class="mb-3">Productos</h2>
+	<div class="container mt-3 ">
 		<div class="row">
-			<div class="col-md-3 mx-auto">
-
+			<div class="col-md-12 text-center">
+				<img src="/images/welcome-index.png" class="img-fluid"
+					style="max-height: 250px;" alt="Bienvenido" title="Bienvenido">
+				<div>
+					<h5>¡Saludos! Soy Goku. Bienvenido al Universo
+						Saiyan. Explora el mundo de Dragon Ball Z con los mejores
+						productos de este legendario Manga Japonés.</h5>
+				</div>
 			</div>
 		</div>
+	</div>
+
+	<div class="container text-center mt-3" id="containerIndex"></div>
+
+
+	<script type="text/javascript" th:src="@{/js/index.js}"></script>
+	<script>
+		// Obtener todas las categorias 
+		window.onload = function() {
+			loadIndex();
+		}
+	</script>
 	</div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
-
 </body>
 
 </html>

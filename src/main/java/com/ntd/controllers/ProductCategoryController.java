@@ -106,7 +106,7 @@ public class ProductCategoryController {
 	/**
 	 * Buscar todas las Categorias
 	 * 
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
@@ -158,7 +158,7 @@ public class ProductCategoryController {
 		if (log.isInfoEnabled())
 			log.info("Buscar Category por id");
 
-		// Retornar Report
+		// Retornar categoria
 		model.addAttribute("categoryDto", categoryMgmtService.searchById(id));
 
 		return "VISTA BUSCAR Category POR id";

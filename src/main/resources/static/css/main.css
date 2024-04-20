@@ -17,6 +17,11 @@
 	margin-bottom: 10px;
 }
 
+#linkRegister, #linkRecoverPassword{
+	text-decoration: none;
+}
+
+
 /* About */
 #about p {
 	text-align: justify !important;

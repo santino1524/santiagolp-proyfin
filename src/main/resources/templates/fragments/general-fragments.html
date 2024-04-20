@@ -14,18 +14,21 @@
 	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 	crossorigin="anonymous">
 <link rel="stylesheet"
+	href="https://fonts.googleapis.com/css?family=Roboto">
+<script src="https://kit.fontawesome.com/4358b9453c.js"
+	crossorigin="anonymous"></script>
+<link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+	rel="stylesheet">
 </head>
 
 <body>
 	<!-- FRAGMENTO PARA CONTENIDO DE CABECERA DE LAS PAGINAS -->
 	<div class="header" th:fragment="headerContent" id="header">
-		<script>
-			// Listar categorias en nav
-			window.onload = function() {
-				listCategoriesInNav();
-			}
-		</script>
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
 				data-target="#navbarSupportedContent"
@@ -44,7 +47,7 @@
 					<li class="nav-item dropdown mr-sm-4"><a
 						class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
 						role="button" data-toggle="dropdown" aria-haspopup="true"
-						aria-expanded="false"> Tienda </a>
+						aria-expanded="false" onclick="listCategoriesInNav()"> Tienda </a>
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
 					<li class="nav-item mr-sm-4"><a class="nav-link"
@@ -92,7 +95,7 @@
 													id="inputPassword2" placeholder="Contraseña" required
 													autocomplete="password">
 												<div class="help-block text-right">
-													<a th:href="@{/recoverPassword}">¿Haz olvidado tu
+													<a id="linkRecoverPassword" th:href="@{/recoverPassword}">¿Haz olvidado tu
 														contraseña?</a>
 												</div>
 											</div>
@@ -104,7 +107,7 @@
 										</form>
 									</div>
 									<div class="bottom text-center">
-										¿Eres nuevo por aquí? <a th:href="@{/register}"><b>Resgístrate</b></a>
+										¿Eres nuevo por aquí? <a id="linkRegister" th:href="@{/register}"><b>Resgístrate</b></a>
 									</div>
 								</div>
 							</li>

@@ -229,21 +229,21 @@ public class ProductController {
 	 * 
 	 * @param model
 	 * @param categoryId
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByCategory/{categoryId}")
-	public String searchByCategory(@PathVariable @NotNull final Long categoryId, final Model model)
-			throws InternalException {
+	public ResponseEntity<Object> searchByCategory(@PathVariable final Long categoryId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por categoria");
+
+		ValidateParams.isNullObject(categoryId);
 
 		ProductCategoryDTO categoryDto = new ProductCategoryDTO(categoryId, null);
 
 		// Retornar lista de productos
-		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByCategory(categoryDto));
-
-		return "products";
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productsDto", productMgmtService.searchByCategory(categoryDto)));
 	}
 
 	/**
@@ -309,16 +309,17 @@ public class ProductController {
 	/**
 	 * Buscar por numero producto
 	 * 
-	 * @param model
 	 * @param productDTO
 	 * @return String
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByProductNumber/{productNum}")
-	public ResponseEntity<Object> searchByProductNumber(@PathVariable @NotNull final String productNum,
-			final Model model) throws InternalException {
+	public ResponseEntity<Object> searchByProductNumber(@PathVariable final String productNum)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por su numero");
+
+		ValidateParams.isNullObject(productNum);
 
 		// Retornar lista de Category
 		return ResponseEntity.ok()

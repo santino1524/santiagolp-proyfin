@@ -440,9 +440,9 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		// Validar parametro
 		ValidateParams.isNullObject(fileNames);
-
-		fileNames.replaceAll(filename -> context.getRealPath("") + File.separatorChar + Constants.PRODUCT_IMAGES
-				+ File.separator + filename);
+		fileNames.replaceAll(filename -> Constants.PRODUCT_IMAGES + File.separator + filename);
+//		fileNames
+//				.replaceAll(filename -> context.getRealPath("") + Constants.PRODUCT_IMAGES + File.separator + filename);
 
 	}
 }
