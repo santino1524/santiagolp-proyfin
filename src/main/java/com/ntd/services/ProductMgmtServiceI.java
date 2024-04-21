@@ -102,6 +102,75 @@ public interface ProductMgmtServiceI {
 	public List<ProductDTO> searchByNameOrderPvpPriceAsc(final String productName) throws InternalException;
 
 	/**
+	 * Buscar productos por categoria ordenados descendentemente por el precio
+	 * 
+	 * @param productCategoryDto
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchByCategoryOrderPvpPriceDesc(final ProductCategoryDTO productCategoryDto)
+			throws InternalException;
+
+	/**
+	 * Buscar productos por categoria ordenados ascendentemente por el precio
+	 * 
+	 * @param productCategoryDto
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchByCategoryOrderPvpPriceAsc(final ProductCategoryDTO productCategoryDto)
+			throws InternalException;
+
+	/**
+	 * Buscar productos por nombre y la categoria y ordenar por precio Desc
+	 * 
+	 * @param productName
+	 * @param productCategoryDto
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchByNameAndProductCategoryOrderDesc(final String productName,
+			final ProductCategoryDTO productCategoryDto) throws InternalException;
+
+	/**
+	 * Buscar productos por nombre y la categoria
+	 * 
+	 * @param productName
+	 * @param productCategoryDto
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchByNameAndProductCategory(final String productName,
+			final ProductCategoryDTO productCategoryDto) throws InternalException;
+
+	/**
+	 * Buscar productos por nombre y la categoria y ordenar por precio Asc
+	 * 
+	 * @param productName
+	 * @param productCategoryDto
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchByNameAndProductCategoryOrderAsc(final String productName,
+			final ProductCategoryDTO productCategoryDto) throws InternalException;
+
+	/**
+	 * Buscar productos ordenados descendentemente por el precio
+	 * 
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchAllOrderPvpPriceDesc() throws InternalException;
+
+	/**
+	 * Buscar productos ordenados ascendentemente por el precio
+	 * 
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchAllOrderPvpPriceAsc() throws InternalException;
+
+	/**
 	 * Buscar por numero de producto
 	 * 
 	 * @param productNumber

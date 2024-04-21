@@ -43,23 +43,23 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item mr-sm-4"><a class="nav-link" href="/">Inicio</a></li>
+					<li class="nav-item mr-sm-4"><a class="nav-link titleNav" href="/">Inicio</a></li>
 					<li class="nav-item dropdown mr-sm-4"><a
-						class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+						class="nav-link titleNav dropdown-toggle" href="#" id="navbarDropdown"
 						role="button" data-toggle="dropdown" aria-haspopup="true"
 						aria-expanded="false" onclick="listCategoriesInNav()"> Tienda </a>
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
-					<li class="nav-item mr-sm-4"><a class="nav-link"
+					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
 						th:href="@{/about}">Acerca de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
-						class="nav-link" th:href="@{/admin}" id="adminLink">Administración</a></li>
+						class="nav-link titleNav" th:href="@{/admin}" id="adminLink">Administración</a></li>
 				</ul>
 
 				<ul class="navbar-nav ml-auto">
-					<form class="form-inline my-2 my-lg-0">
+					<form class="form-inline my-2 my-lg-0" action="/products/searchByProductNamePage" method="GET">
 						<input class="form-control mr-sm-2" type="search"
-							name="productName" placeholder="Buscar" aria-label="Search">
+							name="productName" placeholder="Buscar" aria-label="Search" required title="Introduzca el término de búsqueda">
 						<button class="btn btn-outline-light my-2 my-sm-0 mr-sm-2"
 							type="submit" title="Buscar">
 							<i class="fas fa-search"></i>
@@ -130,7 +130,7 @@
 			</div>
 
 			<div class="navbar-nav">
-				<a class="nav-link" th:href="@{/shoppingCart}"
+				<a class="nav-link titleNav" th:href="@{/shoppingCart}"
 					title="Cesta de compras"> <i class="fas fa-shopping-cart fa-lg"></i>
 				</a>
 			</div>

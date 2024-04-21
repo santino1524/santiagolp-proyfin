@@ -47,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductController {
 
 	/** Constante String productsDto */
-	private static final String PRODUCTS_DTO = "productsDto";
+	private static final String PRODUCTS = "products";
 
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductMgmtServiceI productMgmtService;
@@ -207,33 +207,37 @@ public class ProductController {
 	}
 
 	/**
-	 * Buscar todos los productos
+	 * Buscar producto por categoria
 	 * 
 	 * @param model
+	 * @param categoryId
 	 * @return String
 	 * @throws InternalException
 	 */
-	@GetMapping(path = "/searchAll")
-	public String showProducts(final Model model) throws InternalException {
+	@GetMapping(path = "/searchByCategoryPageProducts/{categoryId}")
+	public String searchByCategory(@PathVariable final Long categoryId, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Mostrar todos los productos");
+			log.info("Buscar producto por categoria");
 
-		// Retornar lista de productos
-		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchAll());
+		ValidateParams.isNullObject(categoryId);
 
-		return "VISTA BUSCAR TODOS LOS PRODUCTOS";
+		ProductCategoryDTO categoryDto = new ProductCategoryDTO(categoryId, null);
+
+		model.addAttribute(PRODUCTS, productMgmtService.searchByCategory(categoryDto));
+
+		return PRODUCTS;
 	}
 
 	/**
 	 * Buscar producto por categoria
 	 * 
-	 * @param model
 	 * @param categoryId
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@GetMapping(path = "/searchByCategory/{categoryId}")
-	public ResponseEntity<Object> searchByCategory(@PathVariable final Long categoryId) throws InternalException {
+	@GetMapping(path = "/searchByCategory")
+	public ResponseEntity<Object> searchByCategory(@RequestParam @NotNull final Long categoryId)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por categoria");
 
@@ -243,67 +247,231 @@ public class ProductController {
 
 		// Retornar lista de productos
 		return ResponseEntity.ok()
-				.body(Collections.singletonMap("productsDto", productMgmtService.searchByCategory(categoryDto)));
+				.body(Collections.singletonMap(PRODUCTS, productMgmtService.searchByCategory(categoryDto)));
 	}
 
 	/**
-	 * Buscar producto por nombre
+	 * Buscar todos los productos
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchAll")
+	public ResponseEntity<Object> showProducts() throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Mostrar todos los productos");
+
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS, productMgmtService.searchAll()));
+	}
+
+	/**
+	 * Buscar producto por nombre desde otra pagina
 	 * 
 	 * @param model
 	 * @param productName
 	 * @return String
 	 * @throws InternalException
 	 */
-	@GetMapping(path = "/searchByProductName")
+	@GetMapping(path = "/searchByProductNamePage")
 	public String searchByProductName(@RequestParam @NotNull final String productName, final Model model)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por su nombre");
 
 		// Retornar producto
-		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByName(productName));
+		model.addAttribute(PRODUCTS, productMgmtService.searchByName(productName));
 
-		return "VISTA BUSCAR PRODUCTOS POR nombre";
+		return PRODUCTS;
+	}
+
+	/**
+	 * Buscar producto por nombre
+	 * 
+	 * @param productName
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByProductName")
+	public ResponseEntity<Object> searchByProductName(@RequestParam @NotNull final String productName)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por su nombre");
+
+		// Retornar lista de productos
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap(PRODUCTS, productMgmtService.searchByName(productName)));
 	}
 
 	/**
 	 * Buscar producto por nombre ordenado por precio DESC
 	 * 
-	 * @param model
 	 * @param productName
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByProductNameDesc")
-	public String searchByNameOrderPvpPriceDesc(@RequestParam @NotNull final String productName, final Model model)
+	public ResponseEntity<Object> searchByNameOrderPvpPriceDesc(@RequestParam @NotNull final String productName)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por nombre ordenado por precio DESC");
 
-		// Retornar producto
-		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByNameOrderPvpPriceDesc(productName));
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(
+				Collections.singletonMap(PRODUCTS, productMgmtService.searchByNameOrderPvpPriceDesc(productName)));
+	}
 
-		return "VISTA BUSCAR PRODUCTOS POR nombre ordenado por precio desc";
+	/**
+	 * Ordenar productos por categoria por precio DESC
+	 * 
+	 * @param categoryId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByProductCategoryDesc")
+	public ResponseEntity<Object> searchBycategoryOrderPvpPriceDesc(@RequestParam @NotNull final Long categoryId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por categoria ordenado por precio DESC");
+
+		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
+
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(Collections.singletonMap("products",
+				productMgmtService.searchByCategoryOrderPvpPriceDesc(productCategoryDto)));
+	}
+
+	/**
+	 * Ordenar productos por categoria y nombre por precio DESC
+	 * 
+	 * @param categoryId
+	 * @param productName
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByNameAndProductCategoryOrderDesc")
+	public ResponseEntity<Object> searchByNameAndProductCategoryOrderDesc(@RequestParam @NotNull final Long categoryId,
+			String productName) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por categoria y nombre ordenado por precio DESC");
+
+		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
+
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(Collections.singletonMap("products",
+				productMgmtService.searchByNameAndProductCategoryOrderDesc(productName, productCategoryDto)));
+	}
+
+	/**
+	 * Ordenar productos por categoria y nombre
+	 * 
+	 * @param categoryId
+	 * @param productName
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByNameAndProductCategory")
+	public ResponseEntity<Object> searchByNameAndProductCategory(@RequestParam @NotNull final Long categoryId,
+			String productName) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por categoria y nombre");
+
+		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
+
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(Collections.singletonMap("products",
+				productMgmtService.searchByNameAndProductCategory(productName, productCategoryDto)));
+	}
+
+	/**
+	 * Ordenar productos por categoria y nombre por precio ASC
+	 * 
+	 * @param categoryId
+	 * @param productName
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByNameAndProductCategoryOrderAsc")
+	public ResponseEntity<Object> searchByNameAndProductCategoryOrderAsc(@RequestParam @NotNull final Long categoryId,
+			String productName) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por categoria y nombre ordenado por precio ASC");
+
+		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
+
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(Collections.singletonMap("products",
+				productMgmtService.searchByNameAndProductCategoryOrderAsc(productName, productCategoryDto)));
 	}
 
 	/**
 	 * Buscar producto por nombre ordenado por precio ASC
 	 * 
-	 * @param model
 	 * @param productName
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByProductNameAsc")
-	public String searchByNameOrderPvpPriceAsc(@RequestParam @NotNull final String productName, final Model model)
+	public ResponseEntity<Object> searchByNameOrderPvpPriceAsc(@RequestParam @NotNull final String productName)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar producto por nombre ordenado por precio ASC");
 
-		// Retornar producto
-		model.addAttribute(PRODUCTS_DTO, productMgmtService.searchByNameOrderPvpPriceAsc(productName));
+		// Retornar lista de productos
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap(PRODUCTS, productMgmtService.searchByNameOrderPvpPriceAsc(productName)));
+	}
 
-		return "VISTA BUSCAR PRODUCTOS POR nombre ordenado por precio asc";
+	/**
+	 * Buscar producto por categoria ordenado por precio ASC
+	 * 
+	 * @param categoryId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByProductCategoryAsc")
+	public ResponseEntity<Object> searchByCategoryOrderPvpPriceAsc(@RequestParam @NotNull final Long categoryId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por categoria ordenado por precio ASC");
+
+		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
+
+		// Retornar lista de productos
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS,
+				productMgmtService.searchByCategoryOrderPvpPriceAsc(productCategoryDto)));
+	}
+
+	/**
+	 * Buscar productos ordenado por precio ASC
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchAllProductAsc")
+	public ResponseEntity<Object> searchAllProductAsc() throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos ordenado por precio ASC");
+
+		// Retornar lista de productos
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap(PRODUCTS, productMgmtService.searchAllOrderPvpPriceAsc()));
+	}
+
+	/**
+	 * Buscar productos ordenado por precio DESC
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchAllProductDesc")
+	public ResponseEntity<Object> searchAllProductDesc() throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos ordenado por precio DESC");
+
+		// Retornar lista de productos
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap(PRODUCTS, productMgmtService.searchAllOrderPvpPriceDesc()));
 	}
 
 	/**
@@ -344,7 +512,7 @@ public class ProductController {
 				// File imageDir = new File(staticDir + Constants.PRODUCT_IMAGES);
 
 				// Crear el directorio de imagenes si no existe
-				File imageDir = new File(context.getRealPath("") + File.separatorChar + Constants.PRODUCT_IMAGES);
+				final File imageDir = new File(context.getRealPath("") + File.separatorChar + Constants.PRODUCT_IMAGES);
 
 				if (!imageDir.exists()) {
 					imageDir.mkdirs();
@@ -359,7 +527,7 @@ public class ProductController {
 					builder.append(File.separatorChar);
 					builder.append(file.getOriginalFilename());
 
-					Path path = Paths.get(builder.toString());
+					final Path path = Paths.get(builder.toString());
 					Files.write(path, bytes);
 				}
 

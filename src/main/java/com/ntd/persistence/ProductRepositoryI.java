@@ -50,6 +50,66 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	public List<Product> findByProductNameIgnoreCaseContainingOrderByPvpPriceAsc(String productName);
 
 	/**
+	 * Buscar productos por la categoria y ordenar por precio DESC
+	 * 
+	 * @param productCategory
+	 * @return List
+	 */
+	public List<Product> findByProductCategoryOrderByPvpPriceDesc(ProductCategory productCategory);
+
+	/**
+	 * Buscar productos por la categoria y ordenar por precio ASC
+	 * 
+	 * @param productCategory
+	 * @return List
+	 */
+	public List<Product> findByProductCategoryOrderByPvpPriceAsc(ProductCategory productCategory);
+
+	/**
+	 * Buscar productos por nombre y la categoria y ordenar por precio Desc
+	 * 
+	 * @param productName
+	 * @param productCategory
+	 * @return List
+	 */
+	public List<Product> findByProductNameIgnoreCaseContainingAndProductCategoryOrderByPvpPriceDesc(String productName,
+			ProductCategory productCategory);
+
+	/**
+	 * Buscar productos por nombre y la categoria
+	 * 
+	 * @param productName
+	 * @param productCategory
+	 * @return List
+	 */
+	public List<Product> findByProductNameIgnoreCaseContainingAndProductCategory(String productName,
+			ProductCategory productCategory);
+
+	/**
+	 * Buscar productos por nombre y la categoria y ordenar por precio Asc
+	 * 
+	 * @param productName
+	 * @param productCategory
+	 * @return List
+	 */
+	public List<Product> findByProductNameIgnoreCaseContainingAndProductCategoryOrderByPvpPriceAsc(String productName,
+			ProductCategory productCategory);
+
+	/**
+	 * Buscar productos y ordenar por precio DESC
+	 * 
+	 * @return List
+	 */
+	public List<Product> findAllByOrderByPvpPriceDesc();
+
+	/**
+	 * Buscar productos y ordenar por precio ASC
+	 * 
+	 * @return List
+	 */
+	public List<Product> findAllByOrderByPvpPriceAsc();
+
+	/**
 	 * Buscar por numero de producto
 	 * 
 	 * @param productNumber

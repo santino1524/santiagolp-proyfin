@@ -440,9 +440,229 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		// Validar parametro
 		ValidateParams.isNullObject(fileNames);
-		fileNames.replaceAll(filename -> Constants.PRODUCT_IMAGES + File.separator + filename);
+		fileNames.replaceAll(filename -> File.separator + Constants.PRODUCT_IMAGES + File.separator + filename);
 //		fileNames
 //				.replaceAll(filename -> context.getRealPath("") + Constants.PRODUCT_IMAGES + File.separator + filename);
 
+	}
+
+	@Override
+	public List<ProductDTO> searchByCategoryOrderPvpPriceDesc(ProductCategoryDTO productCategoryDto)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos por categoria ordenados descendentemente por el precio");
+
+		// Validar parametro
+		ValidateParams.isNullObject(productCategoryDto.categoryId());
+
+		// Buscar por categoria
+		final List<Product> products = productRepository.findByProductCategoryOrderByPvpPriceDesc(
+				DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
+	}
+
+	@Override
+	public List<ProductDTO> searchByCategoryOrderPvpPriceAsc(ProductCategoryDTO productCategoryDto)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos por categoria ordenados ascendentemente por el precio");
+
+		// Validar parametro
+		ValidateParams.isNullObject(productCategoryDto.categoryId());
+
+		// Buscar por categoria
+		final List<Product> products = productRepository
+				.findByProductCategoryOrderByPvpPriceAsc(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
+	}
+
+	@Override
+	public List<ProductDTO> searchAllOrderPvpPriceDesc() throws InternalException {
+		// Buscar productos
+		final List<Product> products = productRepository.findAllByOrderByPvpPriceDesc();
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
+	}
+
+	@Override
+	public List<ProductDTO> searchAllOrderPvpPriceAsc() throws InternalException {
+		// Buscar por categoria
+		final List<Product> products = productRepository.findAllByOrderByPvpPriceAsc();
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
+	}
+
+	@Override
+	public List<ProductDTO> searchByNameAndProductCategoryOrderDesc(String productName,
+			ProductCategoryDTO productCategoryDto) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos por categoria y nombre ordenados DESC por el precio");
+
+		// Validar parametro
+		ValidateParams.isNullObject(productCategoryDto.categoryId());
+		ValidateParams.isNullObject(productName);
+
+		// Buscar por categoria
+		final List<Product> products = productRepository
+				.findByProductNameIgnoreCaseContainingAndProductCategoryOrderByPvpPriceDesc(productName,
+						DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
+	}
+
+	@Override
+	public List<ProductDTO> searchByNameAndProductCategoryOrderAsc(String productName,
+			ProductCategoryDTO productCategoryDto) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos por categoria y nombre ordenados ASC por el precio");
+
+		// Validar parametro
+		ValidateParams.isNullObject(productCategoryDto.categoryId());
+		ValidateParams.isNullObject(productName);
+
+		// Buscar por categoria
+		final List<Product> products = productRepository
+				.findByProductNameIgnoreCaseContainingAndProductCategoryOrderByPvpPriceAsc(productName,
+						DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
+	}
+
+	@Override
+	public List<ProductDTO> searchByNameAndProductCategory(String productName, ProductCategoryDTO productCategoryDto)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos por categoria y nombre");
+
+		// Validar parametro
+		ValidateParams.isNullObject(productCategoryDto.categoryId());
+		ValidateParams.isNullObject(productName);
+
+		// Buscar por categoria
+		final List<Product> products = productRepository.findByProductNameIgnoreCaseContainingAndProductCategory(
+				productName, DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
+
+		// Agregar rutas a las imagenes
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				addRoutes(product.getImageUrls());
+			}
+		}
+
+		// Mapear DTO
+		final List<ProductDTO> productsDto = new ArrayList<>();
+
+		if (!products.isEmpty()) {
+			for (Product product : products) {
+				productsDto.add(DTOMapperI.MAPPER.mapProductToDTO(product));
+			}
+		}
+
+		// Retornar lista DTO
+		return productsDto;
 	}
 }

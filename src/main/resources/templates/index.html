@@ -18,9 +18,9 @@
 				<img src="/images/welcome-index.png" class="img-fluid"
 					style="max-height: 250px;" alt="Bienvenido" title="Bienvenido">
 				<div>
-					<h5>¡Saludos! Soy Goku. Bienvenido al Universo
-						Saiyan. Explora el mundo de Dragon Ball Z con los mejores
-						productos de este legendario Manga Japonés.</h5>
+					<h5>¡Saludos! Soy Goku. Bienvenido al Universo Saiyan. Explora
+						el mundo de Dragon Ball Z con los mejores productos de este
+						legendario Manga Japonés.</h5>
 				</div>
 			</div>
 		</div>
@@ -28,6 +28,11 @@
 
 	<div class="container text-center mt-3" id="containerIndex"></div>
 
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
 
 	<script type="text/javascript" th:src="@{/js/index.js}"></script>
 	<script>
@@ -36,11 +41,6 @@
 			loadIndex();
 		}
 	</script>
-	</div>
-
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
 </body>
 
 </html>

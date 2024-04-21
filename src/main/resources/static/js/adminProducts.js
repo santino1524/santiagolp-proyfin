@@ -38,7 +38,7 @@ function saveCategory() {
 	}
 
 	if (regexOnlyWord.test(categoryName)) {
-		fetch("category/save", {
+		fetch("/category/save", {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json; charset=utf-8"
@@ -59,7 +59,10 @@ function saveCategory() {
 			if (data) {
 				addOption(data.productCategoryDto.categoryId, data.productCategoryDto.categoryName);
 			}
-		}).catch(() => window.location.href = urlError);
+		}).catch((error) => {
+			console.error(error);
+			window.location.href = urlError;
+		});
 
 		form.reset();
 
@@ -96,11 +99,8 @@ function searchProduct() {
 	}
 
 	if (numberProductRegex.test(productNum)) {
-		fetch("products/searchByProductNumber/" + encodeURIComponent(productNum), {
+		fetch("/products/searchByProductNumber/" + encodeURIComponent(productNum), {
 			method: "GET",
-			headers: {
-				"Content-type": "application/json; charset=utf-8"
-			}
 		}).then(response => {
 			if (response.ok) {
 				return response.json();
@@ -139,8 +139,10 @@ function searchProduct() {
 			}
 
 			formSearchProduct.reset();
-		}).catch(() => window.location.href = urlError);
-
+		}).catch((error) => {
+			console.error(error);
+			window.location.href = urlError;
+		});
 	} else {
 		showMessage(divMessageSearchProductError, "El número de producto debe tener 13 dígitos");
 
@@ -166,7 +168,7 @@ function confirmDeleteCategory() {
 
 	// Comprobar si el valor coincide con el patron
 	if (regexOnlyWord.test(categoryName)) {
-		fetch("category/searchByName", {
+		fetch("/category/searchByName", {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json; charset=utf-8"
@@ -189,8 +191,10 @@ function confirmDeleteCategory() {
 			} else {
 				showMessage(divMessageCategoryError, "No se ha encontrado ninguna categoría con ese nombre");
 			}
-		}).catch(() => window.location.href = urlError);
-
+		}).catch((error) => {
+			console.error(error);
+			window.location.href = urlError;
+		});
 		form.reset();
 
 		// Mostrar boton de eliminar categoria
@@ -220,7 +224,7 @@ function deleteOption(id) {
 function deleteCategoryById(categoryId) {
 	let divMessageCategory = document.getElementById('messageCategory');
 
-	fetch("category/delete", {
+	fetch("/category/delete", {
 		method: "DELETE",
 		headers: {
 			"Content-type": "application/json; charset=utf-8"
@@ -235,7 +239,10 @@ function deleteCategoryById(categoryId) {
 		} else {
 			window.location.href = urlError;
 		}
-	}).catch(() => window.location.href = urlError);
+	}).catch((error) => {
+		console.error(error);
+		window.location.href = urlError;
+	});
 }
 
 // Mostrar boton de eliminar categoria
@@ -279,7 +286,7 @@ function showDeleteProduct() {
 function showCategories() {
 	let selectCategories = document.getElementById('productCategory');
 
-	fetch("category/searchAll", {
+	fetch("/category/searchAll", {
 		method: "GET"
 	})
 		.then(response => {
@@ -309,8 +316,11 @@ function showCategories() {
 				});
 			}
 
-		})
-		.catch(() => window.location.href = urlError);
+		}).catch((error) => {
+			console.error(error);
+			window.location.href = urlError;
+		});
+
 }
 
 // Enviar formulario Producto
@@ -380,7 +390,7 @@ function submitFormProduct(form) {
 
 			// Registrar o actualizar
 			if (productId) {
-				fetch("products/update", {
+				fetch("/products/update", {
 					method: "POST",
 					body: formData
 				}).then(response => {
@@ -391,9 +401,12 @@ function submitFormProduct(form) {
 					} else {
 						window.location.href = urlError;
 					}
-				}).catch(() => window.location.href = urlError);
+				}).catch((error) => {
+					console.error(error);
+					window.location.href = urlError;
+				});
 			} else {
-				fetch("products/save", {
+				fetch("/products/save", {
 					method: "POST",
 					body: formData
 				}).then(response => {
@@ -404,11 +417,14 @@ function submitFormProduct(form) {
 					} else {
 						window.location.href = urlError;
 					}
-				}).catch(() => window.location.href = urlError);
+				}).catch((error) => {
+					console.error(error);
+					window.location.href = urlError;
+				});
 			}
 
-			imageUrls = document.getElementById('imageUrls').value ="";
-			productId = document.getElementById('productId').value="";
+			imageUrls = document.getElementById('imageUrls').value = "";
+			productId = document.getElementById('productId').value = "";
 			form.reset();
 			showDeleteImages();
 			showDeleteProduct();
@@ -458,14 +474,17 @@ function uploadImages(productName, productId) {
 	if (!extensionException) {
 
 		// Guardar las imagenes en el sistema de ficheros del server
-		fetch("products/upload", {
+		fetch("/products/upload", {
 			method: "POST",
 			body: formData
 		}).then(response => {
 			if (!response.ok) {
 				window.location.href = urlError;
 			}
-		}).catch(() => window.location.href = urlError);
+		}).catch((error) => {
+			console.error(error);
+			window.location.href = urlError;
+		});
 
 		// Guardar las url en el input oculto
 		if (productId && inputUrlsHidden.value) {
@@ -521,7 +540,7 @@ function confirmDeleteProduct() {
 	let divMessageProduct = document.getElementById("messageProduct");
 
 	if (productId) {
-		fetch("products/delete/" + encodeURIComponent(productId), {
+		fetch("/products/delete/" + productId, {
 			method: "DELETE",
 			headers: {
 				"Content-type": "application/json; charset=utf-8"
@@ -532,7 +551,8 @@ function confirmDeleteProduct() {
 			} else {
 				window.location.href = urlError;
 			}
-		}).catch(() => {
+		}).catch((error) => {
+			console.error(error);
 			window.location.href = urlError;
 			return;
 		});
@@ -562,7 +582,7 @@ function confirmDeleteImages() {
 	let divMessageProduct = document.getElementById("messageProduct");
 
 	if (productId) {
-		fetch("products/deleteImages/" + encodeURIComponent(productId), {
+		fetch("/products/deleteImages/" + productId, {
 			method: "DELETE",
 			headers: {
 				"Content-type": "application/json; charset=utf-8"
@@ -573,7 +593,8 @@ function confirmDeleteImages() {
 			} else {
 				window.location.href = urlError;
 			}
-		}).catch(() => {
+		}).catch((error) => {
+			console.error(error);
 			window.location.href = urlError;
 			return;
 		});

@@ -17,37 +17,45 @@
 		<div class="row d-flex justify-content-center">
 			<div class="col-md-12">
 				<div class="card p-3 py-4">
-					<h5>Una manera más fácil de encontrarlo </h5>
+					<h5>Una manera más fácil de encontrarlo</h5>
 					<div class="row g-3 mt-2">
 						<div class="col-md-3">
-							<div class="dropdown"> <button class="btn btn-secondary dropdown-toggle" type="button"
-									id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false"> Categorías
-								</button>
-								<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-									<li><a class="dropdown-item" href="#">Camisetas</a></li>
-									<li><a class="dropdown-item" href="#">Gorras</a></li>
-									<li><a class="dropdown-item" href="#">Figuras</a></li>
-									<li><a class="dropdown-item" href="#">Mochilas</a></li>
+							<div class="dropdown">
+								<button class="btn btn-secondary dropdown-toggle" type="button"
+									id="dropdownMenuButton" data-toggle="dropdown"
+									aria-expanded="false" onclick="listCategories()">Categorías de productos</button>
+								<ul class="dropdown-menu" id="listCategoriesProducts"
+									aria-labelledby="dropdownMenuButton">
 								</ul>
 							</div>
 						</div>
-						<div class="col-md-6"> <input type="text" class="form-control"
-								placeholder="¿Qué estás buscando?"> </div>
-						<div class="col-md-3"> <button class="btn btn-secondary btn-block">Buscar</button>
+						<div class="col-md-6">
+							<input type="text" class="form-control" id="inputSearch"
+								placeholder="¿Qué estás buscando?"
+								onkeypress="return handleKeyPress(event)">
+						</div>
+						<div class="col-md-3">
+							<button type="button" class="btn btn-secondary btn-block"
+								onclick="searchByNameButton()">Buscar</button>
 						</div>
 					</div>
 
 					<div class="form-inline justify-content-center mt-3">
 						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="radio" name="inlineRadioOptions" id="des"
-								value="option1">
-							<label class="form-check-label" for="des">Descendente</label>
+							<input class="form-check-input " id="optionSortDesc" type="radio"
+								name="inlineRadioOptions" onclick="checkOptionSortDesc()">
+							<label class="form-check-label" for="optionSortDesc"
+								onclick="checkOptionSortDesc()">Descendente</label>
 						</div>
 						<div class="form-check form-check-inline">
-							<input class="form-check-input" type="radio" name="inlineRadioOptions" id="asc"
-								value="option2">
-							<label class="form-check-label" for="asc">Ascendente</label>
+							<input class="form-check-input" id="optionSortAsc" type="radio"
+								name="inlineRadioOptions" onclick="checkOptionSortAsc()">
+							<label class="form-check-label" for="optionSortAsc"
+								onclick="checkOptionSortAsc()">Ascendente</label>
+
 						</div>
+						<button type="button" class="btn btn-danger"
+							onclick="clearFilters()">Limpiar filtros</button>
 					</div>
 				</div>
 			</div>
@@ -55,11 +63,32 @@
 	</div>
 
 	<!-- PRODUCTOS -->
-	<div class="container text-center mt-5">
-		<h2 class="mb-3">Productos</h2>
-		<div class="row">
-			<div class="col-md-3 mx-auto">
+	<div class="container text-center mt-3" id="containerIndex"></div>
 
+	<div class="d-none text-center mt-5" id="msgNotFound">
+		<p class="font-weight-bold" style="font-size: 24px;">Lo sentimos,
+			no hemos encontrado productos que coincidan con tu búsqueda.</p>
+	</div>
+
+	<div class="col text-center d-none" id="not-found">
+		<img src="/images/not-found.png" class="img-fluid"
+			style="max-height: 400px;">
+	</div>
+
+	<!-- Modal Login -->
+	<div class="modal fade" id="productsPageModal" tabindex="-1"
+		role="dialog" aria-labelledby="productsModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Información sobre la búsqueda</h5>
+				</div>
+				<div class="modal-body">Lo sentimos, no hemos encontrado
+					productos que coincidan con tu búsqueda.</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal" onclick="window.location.href = '/';">Aceptar</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -67,6 +96,19 @@
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
+
+	<script type="text/javascript" th:src="@{/js/products.js}"></script>
+	<script th:inline="javascript">
+		// Obtener los productos del modelo y convertirlos a una variable de JavaScript
+		const productsPage = /*[[${products}]]*/[];
+
+		if (!productsPage || productsPage.length === 0) {
+			showProductsNotFound();
+			$('#productsPageModal').modal('show').modal('show');
+		} else {
+			layoutProducts(productsPage);
+		}
+	</script>
 
 </body>
 

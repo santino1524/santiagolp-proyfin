@@ -110,8 +110,9 @@ function verifyUserPass(user, password) {
 // Listar categorias en nav
 async function listCategoriesInNav() {
 	let dropdownMenu = document.getElementById('categoriesMenu');
+
 	try {
-		let response = await fetch("category/searchAll", {
+		let response = await fetch("/category/searchAll", {
 			method: "GET",
 		});
 
@@ -122,12 +123,16 @@ async function listCategoriesInNav() {
 		let data = await response.json();
 
 		if (data) {
+			// Limpiar el contenido actual del dropdownMenu
+			dropdownMenu.innerHTML = '';
+
 			// Crear menu de categorias dinamicamente
 			data.productCategoryDto.forEach(category => {
 				let link = document.createElement('a');
 				link.classList.add('dropdown-item', 'bg-dark', 'text-white');
-				link.href = "/products/searchByCategory/" + encodeURIComponent(category.categoryId);
+				link.href = "/products/searchByCategoryPageProducts/" + category.categoryId;
 				link.textContent = category.categoryName;
+
 				dropdownMenu.appendChild(link);
 			});
 		}
@@ -138,4 +143,20 @@ async function listCategoriesInNav() {
 	}
 }
 
+// Annadir al carrito
+function addCart(productId) {
 
+}
+
+// Buscar productos y redirigir a pagina productos
+async function searchByCategoryPageProducts(categoryId) {
+	try {
+		await fetch("/products/searchByCategoryPageProducts/" + categoryId, {
+			method: "GET",
+		});
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
