@@ -1,0 +1,1 @@
+web: java -jar target/santiagolp-proyfin-3.4.0-SNAPSHOT.war
