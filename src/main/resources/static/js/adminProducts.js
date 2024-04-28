@@ -24,32 +24,30 @@ function generateEAN13() {
 	inputNumber.value = cuerpoEAN + digitoControl;
 }
 
-// Cargar imagenes
-function uploadImages(productId) {
-	let inputFiles = document.getElementById('images');
-	let formData = new FormData();
+// Convertir un array de blobs a un array de cadenas Base64
+function blobsToBase64(blobs) {
+	return new Promise((resolve, reject) => {
+		const base64Images = [];
 
-	// Agregar los archivos seleccionados al objeto FormData
-	let result = "";
-	formData.append('productId', productId);
-	for (let file of inputFiles.files) {
-		formData.append('files', file);
-	}
+		const convertNextBlob = index => {
+			if (index < blobs.length) {
+				const reader = new FileReader();
+				reader.onload = function() {
+					const base64String = reader.result.split(',')[1];
+					base64Images.push(base64String);
+					convertNextBlob(index + 1);
+				};
+				reader.onerror = function(error) {
+					reject(error);
+				};
+				reader.readAsDataURL(blobs[index]);
+			} else {
+				resolve(base64Images);
+			}
+		};
 
-	// Guardar las imagenes en el sistema de ficheros del server
-	fetch("/products/upload", {
-		method: "POST",
-		body: formData
-	}).then(response => {
-		if (!response.ok) {
-			result = "Ha ocurrido un error en la carga de imágenes"
-		}
-	}).catch((error) => {
-		console.error(error);
-		window.location.href = urlError;
+		convertNextBlob(0);
 	});
-
-	return result;
 }
 
 // Guardar categorias	
@@ -355,11 +353,9 @@ function showCategories() {
 }
 
 // Enviar formulario Producto
-let successfulSave;
 async function submitFormProduct(form) {
 	successfulSave = 0;
 	let productId = document.getElementById('productId').value;
-	let divMessageProduct = document.getElementById('messageProduct');
 	let divMessageProductError = document.getElementById('messageProductError');
 	let productName = document.getElementById('productName').value;
 	let productNumber = document.getElementById('productNumber').value;
@@ -369,7 +365,7 @@ async function submitFormProduct(form) {
 	let productQuantity = document.getElementById('productQuantity').value;
 	let iva = document.getElementById('iva').value;
 	let basePrice = document.getElementById('basePrice').value;
-	let images = document.getElementById('images').value;
+	let images = document.getElementById('images').files;
 	let formData = new FormData();
 
 	if (productName && productNumber && selectedCategory && selectedCategory
@@ -411,74 +407,18 @@ async function submitFormProduct(form) {
 		formData.append('categoryId', selectedCategory);
 		formData.append('productSize', productSize);
 		formData.append('productQuantity', productQuantity);
-		//formData.append('images', images);
 		formData.append('iva', iva);
 		formData.append('basePrice', basePrice);
+		let imagesBase64 = await blobsToBase64(images);
+		for (let image of imagesBase64) {
+			formData.append('images', image)
+		}
 
 		// Registrar o actualizar
 		if (productId) {
-
 			await updateProduct(formData);
-			//			
-			//			fetch("/products/update", {
-			//				method: "POST",
-			//				body: formData
-			//			}).then(response => {
-			//				if (response.status === 200) {
-			//					successfulSave = 2;
-			//					return response.json();
-			//				} else if (response.status === 422) {
-			//					showMessage(divMessageProductError, "Ya existe otro producto con ese nombre");
-			//				} else {
-			//					window.location.href = urlError;
-			//				}
-			//			}).then(data => {
-			//				if (data) {
-			//					productId = data.productId;
-			//				}
-			//			}).catch((error) => {
-			//				console.error(error);
-			//				window.location.href = urlError;
-			//			});
 		} else {
-
 			productId = await saveProduct(formData);
-
-			//			fetch("/products/save", {
-			//				method: "POST",
-			//				body: formData
-			//			}).then(response => {
-			//				if (response.status === 200) {
-			//					successfulSave = 1;
-			//					return response.json();
-			//				} else if (response.status === 422) {
-			//					showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
-			//				} else {
-			//					window.location.href = urlError;
-			//				}
-			//			}).then(data => {
-			//				if (data) {
-			//					productId = data.productId;
-			//				}
-			//			}).catch((error) => {
-			//				console.error(error);
-			//				window.location.href = urlError;
-			//			});
-		}
-
-		let result = uploadImages(productId);
-
-		if (result) {
-			showMessage(divMessageProductError, result);
-		} else {
-			switch (successfulSave) {
-				case 1:
-					showMessage(divMessageProduct, "El producto ha sido registrado");
-					break;
-				case 2:
-					showMessage(divMessageProduct, "El producto ha sido actualizado");
-					break;
-			}
 		}
 
 		document.getElementById('productId').value = "";
@@ -493,6 +433,8 @@ async function submitFormProduct(form) {
 
 // Peticion para actualizar producto
 async function updateProduct(formData) {
+	let divMessageProduct = document.getElementById("messageProduct");
+	
 	try {
 		let response = await fetch("/products/update", {
 			method: "POST",
@@ -500,7 +442,7 @@ async function updateProduct(formData) {
 		});
 
 		if (response.status === 200) {
-			successfulSave = 2;
+			showMessage(divMessageProduct, "El producto ha sido actualizado");
 		} else if (response.status === 422) {
 			showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
 			return;
@@ -515,6 +457,7 @@ async function updateProduct(formData) {
 
 // Peticion para guardar producto
 async function saveProduct(formData) {
+	let divMessageProduct = document.getElementById("messageProduct");
 	let data;
 
 	try {
@@ -524,7 +467,7 @@ async function saveProduct(formData) {
 		});
 
 		if (response.status === 200) {
-			successfulSave = 1;
+			showMessage(divMessageProduct, "El producto ha sido registrado");
 			data = await response.json();
 		} else if (response.status === 422) {
 			showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
@@ -553,7 +496,7 @@ function verifySize() {
 
 		if (fileSize > maxSizeInBytes) {
 			// Mostrar error de archivo no valido
-			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido (1MB)");
+			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido (500KB)");
 
 			// Limpiar el input de archivo para evitar enviar archivos demasiado grandes
 			inputFiles.value = '';

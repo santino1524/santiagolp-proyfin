@@ -23,6 +23,7 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * @param productCategory
 	 * @return List
 	 */
+	@Transactional
 	public List<Product> findByProductCategory(ProductCategory productCategory);
 
 	/**
@@ -126,15 +127,6 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	public Product findByProductNumber(String productNumber);
 
 	/**
-	 * Buscar imagenes por id
-	 * 
-	 * @param id
-	 * @return Object[]
-	 */
-	@Query(value = "SELECT i.C_IMAGE FROM T_IMAGES i WHERE i.C_PRODUCT_ID = :id", nativeQuery = true)
-	public Object[] findImagesById(Long id);
-
-	/**
 	 * Comprobar existencia por numero de producto
 	 * 
 	 * @param productNumber
@@ -158,15 +150,6 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * @return List
 	 */
 	public List<Product> findByProductNameIgnoreCaseOrProductNumber(String productName, String productNumber);
-
-	/**
-	 * Buscar las imagenes
-	 * 
-	 * @param productId
-	 * @return List
-	 */
-	@Query(value = "SELECT C_IMAGE_URL FROM T_IMAGES_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
-	public List<String> findImageUrlsByProductId(Long productId);
 
 	/**
 	 * Eliminar imagenes

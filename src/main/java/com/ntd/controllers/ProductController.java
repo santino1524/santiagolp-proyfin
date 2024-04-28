@@ -1,10 +1,7 @@
 package com.ntd.controllers;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,8 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
@@ -85,54 +80,6 @@ public class ProductController {
 				result = ResponseEntity.ok().body(Collections.singletonMap("productId", savedProduct.productId()));
 
 			} else {
-				// Devolver una respuesta con codigo de estado 500
-				result = ResponseEntity.internalServerError().build();
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Cargar imagenes
-	 * 
-	 * @param files
-	 * @return ResponseEntity
-	 * @throws InternalException
-	 */
-	@PostMapping(path = "/upload")
-	public ResponseEntity<Void> handleFileUpload(@RequestParam("productId") Long productId,
-			@RequestPart("files") final List<MultipartFile> files) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Guardar imagenes");
-
-		ValidateParams.isNullObject(productId);
-		ValidateParams.isNullObject(files);
-
-		ResponseEntity<Void> result = null;
-		List<byte[]> images = new ArrayList<>();
-
-		for (MultipartFile file : files) {
-			try {
-				images.add(file.getBytes());
-			} catch (IOException e) {
-				if (log.isErrorEnabled())
-					log.error(e.getMessage());
-
-				// Devolver una respuesta con codigo de estado 500
-				result = ResponseEntity.internalServerError().build();
-
-				break;
-			}
-		}
-
-		if (result == null) {
-			try {
-				productMgmtService.insertImages(productId, images);
-
-				// Devolver una respuesta con codigo de estado 200
-				result = ResponseEntity.ok().build();
-			} catch (SQLException e) {
 				// Devolver una respuesta con codigo de estado 500
 				result = ResponseEntity.internalServerError().build();
 			}
@@ -435,7 +382,7 @@ public class ProductController {
 		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
 
 		// Retornar lista de productos
-		return ResponseEntity.ok().body(Collections.singletonMap("products",
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS,
 				productMgmtService.searchByNameAndProductCategoryOrderAsc(productName, productCategoryDto)));
 	}
 

@@ -3,15 +3,11 @@ package com.ntd.services;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
-
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
 import com.ntd.exceptions.InternalException;
 
-import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 /**
@@ -211,18 +207,6 @@ public interface ProductMgmtServiceI {
 	 */
 	@Transactional
 	public List<ProductDTO> confirmOrder(final List<ProductSoldDTO> productsDtoToBuy) throws InternalException;
-
-	/**
-	 * GUardar imagenes
-	 * 
-	 * @param productId
-	 * @param images
-	 * @throws SQLException
-	 */
-	@Transactional
-	@Modifying
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	public void insertImages(Long productId, List<byte[]> images) throws SQLException;
 
 	/**
 	 * Contar las ocurrencias de productos de una categoria

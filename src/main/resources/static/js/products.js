@@ -44,12 +44,12 @@ async function layoutProducts(products) {
 		img1.classList.add('pic-1');
 		let img2 = document.createElement('img');
 		img2.classList.add('pic-2');
-		// Crea una URL de datos (data URL) usando los datos binarios de la imagen
-		let dataUrl = 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, product.images[0]));
+		// Crea una URL de datos (data URL) 
+		let dataUrl = 'data:image/jpeg;base64,' +  product.images[0];
 		let dataUrl2;
 		let sizeImages = product.images.length
 		if (sizeImages > 1) {
-			dataUrl2 = 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, product.images[sizeImages - 1]));
+			dataUrl2 = 'data:image/jpeg;base64,' + product.images[sizeImages - 1];
 			img1.src = dataUrl;
 			img2.src = dataUrl2;
 		} else {

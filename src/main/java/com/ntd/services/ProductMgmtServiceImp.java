@@ -1,12 +1,8 @@
 package com.ntd.services;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.springframework.stereotype.Service;
 
@@ -33,18 +29,13 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	/** Dependencia de ProductRepository */
 	private final ProductRepositoryI productRepository;
 
-	/** Dependencia de DataSource */
-	private final DataSource dataSource;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param productRepository
-	 * @param dataSource
 	 */
-	public ProductMgmtServiceImp(ProductRepositoryI productRepository, DataSource dataSource) {
+	public ProductMgmtServiceImp(ProductRepositoryI productRepository) {
 		this.productRepository = productRepository;
-		this.dataSource = dataSource;
 	}
 
 	@Override
@@ -58,44 +49,8 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Mapear DTO y guardar
 		final Product product = productRepository.save(DTOMapperI.MAPPER.mapDTOToProduct(productDto));
 
-		// Guardar las imágenes asociadas al producto
-		if (productDto.images() != null && !productDto.images().isEmpty()) {
-			insertImages(product.getProductId(), productDto.images());
-		}
-
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductToDTO(product);
-	}
-
-	/**
-	 * Insertar imagenes por lotes
-	 * 
-	 * @param productId
-	 * @param images
-	 * @throws SQLException
-	 */
-	public void insertImages(Long productId, List<byte[]> images) throws SQLException {
-		if (log.isInfoEnabled())
-			log.info("Insertar imagenes");
-
-		try (Connection connection = dataSource.getConnection();
-				PreparedStatement statement = connection.prepareStatement(
-						"INSERT INTO T_IMAGES (C_PRODUCT_ID, C_IMAGE) VALUES (?, CAST(? AS bytea))")) {
-
-			for (byte[] image : images) {
-				statement.setLong(1, productId);
-				statement.setBytes(2, image);
-				statement.addBatch();
-			}
-			statement.executeBatch();
-
-		} catch (SQLException e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.getMessage());
-			}
-
-			throw new SQLException("Ha ocurrido un error al insertar las imágenes");
-		}
 	}
 
 	@Override
@@ -256,23 +211,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Buscar producto por numero de producto
 		Product product = productRepository.findByProductNumber(productNumber);
 
-		// Buscar imagenes por id
-		Object[] objectProduct = productRepository.findImagesById(product.getProductId());
-
-		// Inicializa una lista para las imágenes
-		List<byte[]> images = new ArrayList<>();
-
-		// Itera sobre los valores de result
-		for (int i = 0; i < objectProduct.length; i++) {
-			// Verifica si el valor en result[i] no es nulo
-			if (objectProduct[i] != null) {
-				// Agrega el valor a la lista de imagenes
-				images.add((byte[]) objectProduct[i]);
-			}
-		}
-
-		product.setImages(images);
-
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductToDTO(product);
 	}
@@ -337,7 +275,7 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 				// Reducir cantidad de producto en stock
 				productInStock.setProductQuantity(productInStock.getProductQuantity() - productSoldDto.quantitySold());
 
-				// Añadir a lista de productos confirmados
+				// Agregar a lista de productos confirmados
 				productsConfirm.add(productInStock);
 			} else {
 				// Si algun producto no esta disponible agregarlo a la lista de no disponibles

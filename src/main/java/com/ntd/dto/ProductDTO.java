@@ -35,7 +35,8 @@ public record ProductDTO(Long productId,
 		// Validar categoria del producto
 		@NotNull(message = Constants.MSG_CATEGORY_NOT_VALID) Long categoryId,
 
-		List<byte[]> images,
+		// Validar categoria del producto
+		@NotNull(message = Constants.MSG_IMAGE_NOT_VALID) List<String> images,
 
 		// Validar iva
 		@Digits(integer = 2, fraction = 2, message = Constants.MSG_IVA_NOT_VALID) BigDecimal iva,

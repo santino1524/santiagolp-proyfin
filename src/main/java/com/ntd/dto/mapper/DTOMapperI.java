@@ -237,7 +237,6 @@ public interface DTOMapperI {
 	@Mapping(target = "soldProducts", ignore = true)
 	@Mapping(target = "productCategory.categoryId", source = "categoryId")
 	@Mapping(target = "reviews", ignore = true)
-	@Mapping(target = "images", ignore = true)
 	@Mapping(target = "pvpPrice", expression = "java(calculatePvp(productDto))")
 	public Product mapDTOToProduct(ProductDTO productDto);
 
