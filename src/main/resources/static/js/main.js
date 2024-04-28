@@ -9,6 +9,8 @@ const separatorsRegex = /[\\/]/;
 const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 // Url error
 const urlError = "/internalError";
+// Tamanyo maximo permitido para la carga de imagenes (500KB)
+const maxSizeInBytes = 500 * 1024;
 
 // Comprobacion de contrasennas al enviar formulario de registro
 document.addEventListener("DOMContentLoaded", function() {
@@ -71,6 +73,7 @@ function checkPasswords() {
 function showMessage(div, message) {
 	div.innerText = message;
 	div.classList.remove('d-none'); // Mostrar el elemento
+	document.body.scrollIntoView(true);
 
 	// Ocultar el mensaje despues de 5 segundos
 	setTimeout(function() {
@@ -122,7 +125,7 @@ async function listCategoriesInNav() {
 
 		let data = await response.json();
 
-		if (data) {
+		if (data && data.productCategoryDto.length > 0) {
 			// Limpiar el contenido actual del dropdownMenu
 			dropdownMenu.innerHTML = '';
 

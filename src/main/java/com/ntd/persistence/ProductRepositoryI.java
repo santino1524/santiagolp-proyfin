@@ -23,7 +23,16 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * @param productCategory
 	 * @return List
 	 */
+	@Transactional
 	public List<Product> findByProductCategory(ProductCategory productCategory);
+
+	/**
+	 * Contar las ocurrencias de productos de una categoria
+	 * 
+	 * @param productCategory
+	 * @return long
+	 */
+	public long countByProductCategory(ProductCategory productCategory);
 
 	/**
 	 * Buscar por nombre de producto
@@ -143,15 +152,6 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	public List<Product> findByProductNameIgnoreCaseOrProductNumber(String productName, String productNumber);
 
 	/**
-	 * Buscar las imagenes
-	 * 
-	 * @param productId
-	 * @return List
-	 */
-	@Query(value = "SELECT C_IMAGE_URL FROM T_IMAGES_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
-	public List<String> findImageUrlsByProductId(Long productId);
-
-	/**
 	 * Eliminar imagenes
 	 * 
 	 * @param productId
@@ -159,8 +159,8 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 */
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE FROM T_IMAGES_URL WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
-	public void deleteImageUrlsByProductId(Long productId);
+	@Query(value = "DELETE FROM T_IMAGES WHERE C_PRODUCT_ID = :productId", nativeQuery = true)
+	public void deleteImagesByProductId(Long productId);
 
 	/**
 	 * Metodo para guardar o actualizar un producto

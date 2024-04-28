@@ -189,7 +189,6 @@ public interface DTOMapperI {
 	 */
 	@Mapping(target = "categoryId", source = "productCategory.categoryId")
 	@Mapping(target = "reviewsDto", expression = "java(listProductReviewToDTO(product.getReviews()))")
-	@Mapping(target = "imageUrls", expression = "java(String.join(\",\", product.getImageUrls()))")
 	public ProductDTO mapProductToDTO(Product product);
 
 	/**
@@ -239,7 +238,6 @@ public interface DTOMapperI {
 	@Mapping(target = "productCategory.categoryId", source = "categoryId")
 	@Mapping(target = "reviews", ignore = true)
 	@Mapping(target = "pvpPrice", expression = "java(calculatePvp(productDto))")
-	@Mapping(target = "imageUrls", expression = "java(Arrays.asList(productDto.imageUrls().split(\",\")))")
 	public Product mapDTOToProduct(ProductDTO productDto);
 
 	/**

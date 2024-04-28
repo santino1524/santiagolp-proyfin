@@ -44,12 +44,17 @@ async function layoutCategoriesProducts(categories) {
 			img1.classList.add('pic-1');
 			let img2 = document.createElement('img');
 			img2.classList.add('pic-2');
-			if (product.imageUrls.includes(',')) {
-				img1.src = product.imageUrls.split(',')[0];
-				img2.src = product.imageUrls.split(',').pop();
+			// Crea una URL de datos (data URL) 
+			let dataUrl = 'data:image/jpeg;base64,' + product.images[0];
+			let dataUrl2;
+			let sizeImages = product.images.length
+			if (sizeImages > 1) {
+				dataUrl2 = 'data:image/jpeg;base64,' + product.images[sizeImages - 1];
+				img1.src = dataUrl;
+				img2.src = dataUrl2;
 			} else {
-				img1.src = product.imageUrls;
-				img2.src = product.imageUrls;
+				img1.src = dataUrl;
+				img2.src = dataUrl;
 			}
 			aImage.append(img1);
 			aImage.append(img2);
@@ -122,7 +127,7 @@ async function loadIndex() {
 
 		let data = await response.json();
 
-		if (data && data.productCategoryDto[0].categoryId) {
+		if (data && data.productCategoryDto.length > 0) {
 			// Maquetar categorias con productos
 			layoutCategoriesProducts(data.productCategoryDto);
 		}

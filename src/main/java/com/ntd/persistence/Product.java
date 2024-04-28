@@ -67,12 +67,12 @@ public class Product implements Serializable {
 	@Column(name = "C_PRODUCT_QUANTITY", nullable = false)
 	private int productQuantity;
 
-	/** Url de las imagenes */
+	/** Imagenes */
 	@ElementCollection
 	@Cascade(value = { CascadeType.ALL })
-	@CollectionTable(name = "T_IMAGES_URL", joinColumns = @JoinColumn(name = "C_PRODUCT_ID"))
-	@Column(name = "C_IMAGE_URL", nullable = false)
-	private List<String> imageUrls;
+	@CollectionTable(name = "T_IMAGES", joinColumns = @JoinColumn(name = "C_PRODUCT_ID"))
+	@Column(name = "C_IMAGE", columnDefinition = "TEXT", nullable = false)
+	private List<String> images;
 
 	/** IVA */
 	@Column(name = "C_IVA", nullable = false)

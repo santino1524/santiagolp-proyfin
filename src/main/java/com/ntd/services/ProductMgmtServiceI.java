@@ -1,11 +1,11 @@
 package com.ntd.services;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
-import com.ntd.exceptions.DeleteFilesException;
 import com.ntd.exceptions.InternalException;
 
 import jakarta.transaction.Transactional;
@@ -23,9 +23,10 @@ public interface ProductMgmtServiceI {
 	 * @param productDto
 	 * @return ProductDTO
 	 * @throws InternalException
+	 * @throws SQLException
 	 */
 	@Transactional
-	public ProductDTO insertProduct(final ProductDTO productDto) throws InternalException;
+	public ProductDTO insertProduct(final ProductDTO productDto) throws InternalException, SQLException;
 
 	/**
 	 * Actualizar nuevo producto
@@ -42,20 +43,18 @@ public interface ProductMgmtServiceI {
 	 * 
 	 * @param id
 	 * @throws InternalException
-	 * @throws DeleteFilesException
 	 */
 	@Transactional
-	public void deleteProduct(final Long id) throws InternalException, DeleteFilesException;
+	public void deleteProduct(final Long id) throws InternalException;
 
 	/**
 	 * Eliminar imagenes
 	 * 
 	 * @param id
 	 * @throws InternalException
-	 * @throws DeleteFilesException
 	 */
 	@Transactional
-	public void deleteImages(final Long id) throws InternalException, DeleteFilesException;
+	public void deleteImages(final Long id) throws InternalException;
 
 	/**
 	 * Buscar todos los productos
@@ -210,20 +209,12 @@ public interface ProductMgmtServiceI {
 	public List<ProductDTO> confirmOrder(final List<ProductSoldDTO> productsDtoToBuy) throws InternalException;
 
 	/**
-	 * Eliminar ficheros
+	 * Contar las ocurrencias de productos de una categoria
 	 * 
-	 * @param imagesUrls
-	 * @throws DeleteFilesException
+	 * @param productCategory
+	 * @return long
 	 * @throws InternalException
 	 */
-	public void removeImages(final List<String> imagesUrls) throws DeleteFilesException, InternalException;
-
-	/**
-	 * Agregar ruta base a cada archivo
-	 * 
-	 * @param fileNames
-	 * @throws InternalException
-	 */
-	public void addRoutes(final List<String> fileNames) throws InternalException;
+	public long countByProductCategory(ProductCategoryDTO productCategoryDto) throws InternalException;
 
 }

@@ -1,12 +1,7 @@
 package com.ntd.controllers;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,19 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
-import com.ntd.exceptions.DeleteFilesException;
-import com.ntd.exceptions.FileUploadException;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductMgmtServiceI;
-import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
-import jakarta.servlet.ServletContext;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -52,18 +41,13 @@ public class ProductController {
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductMgmtServiceI productMgmtService;
 
-	/** ServletContext */
-	private final ServletContext context;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param productMgmtService
-	 * @param context
 	 */
-	public ProductController(final ProductMgmtServiceI productMgmtService, final ServletContext context) {
+	public ProductController(final ProductMgmtServiceI productMgmtService) {
 		this.productMgmtService = productMgmtService;
-		this.context = context;
 	}
 
 	/**
@@ -73,14 +57,15 @@ public class ProductController {
 	 * @param model
 	 * @return ResponseEntity
 	 * @throws InternalException
+	 * @throws SQLException
 	 */
 	@PostMapping(path = "/save")
-	public ResponseEntity<Void> saveProduct(@ModelAttribute @Valid final ProductDTO productDto)
-			throws InternalException {
+	public ResponseEntity<Object> saveProduct(@ModelAttribute @Valid final ProductDTO productDto)
+			throws InternalException, SQLException {
 		if (log.isInfoEnabled())
 			log.info("Registrar producto");
 
-		ResponseEntity<Void> result = null;
+		ResponseEntity<Object> result = null;
 
 		// Comprobar si el producto existe por el nombre
 		if (productMgmtService.existsByProductName(productDto.productName())) {
@@ -88,9 +73,12 @@ public class ProductController {
 			result = ResponseEntity.unprocessableEntity().build();
 		} else {
 			// Guardar producto
-			if (productMgmtService.insertProduct(productDto) != null) {
-				// Devolver una respuesta con codigo de estado 204
-				result = ResponseEntity.noContent().build();
+			ProductDTO savedProduct = productMgmtService.insertProduct(productDto);
+
+			if (savedProduct.productId() != null) {
+				// Devolver una respuesta con codigo de estado 200
+				result = ResponseEntity.ok().body(Collections.singletonMap("productId", savedProduct.productId()));
+
 			} else {
 				// Devolver una respuesta con codigo de estado 500
 				result = ResponseEntity.internalServerError().build();
@@ -109,12 +97,12 @@ public class ProductController {
 	 * @throws InternalException
 	 */
 	@PostMapping(path = "/update")
-	public ResponseEntity<Void> updateProduct(@ModelAttribute @Valid final ProductDTO productDto)
+	public ResponseEntity<Object> updateProduct(@ModelAttribute @Valid final ProductDTO productDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar producto");
 
-		ResponseEntity<Void> result = null;
+		ResponseEntity<Object> result = null;
 
 		// Comprobar si existe otro producto
 		if (productMgmtService.searchByProductNameOrProductNumber(productDto.productName(), productDto.productNumber())
@@ -126,9 +114,9 @@ public class ProductController {
 			final ProductDTO productUpdated = productMgmtService.updateProduct(productDto);
 
 			// Verificar retorno de actualizacion
-			if (productUpdated != null) {
-				// Devolver una respuesta con codigo de estado 204
-				result = ResponseEntity.noContent().build();
+			if (productUpdated.productId() != null) {
+				// Devolver una respuesta con codigo de estado 200
+				result = ResponseEntity.ok().body(Collections.singletonMap("productId", productUpdated.productId()));
 			} else {
 				// Devolver una respuesta con codigo de estado 500
 				result = ResponseEntity.internalServerError().build();
@@ -146,12 +134,11 @@ public class ProductController {
 	 * @param model
 	 * @return String
 	 * @throws InternalException
-	 * @throws DeleteFilesException
 	 */
 	@Transactional
 	@DeleteMapping(path = "/deleteImages/{productId}")
 	public ResponseEntity<Void> deleteImages(@PathVariable final Long productId, final Model model)
-			throws InternalException, DeleteFilesException {
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar imagenes");
 
@@ -167,8 +154,6 @@ public class ProductController {
 
 		} catch (InternalException e) {
 			throw new InternalException();
-		} catch (DeleteFilesException e) {
-			throw new DeleteFilesException();
 		}
 
 		return ResponseEntity.ok().build();
@@ -181,12 +166,11 @@ public class ProductController {
 	 * @param model
 	 * @return String
 	 * @throws InternalException
-	 * @throws DeleteFilesException
 	 */
 	@Transactional
 	@DeleteMapping(path = "/delete/{productId}")
 	public ResponseEntity<Void> deleteProduct(@PathVariable final Long productId, final Model model)
-			throws InternalException, DeleteFilesException {
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar producto");
 
@@ -199,8 +183,6 @@ public class ProductController {
 
 		} catch (InternalException e) {
 			throw new InternalException();
-		} catch (DeleteFilesException e) {
-			throw new DeleteFilesException();
 		}
 
 		return ResponseEntity.ok().build();
@@ -337,7 +319,7 @@ public class ProductController {
 		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
 
 		// Retornar lista de productos
-		return ResponseEntity.ok().body(Collections.singletonMap("products",
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS,
 				productMgmtService.searchByCategoryOrderPvpPriceDesc(productCategoryDto)));
 	}
 
@@ -358,7 +340,7 @@ public class ProductController {
 		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
 
 		// Retornar lista de productos
-		return ResponseEntity.ok().body(Collections.singletonMap("products",
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS,
 				productMgmtService.searchByNameAndProductCategoryOrderDesc(productName, productCategoryDto)));
 	}
 
@@ -379,7 +361,7 @@ public class ProductController {
 		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
 
 		// Retornar lista de productos
-		return ResponseEntity.ok().body(Collections.singletonMap("products",
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS,
 				productMgmtService.searchByNameAndProductCategory(productName, productCategoryDto)));
 	}
 
@@ -400,7 +382,7 @@ public class ProductController {
 		ProductCategoryDTO productCategoryDto = new ProductCategoryDTO(categoryId, null);
 
 		// Retornar lista de productos
-		return ResponseEntity.ok().body(Collections.singletonMap("products",
+		return ResponseEntity.ok().body(Collections.singletonMap(PRODUCTS,
 				productMgmtService.searchByNameAndProductCategoryOrderAsc(productName, productCategoryDto)));
 	}
 
@@ -489,59 +471,8 @@ public class ProductController {
 
 		ValidateParams.isNullObject(productNum);
 
-		// Retornar lista de Category
+		// Retornar producto
 		return ResponseEntity.ok()
 				.body(Collections.singletonMap("productDto", productMgmtService.searchByProductNumber(productNum)));
-	}
-
-	/**
-	 * Cargar imagenes
-	 * 
-	 * @param files
-	 * @return ResponseEntity
-	 * @throws FileUploadException
-	 */
-	@PostMapping(path = "/upload")
-	public ResponseEntity<Void> handleFileUpload(@RequestPart("files") final List<MultipartFile> files)
-			throws FileUploadException {
-
-		if (!files.isEmpty()) {
-			try {
-				// Obtener el directorio de recursos estaticos
-				// String staticDir = "src/main/resources/static/";
-				// File imageDir = new File(staticDir + Constants.PRODUCT_IMAGES);
-
-				// Crear el directorio de imagenes si no existe
-				final File imageDir = new File(context.getRealPath("") + File.separatorChar + Constants.PRODUCT_IMAGES);
-
-				if (!imageDir.exists()) {
-					imageDir.mkdirs();
-				}
-
-				// Guardar cada archivo en el directorio de imagenes
-				for (MultipartFile file : files) {
-					byte[] bytes = file.getBytes();
-
-					StringBuilder builder = new StringBuilder();
-					builder.append(imageDir.getAbsolutePath());
-					builder.append(File.separatorChar);
-					builder.append(file.getOriginalFilename());
-
-					final Path path = Paths.get(builder.toString());
-					Files.write(path, bytes);
-				}
-
-				return ResponseEntity.ok().build();
-
-			} catch (IOException e) {
-				if (log.isErrorEnabled())
-					log.error(e.getMessage());
-
-				throw new FileUploadException();
-			}
-		} else {
-			return ResponseEntity.notFound().build();
-
-		}
 	}
 }
