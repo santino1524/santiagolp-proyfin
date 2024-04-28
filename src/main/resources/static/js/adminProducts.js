@@ -24,6 +24,34 @@ function generateEAN13() {
 	inputNumber.value = cuerpoEAN + digitoControl;
 }
 
+// Cargar imagenes
+function uploadImages(productId) {
+	let inputFiles = document.getElementById('images');
+	let formData = new FormData();
+
+	// Agregar los archivos seleccionados al objeto FormData
+	let result = "";
+	formData.append('productId', productId);
+	for (let file of inputFiles.files) {
+		formData.append('files', file);
+	}
+
+	// Guardar las imagenes en el sistema de ficheros del server
+	fetch("/products/upload", {
+		method: "POST",
+		body: formData
+	}).then(response => {
+		if (!response.ok) {
+			result = "Ha ocurrido un error en la carga de imágenes"
+		}
+	}).catch((error) => {
+		console.error(error);
+		window.location.href = urlError;
+	});
+
+	return result;
+}
+
 // Guardar categorias	
 function saveCategory() {
 	let form = document.getElementById("formCategory");
@@ -115,7 +143,7 @@ function searchProduct() {
 				document.getElementById('productNumber').value = responseData.productDto.productNumber;
 				document.getElementById('productDescription').value = responseData.productDto.productDescription;
 				document.getElementById('productSize').value = responseData.productDto.productSize;
-				document.getElementById('imageUrls').value = responseData.productDto.imageUrls;
+				document.getElementById('foundImages').value = responseData.productDto.images;
 				document.getElementById('productQuantity').value = responseData.productDto.productQuantity;
 				document.getElementById('iva').value = responseData.productDto.iva;
 				document.getElementById('basePrice').value = responseData.productDto.basePrice;
@@ -179,7 +207,7 @@ function confirmDeleteCategory() {
 		}).then(response => {
 			if (response.ok) {
 				// La solicitud se completo con exito
-				return response.json(); // Devuelve una promesa que se resuelve con el cuerpo de la respuesta como JSON
+				return response.json();
 			} else {
 				window.location.href = urlError
 			}
@@ -223,6 +251,7 @@ function deleteOption(id) {
 // Eliminar categoria por ID
 function deleteCategoryById(categoryId) {
 	let divMessageCategory = document.getElementById('messageCategory');
+	let divMessageCategoryError = document.getElementById('messageCategoryError');
 
 	fetch("/category/delete", {
 		method: "DELETE",
@@ -236,6 +265,8 @@ function deleteCategoryById(categoryId) {
 		if (response.status === 204) {
 			showMessage(divMessageCategory, "Se ha eliminado correctamente la categoría");
 			deleteOption(categoryId);
+		} else if (response.status === 422) {
+			showMessage(divMessageCategoryError, "La categoría no se pudo eliminar porque está en uso");
 		} else {
 			window.location.href = urlError;
 		}
@@ -261,9 +292,9 @@ function showDeleteCategory() {
 function showDeleteImages() {
 	let inputProductId = document.getElementById('productId');
 	let buttonDeleteImages = document.getElementById('buttonDeleteImages');
-	let inputUrlsHidden = document.getElementById('imageUrls').value;
+	let images = document.getElementById('foundImages').value;
 
-	if (inputProductId.value && inputUrlsHidden) {
+	if (inputProductId.value && images) {
 		buttonDeleteImages.classList.remove("d-none");
 	} else {
 		buttonDeleteImages.classList.add("d-none");
@@ -297,7 +328,7 @@ function showCategories() {
 			}
 		})
 		.then(data => {
-			if (data) {
+			if (data && data.productCategoryDto.length > 0) {
 				// Limpiar opciones existentes en el select
 				selectCategories.innerHTML = "";
 
@@ -324,7 +355,9 @@ function showCategories() {
 }
 
 // Enviar formulario Producto
-function submitFormProduct(form) {
+let successfulSave;
+async function submitFormProduct(form) {
+	successfulSave = 0;
 	let productId = document.getElementById('productId').value;
 	let divMessageProduct = document.getElementById('messageProduct');
 	let divMessageProductError = document.getElementById('messageProductError');
@@ -334,14 +367,13 @@ function submitFormProduct(form) {
 	let selectedCategory = document.getElementById('productCategory').value;
 	let productSize = document.getElementById('productSize').value;
 	let productQuantity = document.getElementById('productQuantity').value;
-	let files = document.getElementById('files').value;
 	let iva = document.getElementById('iva').value;
 	let basePrice = document.getElementById('basePrice').value;
-	let imageUrls = document.getElementById('imageUrls').value;
+	let images = document.getElementById('images').value;
 	let formData = new FormData();
 
 	if (productName && productNumber && selectedCategory && selectedCategory
-		&& productSize && productQuantity && (files || imageUrls) && iva && basePrice) {
+		&& productSize && productQuantity && images && iva && basePrice) {
 
 		// Validar los valores usando el patron
 		let isValidProductName = onlyWordsNumbersSpaces.test(productName);
@@ -370,158 +402,197 @@ function submitFormProduct(form) {
 			return;
 		}
 
-		// Cargar imagenes
-		if (uploadImages(productName, productId)) {
-
-			let imageUrls = document.getElementById('imageUrls').value;
-
-			if (productId) {
-				formData.append('productId', productId);
-			}
-			formData.append('productNumber', productNumber);
-			formData.append('productName', productName);
-			formData.append('productDescription', productDescription);
-			formData.append('categoryId', selectedCategory);
-			formData.append('productSize', productSize);
-			formData.append('productQuantity', productQuantity);
-			formData.append('imageUrls', imageUrls);
-			formData.append('iva', iva);
-			formData.append('basePrice', basePrice);
-
-			// Registrar o actualizar
-			if (productId) {
-				fetch("/products/update", {
-					method: "POST",
-					body: formData
-				}).then(response => {
-					if (response.status === 204) {
-						showMessage(divMessageProduct, "El producto ha sido actualizado");
-					} else if (response.status === 422) {
-						showMessage(divMessageProductError, "Ya existe otro producto con ese nombre");
-					} else {
-						window.location.href = urlError;
-					}
-				}).catch((error) => {
-					console.error(error);
-					window.location.href = urlError;
-				});
-			} else {
-				fetch("/products/save", {
-					method: "POST",
-					body: formData
-				}).then(response => {
-					if (response.status === 204) {
-						showMessage(divMessageProduct, "El producto ha sido registrado");
-					} else if (response.status === 422) {
-						showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
-					} else {
-						window.location.href = urlError;
-					}
-				}).catch((error) => {
-					console.error(error);
-					window.location.href = urlError;
-				});
-			}
-
-			imageUrls = document.getElementById('imageUrls').value = "";
-			productId = document.getElementById('productId').value = "";
-			form.reset();
-			showDeleteImages();
-			showDeleteProduct();
-
-		} else {
-			// Mostrar error de archivo no valido
-			showMessage(divMessageProductError, "Ha cargado un archivo no válido, las extensiones permitidas son: 'jpg', 'jpeg', 'png', 'gif'");
+		if (productId) {
+			formData.append('productId', productId);
 		}
+		formData.append('productNumber', productNumber);
+		formData.append('productName', productName);
+		formData.append('productDescription', productDescription);
+		formData.append('categoryId', selectedCategory);
+		formData.append('productSize', productSize);
+		formData.append('productQuantity', productQuantity);
+		//formData.append('images', images);
+		formData.append('iva', iva);
+		formData.append('basePrice', basePrice);
+
+		// Registrar o actualizar
+		if (productId) {
+
+			await updateProduct(formData);
+			//			
+			//			fetch("/products/update", {
+			//				method: "POST",
+			//				body: formData
+			//			}).then(response => {
+			//				if (response.status === 200) {
+			//					successfulSave = 2;
+			//					return response.json();
+			//				} else if (response.status === 422) {
+			//					showMessage(divMessageProductError, "Ya existe otro producto con ese nombre");
+			//				} else {
+			//					window.location.href = urlError;
+			//				}
+			//			}).then(data => {
+			//				if (data) {
+			//					productId = data.productId;
+			//				}
+			//			}).catch((error) => {
+			//				console.error(error);
+			//				window.location.href = urlError;
+			//			});
+		} else {
+
+			productId = await saveProduct(formData);
+
+			//			fetch("/products/save", {
+			//				method: "POST",
+			//				body: formData
+			//			}).then(response => {
+			//				if (response.status === 200) {
+			//					successfulSave = 1;
+			//					return response.json();
+			//				} else if (response.status === 422) {
+			//					showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
+			//				} else {
+			//					window.location.href = urlError;
+			//				}
+			//			}).then(data => {
+			//				if (data) {
+			//					productId = data.productId;
+			//				}
+			//			}).catch((error) => {
+			//				console.error(error);
+			//				window.location.href = urlError;
+			//			});
+		}
+
+		let result = uploadImages(productId);
+
+		if (result) {
+			showMessage(divMessageProductError, result);
+		} else {
+			switch (successfulSave) {
+				case 1:
+					showMessage(divMessageProduct, "El producto ha sido registrado");
+					break;
+				case 2:
+					showMessage(divMessageProduct, "El producto ha sido actualizado");
+					break;
+			}
+		}
+
+		document.getElementById('productId').value = "";
+		form.reset();
+		showDeleteImages();
+		showDeleteProduct();
 	} else {
 		// Datos incompletas en el formulario
 		showMessage(divMessageProductError, "Completa los datos obligatorios (*) en el formulario");
 	}
 }
 
-// Cargar imagenes
-function uploadImages(productName, productId) {
-	let inputFiles = document.getElementById('files');
-	let inputUrlsHidden = document.getElementById('imageUrls');
-	let formData = new FormData();
-	let extensionException = false;
-
-	// Agregar los archivos seleccionados al objeto FormData
-	let i = 0;
-	let result = "";
-	for (let file of inputFiles.files) {
-		i++;
-		// Renombrar archivo
-		// Obtener la extension del nombre original del archivo
-		let extension = file.name.split('.').pop();
-
-		if (allowedExtensions.includes(extension)) {
-
-			// Comprobar si hay que poner coma
-			if (result) {
-				result = result + ',';
-			}
-			let newName = productName + i + '.' + extension;
-			formData.append('files', file, newName);
-			result = result + newName
-		} else {
-			extensionException = true;
-			break;
-		}
-	}
-
-	//Si las extensiones son permitidas continuar
-	if (!extensionException) {
-
-		// Guardar las imagenes en el sistema de ficheros del server
-		fetch("/products/upload", {
+// Peticion para actualizar producto
+async function updateProduct(formData) {
+	try {
+		let response = await fetch("/products/update", {
 			method: "POST",
 			body: formData
-		}).then(response => {
-			if (!response.ok) {
-				window.location.href = urlError;
-			}
-		}).catch((error) => {
-			console.error(error);
-			window.location.href = urlError;
 		});
 
-		// Guardar las url en el input oculto
-		if (productId && inputUrlsHidden.value) {
-			let onlyFileNames = extractFileName(inputUrlsHidden.value);
-
-			result = onlyFileNames + ',' + result;
+		if (response.status === 200) {
+			successfulSave = 2;
+		} else if (response.status === 422) {
+			showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
+			return;
+		} else {
+			window.location.href = urlError;
 		}
-
-		inputUrlsHidden.value = result;
-
-
-		return result;
-	} else {
-		return "";
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
 	}
 }
 
-//Extraer nombres de archivos
-function extractFileName(routes) {
-	// Dividir las rutas por coma y eliminar espacios en blanco
-	const separateRoutes = routes.split(',').map(route => route.trim());
+// Peticion para guardar producto
+async function saveProduct(formData) {
+	let data;
 
-	// Array para almacenar nombres de archivo
-	const fileNames = [];
+	try {
+		let response = await fetch("/products/save", {
+			method: "POST",
+			body: formData
+		});
 
-	// Iterar sobre cada ruta
-	separateRoutes.forEach(ruta => {
-		// Obtener el ultimo segmento de la ruta
-		const fileName = ruta.split(separatorsRegex).pop();
-		// Agregar el nombre de archivo a la lista si existe
-		if (fileName) {
-			fileNames.push(fileName);
+		if (response.status === 200) {
+			successfulSave = 1;
+			data = await response.json();
+		} else if (response.status === 422) {
+			showMessage(divMessageProductError, "El nombre del producto introducido ya está registrado");
+			return;
+		} else {
+			window.location.href = urlError;
 		}
-	});
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
 
-	// Devolver los nombres de archivo separados por coma
-	return fileNames.join(',');
+	if (data) {
+		return data.productId;
+	}
+}
+
+// Verificar tamanyo
+function verifySize() {
+	let inputFiles = document.getElementById('images');
+	let divMessageProductError = document.getElementById('messageProductError');
+
+	for (let i = 0; i < inputFiles.files.length; i++) {
+		let file = inputFiles.files[i];
+		let fileSize = file.size;
+
+		if (fileSize > maxSizeInBytes) {
+			// Mostrar error de archivo no valido
+			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido (1MB)");
+
+			// Limpiar el input de archivo para evitar enviar archivos demasiado grandes
+			inputFiles.value = '';
+
+			return;
+		}
+	}
+}
+
+// Verificar ficheros
+function verifyFiles() {
+	verifyExtension();
+	verifySize();
+}
+
+// Verificar extensiones
+function verifyExtension() {
+	let inputFiles = document.getElementById('images');
+	let divMessageProductError = document.getElementById('messageProductError');
+
+	// Recorremos los archivos seleccionados
+	for (let i = 0; i < inputFiles.files.length; i++) {
+		let file = inputFiles.files[i];
+		let filename = file.name;
+
+		// Obtenemos la extension del archivo
+		let extension = filename.split('.').pop().toLowerCase();
+
+		// Verificamos si la extension esta en la lista de extensiones permitidas
+		if (allowedExtensions.indexOf(extension) === -1) {
+			// Mostrar error de archivo no valido
+			showMessage(divMessageProductError, "La carga de imágenes contiene extensiones no válidas (extensiones permitidas son: 'jpg', 'jpeg', 'png', 'gif')");
+
+			// Limpiar el input de archivo para evitar enviar archivos demasiado grandes
+			inputFiles.value = '';
+
+			return;
+		}
+	}
 }
 
 // Eliminar producto
@@ -576,7 +647,7 @@ function deleteImages() {
 
 // Eliminar imagenes confirmado
 function confirmDeleteImages() {
-	let inputUrlsHidden = document.getElementById('imageUrls');
+	let images = document.getElementById('foundImages');
 	let divProductId = document.getElementById("productId");
 	let productId = divProductId.value;
 	let divMessageProduct = document.getElementById("messageProduct");
@@ -601,7 +672,7 @@ function confirmDeleteImages() {
 	}
 
 	// Ocultar botones de eliminar
-	inputUrlsHidden.value = "";
+	images.value = "";
 	showDeleteImages();
 	showDeleteProduct();
 }

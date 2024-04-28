@@ -1,13 +1,17 @@
 package com.ntd.services;
 
+import java.sql.SQLException;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
-import com.ntd.exceptions.DeleteFilesException;
 import com.ntd.exceptions.InternalException;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 /**
@@ -23,9 +27,10 @@ public interface ProductMgmtServiceI {
 	 * @param productDto
 	 * @return ProductDTO
 	 * @throws InternalException
+	 * @throws SQLException
 	 */
 	@Transactional
-	public ProductDTO insertProduct(final ProductDTO productDto) throws InternalException;
+	public ProductDTO insertProduct(final ProductDTO productDto) throws InternalException, SQLException;
 
 	/**
 	 * Actualizar nuevo producto
@@ -42,20 +47,18 @@ public interface ProductMgmtServiceI {
 	 * 
 	 * @param id
 	 * @throws InternalException
-	 * @throws DeleteFilesException
 	 */
 	@Transactional
-	public void deleteProduct(final Long id) throws InternalException, DeleteFilesException;
+	public void deleteProduct(final Long id) throws InternalException;
 
 	/**
 	 * Eliminar imagenes
 	 * 
 	 * @param id
 	 * @throws InternalException
-	 * @throws DeleteFilesException
 	 */
 	@Transactional
-	public void deleteImages(final Long id) throws InternalException, DeleteFilesException;
+	public void deleteImages(final Long id) throws InternalException;
 
 	/**
 	 * Buscar todos los productos
@@ -210,20 +213,24 @@ public interface ProductMgmtServiceI {
 	public List<ProductDTO> confirmOrder(final List<ProductSoldDTO> productsDtoToBuy) throws InternalException;
 
 	/**
-	 * Eliminar ficheros
+	 * GUardar imagenes
 	 * 
-	 * @param imagesUrls
-	 * @throws DeleteFilesException
-	 * @throws InternalException
+	 * @param productId
+	 * @param images
+	 * @throws SQLException
 	 */
-	public void removeImages(final List<String> imagesUrls) throws DeleteFilesException, InternalException;
+	@Transactional
+	@Modifying
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	public void insertImages(Long productId, List<byte[]> images) throws SQLException;
 
 	/**
-	 * Agregar ruta base a cada archivo
+	 * Contar las ocurrencias de productos de una categoria
 	 * 
-	 * @param fileNames
+	 * @param productCategory
+	 * @return long
 	 * @throws InternalException
 	 */
-	public void addRoutes(final List<String> fileNames) throws InternalException;
+	public long countByProductCategory(ProductCategoryDTO productCategoryDto) throws InternalException;
 
 }

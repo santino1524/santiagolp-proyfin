@@ -122,7 +122,7 @@ async function loadIndex() {
 
 		let data = await response.json();
 
-		if (data && data.productCategoryDto[0].categoryId) {
+		if (data && data.productCategoryDto.length > 0) {
 			// Maquetar categorias con productos
 			layoutCategoriesProducts(data.productCategoryDto);
 		}

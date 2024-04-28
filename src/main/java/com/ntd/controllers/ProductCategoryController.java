@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ProductCategoryMgmtServiceI;
+import com.ntd.services.ProductMgmtServiceI;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
@@ -35,13 +36,19 @@ public class ProductCategoryController {
 	/** Dependencia del servicio de gategorias de productos */
 	private final ProductCategoryMgmtServiceI categoryMgmtService;
 
+	/** Dependencia del servicio de productos */
+	private final ProductMgmtServiceI productMgmtService;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param categoryMgmtService
+	 * @param productMgmtService
 	 */
-	public ProductCategoryController(final ProductCategoryMgmtServiceI categoryMgmtService) {
+	public ProductCategoryController(ProductCategoryMgmtServiceI categoryMgmtService,
+			ProductMgmtServiceI productMgmtService) {
 		this.categoryMgmtService = categoryMgmtService;
+		this.productMgmtService = productMgmtService;
 	}
 
 	/**
@@ -83,8 +90,7 @@ public class ProductCategoryController {
 	 * Eliminar Categoria
 	 * 
 	 * @param categoryDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
@@ -97,10 +103,18 @@ public class ProductCategoryController {
 		// Validar id
 		ValidateParams.isNullObject(categoryDto.categoryId());
 
-		// Eliminar Category
-		categoryMgmtService.deleteProductCategory(categoryDto.categoryId());
+		ResponseEntity<Void> result = null;
 
-		return ResponseEntity.noContent().build();
+		// Verificar si existen productos con esa categoria
+		if (productMgmtService.countByProductCategory(categoryDto) > 0) {
+			result = ResponseEntity.unprocessableEntity().build();
+		} else {
+			// Eliminar Category
+			categoryMgmtService.deleteProductCategory(categoryDto.categoryId());
+			result = ResponseEntity.noContent().build();
+		}
+
+		return result;
 	}
 
 	/**
@@ -110,7 +124,7 @@ public class ProductCategoryController {
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchAll")
-	public ResponseEntity<Object> showCategory(final Model model) throws InternalException {
+	public ResponseEntity<Object> showCategory() throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar todas las Categorias");
 

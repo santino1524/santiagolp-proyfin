@@ -134,7 +134,7 @@ public class Constants {
 	public static final String MSG_PRODUCT_SIZES_NOT_VALID = "Debe introducir la talla del producto";
 
 	/** Msg de imageUrls NotValid */
-	public static final String MSG_IMAGE_URL_NOT_VALID = "El producto debe contener alguna imagen";
+	public static final String MSG_IMAGE_NOT_VALID = "El producto debe contener alguna imagen";
 
 	/** Msg de category NotValid */
 	public static final String MSG_CATEGORY_NOT_VALID = "La categoría introducida no es válida";

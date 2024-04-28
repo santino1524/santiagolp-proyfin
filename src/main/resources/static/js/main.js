@@ -9,6 +9,8 @@ const separatorsRegex = /[\\/]/;
 const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 // Url error
 const urlError = "/internalError";
+// Tamanyo maximo permitido para la carga de imagenes (1MB)
+const maxSizeInBytes = 1 * 1024 * 1024;
 
 // Comprobacion de contrasennas al enviar formulario de registro
 document.addEventListener("DOMContentLoaded", function() {
@@ -122,7 +124,7 @@ async function listCategoriesInNav() {
 
 		let data = await response.json();
 
-		if (data) {
+		if (data && data.productCategoryDto.length > 0) {
 			// Limpiar el contenido actual del dropdownMenu
 			dropdownMenu.innerHTML = '';
 

@@ -1,12 +1,12 @@
 package com.ntd.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.springframework.stereotype.Service;
 
@@ -14,14 +14,11 @@ import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.mapper.DTOMapperI;
-import com.ntd.exceptions.DeleteFilesException;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductRepositoryI;
-import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
-import jakarta.servlet.ServletContext;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,22 +33,22 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	/** Dependencia de ProductRepository */
 	private final ProductRepositoryI productRepository;
 
-	/** ServletContext */
-	private final ServletContext context;
+	/** Dependencia de DataSource */
+	private final DataSource dataSource;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param context
 	 * @param productRepository
+	 * @param dataSource
 	 */
-	public ProductMgmtServiceImp(final ProductRepositoryI productRepository, final ServletContext context) {
+	public ProductMgmtServiceImp(ProductRepositoryI productRepository, DataSource dataSource) {
 		this.productRepository = productRepository;
-		this.context = context;
+		this.dataSource = dataSource;
 	}
 
 	@Override
-	public ProductDTO insertProduct(ProductDTO productDto) throws InternalException {
+	public ProductDTO insertProduct(ProductDTO productDto) throws InternalException, SQLException {
 		if (log.isInfoEnabled())
 			log.info("Insertar producto");
 
@@ -61,8 +58,44 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Mapear DTO y guardar
 		final Product product = productRepository.save(DTOMapperI.MAPPER.mapDTOToProduct(productDto));
 
+		// Guardar las imágenes asociadas al producto
+		if (productDto.images() != null && !productDto.images().isEmpty()) {
+			insertImages(product.getProductId(), productDto.images());
+		}
+
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductToDTO(product);
+	}
+
+	/**
+	 * Insertar imagenes por lotes
+	 * 
+	 * @param productId
+	 * @param images
+	 * @throws SQLException
+	 */
+	public void insertImages(Long productId, List<byte[]> images) throws SQLException {
+		if (log.isInfoEnabled())
+			log.info("Insertar imagenes");
+
+		try (Connection connection = dataSource.getConnection();
+				PreparedStatement statement = connection.prepareStatement(
+						"INSERT INTO T_IMAGES (C_PRODUCT_ID, C_IMAGE) VALUES (?, CAST(? AS bytea))")) {
+
+			for (byte[] image : images) {
+				statement.setLong(1, productId);
+				statement.setBytes(2, image);
+				statement.addBatch();
+			}
+			statement.executeBatch();
+
+		} catch (SQLException e) {
+			if (log.isErrorEnabled()) {
+				log.error(e.getMessage());
+			}
+
+			throw new SQLException("Ha ocurrido un error al insertar las imágenes");
+		}
 	}
 
 	@Override
@@ -81,15 +114,12 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public void deleteProduct(Long id) throws InternalException, DeleteFilesException {
+	public void deleteProduct(Long id) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar producto");
 
 		// Validar parametro
 		ValidateParams.isNullObject(id);
-
-		// Eliminar imagenes
-		deleteImages(id);
 
 		// Eliminar por Id
 		productRepository.deleteById(id);
@@ -102,13 +132,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		// Buscar todos los productos
 		final List<Product> products = productRepository.findAll();
-
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -135,13 +158,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductCategory(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -165,13 +181,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		// Buscar por nombre
 		final List<Product> products = productRepository.findByProductNameIgnoreCaseContaining(productName);
-
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -198,13 +207,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductNameIgnoreCaseContainingOrderByPvpPriceDesc(productName);
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -230,13 +232,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductNameIgnoreCaseContainingOrderByPvpPriceAsc(productName);
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -258,13 +253,25 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Validar parametro
 		ValidateParams.isNullObject(productNumber);
 
-		// Buscar por numero de producto
-		final Product product = productRepository.findByProductNumber(productNumber);
+		// Buscar producto por numero de producto
+		Product product = productRepository.findByProductNumber(productNumber);
 
-		// Agregar rutas a las imagenes
-		if (product != null) {
-			addRoutes(product.getImageUrls());
+		// Buscar imagenes por id
+		Object[] objectProduct = productRepository.findImagesById(product.getProductId());
+
+		// Inicializa una lista para las imágenes
+		List<byte[]> images = new ArrayList<>();
+
+		// Itera sobre los valores de result
+		for (int i = 0; i < objectProduct.length; i++) {
+			// Verifica si el valor en result[i] no es nulo
+			if (objectProduct[i] != null) {
+				// Agrega el valor a la lista de imagenes
+				images.add((byte[]) objectProduct[i]);
+			}
 		}
+
+		product.setImages(images);
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductToDTO(product);
@@ -283,13 +290,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Buscar por numero y nombre de producto
 		final List<Product> products = productRepository.findByProductNameIgnoreCaseOrProductNumber(productName,
 				productNumber);
-
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -363,87 +363,15 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public void deleteImages(Long id) throws InternalException, DeleteFilesException {
+	public void deleteImages(Long id) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar imagenes");
 
 		// Validar parametro
 		ValidateParams.isNullObject(id);
 
-		// Buscar imagenes
-		List<String> fileNames = productRepository.findImageUrlsByProductId(id);
-
-		// Eliminar ficheros
-		removeImages(fileNames);
-
 		// Eliminar imagenes
-		productRepository.deleteImageUrlsByProductId(id);
-	}
-
-	@Override
-	public void removeImages(List<String> fileNames) throws DeleteFilesException, InternalException {
-		// Crea un objeto File que representa el directorio
-		String baseDirectory = context.getRealPath("") + Constants.SEPARATOR + Constants.PRODUCT_IMAGES;
-		File directory = new File(baseDirectory);
-
-		// Verifica si el directorio existe
-		if (directory.exists() && directory.isDirectory()) {
-			// Obtiene una lista de archivos en el directorio
-			File[] files = directory.listFiles();
-
-			// Itera sobre los archivos en el directorio
-			for (File file : files) {
-				// Verifica si el nombre del archivo coincide con alguno de los nombres de
-				// imagen
-				findFileNameForImageName(fileNames, baseDirectory, file);
-			}
-		} else {
-			if (log.isErrorEnabled())
-				log.error("El directorio de imagenes de productos debe existir");
-
-			throw new InternalException();
-		}
-	}
-
-	/**
-	 * Verifica si el nombre del archivo coincide con alguno de los nombres de
-	 * imagen
-	 * 
-	 * @param fileNames
-	 * @param baseDirectory
-	 * @param file
-	 * @throws DeleteFilesException
-	 */
-	private void findFileNameForImageName(List<String> fileNames, String baseDirectory, File file)
-			throws DeleteFilesException {
-
-		for (String imageName : fileNames) {
-			if (file.getName().equals(imageName)) {
-				// Obtener el path
-				Path filePath = Paths.get(baseDirectory, file.getName());
-
-				// Elimina el archivo si coincide con el nombre de la imagen
-				try {
-					Files.delete(filePath);
-				} catch (IOException e) {
-					if (log.isErrorEnabled())
-						log.error(e.getMessage());
-
-					throw new DeleteFilesException();
-				}
-			}
-		}
-	}
-
-	@Override
-	public void addRoutes(List<String> fileNames) throws InternalException {
-
-		// Validar parametro
-		ValidateParams.isNullObject(fileNames);
-		fileNames.replaceAll(filename -> File.separator + Constants.PRODUCT_IMAGES + File.separator + filename);
-//		fileNames
-//				.replaceAll(filename -> context.getRealPath("") + Constants.PRODUCT_IMAGES + File.separator + filename);
-
+		productRepository.deleteImagesByProductId(id);
 	}
 
 	@Override
@@ -458,13 +386,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Buscar por categoria
 		final List<Product> products = productRepository.findByProductCategoryOrderByPvpPriceDesc(
 				DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
-
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -492,13 +413,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository
 				.findByProductCategoryOrderByPvpPriceAsc(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -517,13 +431,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Buscar productos
 		final List<Product> products = productRepository.findAllByOrderByPvpPriceDesc();
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -541,13 +448,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	public List<ProductDTO> searchAllOrderPvpPriceAsc() throws InternalException {
 		// Buscar por categoria
 		final List<Product> products = productRepository.findAllByOrderByPvpPriceAsc();
-
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
 
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
@@ -577,13 +477,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 				.findByProductNameIgnoreCaseContainingAndProductCategoryOrderByPvpPriceDesc(productName,
 						DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -612,13 +505,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 				.findByProductNameIgnoreCaseContainingAndProductCategoryOrderByPvpPriceAsc(productName,
 						DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -646,13 +532,6 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		final List<Product> products = productRepository.findByProductNameIgnoreCaseContainingAndProductCategory(
 				productName, DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 
-		// Agregar rutas a las imagenes
-		if (!products.isEmpty()) {
-			for (Product product : products) {
-				addRoutes(product.getImageUrls());
-			}
-		}
-
 		// Mapear DTO
 		final List<ProductDTO> productsDto = new ArrayList<>();
 
@@ -664,5 +543,15 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		// Retornar lista DTO
 		return productsDto;
+	}
+
+	@Override
+	public long countByProductCategory(ProductCategoryDTO productCategoryDto) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Contar productos de una categoria");
+
+		ValidateParams.isNullObject(productCategoryDto);
+
+		return productRepository.countByProductCategory(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 	}
 }

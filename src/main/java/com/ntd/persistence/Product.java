@@ -16,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -67,12 +68,13 @@ public class Product implements Serializable {
 	@Column(name = "C_PRODUCT_QUANTITY", nullable = false)
 	private int productQuantity;
 
-	/** Url de las imagenes */
+	/** Imagenes */
+	@Lob
 	@ElementCollection
 	@Cascade(value = { CascadeType.ALL })
-	@CollectionTable(name = "T_IMAGES_URL", joinColumns = @JoinColumn(name = "C_PRODUCT_ID"))
-	@Column(name = "C_IMAGE_URL", nullable = false)
-	private List<String> imageUrls;
+	@CollectionTable(name = "T_IMAGES", joinColumns = @JoinColumn(name = "C_PRODUCT_ID"))
+	@Column(name = "C_IMAGE", columnDefinition = "BYTEA", nullable = false)
+	private List<byte[]> images;
 
 	/** IVA */
 	@Column(name = "C_IVA", nullable = false)
