@@ -28,7 +28,7 @@ import com.ntd.persistence.User;
 /**
  * Mapear DTO
  */
-@Mapper(imports = { com.ntd.security.UserRole.class, java.util.Arrays.class })
+@Mapper(imports = { com.ntd.security.UserRole.class })
 public interface DTOMapperI {
 
 	/** Dependencia de DTOMapper */
