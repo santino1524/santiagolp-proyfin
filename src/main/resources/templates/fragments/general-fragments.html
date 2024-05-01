@@ -220,7 +220,7 @@
 										<div class="col-md-2">
 											<label class="sr-only" for="quantity">Cantidad</label> <input
 												type="number" class="form-control mb-2" id="quantity"
-												placeholder="0">
+												placeholder="0" min="1" max="100">
 										</div>
 										<div class="col-md-4 mr-4">
 											<button type="button" class="btn btn-primary mb-2 btn-block"
@@ -252,7 +252,7 @@
 
 	<!-- Modal Pay -->
 	<div th:fragment="modalPay">
-		<div class="modal fade" id="loginPageModal" tabindex="-1"
+		<div class="modal fade" id="modalPay" tabindex="-1"
 			role="dialog" aria-labelledby="generalModal" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -261,7 +261,7 @@
 					</div>
 					<div class="modal-body" id="bodyModalPay"></div>
 					<div class="modal-footer">
-						<a id="hrefModalPay" class="btn btn-secondary" data-dismiss="modal">Aceptar</a>
+						<button id="hrefModalPay" class="btn btn-secondary" data-dismiss="modal">Aceptar</a>
 					</div>
 				</div>
 			</div>

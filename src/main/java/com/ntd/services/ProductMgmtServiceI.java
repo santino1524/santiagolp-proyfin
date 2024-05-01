@@ -217,4 +217,13 @@ public interface ProductMgmtServiceI {
 	 */
 	public long countByProductCategory(ProductCategoryDTO productCategoryDto) throws InternalException;
 
+	/**
+	 * Buscar producto por id
+	 * 
+	 * @param id
+	 * @return ProductDTO
+	 * @throws InternalException
+	 */
+	public ProductDTO searchById(final Long id) throws InternalException;
+
 }

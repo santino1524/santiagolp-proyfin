@@ -159,24 +159,6 @@ function updateQuantityCart(quantity) {
 	cartIcon.innerHTML = '<i class="fas fa-shopping-cart fa-lg"></i> <span class="badge badge-pill badge-danger">' + quantity + '</span>';
 }
 
-// Mostrar productos de la cesta
-function loadShoppingCart() {
-	// Obtener el carrito de la cesta del localStorage
-	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
-
-	// Redireccionar a pagina principal si el carrito esta vacio
-	if (cartLfd.lenght === 0) {
-		document.getElementById('bodyModalPay').textContent = "¡Oops! Parece que el carrito está vacío. ¿Por qué no te das una vuelta por nuestra tienda y descubres nuestros increíbles productos? Estamos seguros de que encontrarás algo que te encantará.";
-		document.getElementById('modalPay').href = "/#";
-		
-		$('#modalPay').modal('show');
-		return;
-	}
-	
-	
-}
-
-
 // Annadir al carrito
 function addCart(productId, quantity) {
 	// Construir el objeto a guardar

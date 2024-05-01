@@ -492,4 +492,19 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		return productRepository.countByProductCategory(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
 	}
+
+	@Override
+	public ProductDTO searchById(Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por id");
+
+		// Validar parametro
+		ValidateParams.isNullObject(id);
+
+		// Buscar por id
+		final Product product = productRepository.findById(id).orElse(null);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapProductToDTO(product);
+	}
 }
