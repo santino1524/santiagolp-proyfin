@@ -43,11 +43,13 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item mr-sm-4"><a class="nav-link titleNav" href="/">Inicio</a></li>
+					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
+						href="/">Inicio</a></li>
 					<li class="nav-item dropdown mr-sm-4"><a
-						class="nav-link titleNav dropdown-toggle" href="#" id="navbarDropdown"
-						role="button" data-toggle="dropdown" aria-haspopup="true"
-						aria-expanded="false" onclick="listCategoriesInNav()"> Tienda </a>
+						class="nav-link titleNav dropdown-toggle" href="#"
+						id="navbarDropdown" role="button" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false"
+						onclick="listCategoriesInNav()"> Tienda </a>
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
 					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
@@ -57,9 +59,11 @@
 				</ul>
 
 				<ul class="navbar-nav ml-auto">
-					<form class="form-inline my-2 my-lg-0" action="/products/searchByProductNamePage" method="GET">
+					<form class="form-inline my-2 my-lg-0"
+						action="/products/searchByProductNamePage" method="GET">
 						<input class="form-control mr-sm-2" type="search"
-							name="productName" placeholder="Buscar" aria-label="Search" required title="Introduzca el término de búsqueda">
+							name="productName" placeholder="Buscar" aria-label="Search"
+							required title="Introduzca el término de búsqueda">
 						<button class="btn btn-outline-light my-2 my-sm-0 mr-sm-2"
 							type="submit" title="Buscar">
 							<i class="fas fa-search"></i>
@@ -95,8 +99,8 @@
 													id="inputPassword2" placeholder="Contraseña" required
 													autocomplete="password">
 												<div class="help-block text-right">
-													<a id="linkRecoverPassword" th:href="@{/recoverPassword}">¿Haz olvidado tu
-														contraseña?</a>
+													<a id="linkRecoverPassword" th:href="@{/recoverPassword}">¿Haz
+														olvidado tu contraseña?</a>
 												</div>
 											</div>
 											<div class="form-group">
@@ -107,7 +111,8 @@
 										</form>
 									</div>
 									<div class="bottom text-center">
-										¿Eres nuevo por aquí? <a id="linkRegister" th:href="@{/register}"><b>Resgístrate</b></a>
+										¿Eres nuevo por aquí? <a id="linkRegister"
+											th:href="@{/register}"><b>Resgístrate</b></a>
 									</div>
 								</div>
 							</li>
@@ -153,6 +158,92 @@
 						<button type="button" class="btn btn-secondary"
 							data-dismiss="modal" id="modalBtnOk"
 							onclick="document.getElementById('login-nav').submit()">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Product-->
+	<div th:fragment="modalProduct">
+		<div class="modal fade" id="modalProduct" tabindex="-1" role="dialog"
+			aria-labelledby="modalProduct" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<!-- Encabezado del modal -->
+					<div class="modal-header">
+						<h5 class="modal-title" id="titleModalProduct"></h5>
+						<!-- Boton de cerrar -->
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<!-- Contenido del modal -->
+					<div class="modal-body">
+						<div class="row">
+							<!-- Sección de imagenes del producto -->
+							<div class="col-md-6">
+								<div id="carouselImagesProducts" class="carousel slide"
+									data-ride="carousel">
+									<ol class="carousel-indicators" id="carouselIndicators">
+									</ol>
+									<div class="carousel-inner" id="carouselInner">
+									</div>
+									<a class="carousel-control-prev" href="#carouselImagesProducts"
+										role="button" data-slide="prev"> <span
+										class="carousel-control-prev-icon" aria-hidden="true"></span>
+										<span class="sr-only">Anterior</span>
+									</a> <a class="carousel-control-next"
+										href="#carouselImagesProducts" role="button" data-slide="next">
+										<span class="carousel-control-next-icon" aria-hidden="true"></span>
+										<span class="sr-only">Siguiente</span>
+									</a>
+								</div>
+							</div>
+
+							<!-- Seccion de detalles del producto -->
+							<div class="col-md-6">
+								<div class="alert alert-danger d-none mb-3 text-center" role="alert"
+									id="messageProductQuantity"></div>
+								<div class="d-flex flex-column justify-content-between h-100">
+									<div class="mt-3 mb-3 text-center">
+										<h4 id="productName"></h4>
+									</div>
+									<div class="mb-3 text-center">
+										<h4 id="productPrice"></h4>
+									</div>
+									<div class="mb-3 text-center">
+										<h5>
+											<i class="fas fa-plane mr-2"></i>Envío gratis
+										</h5>
+									</div>
+									<div class="mb-3 text-center">
+										<h5 class="mb-0" id="productSize">Tamaño:</h5>
+									</div>
+									<div class="form-row text-center mt-3 mb-3">
+										<div class="col-md-2">
+											<label class="sr-only" for="productQuantity">Cantidad</label> <input
+												type="number" class="form-control mb-2" id="productQuantity"
+												placeholder="0">
+										</div>
+										<div class="col-md-4 mr-4">
+											<button type="button" class="btn btn-primary mb-2 btn-block">Añadir
+												al carrito</button>
+										</div>
+										<div class="col-md-4">
+											<button type="button" class="btn btn-success mb-2 btn-block">Comprar
+												ahora</button>
+										</div>
+									</div>
+									<div>
+										<!-- Descripción del producto -->
+										<h5>Descripción del producto:</h5>
+										<p id="productDescription"></p>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -212,7 +303,6 @@
 		<div class="invisible d-md-block w-100"
 			style="height: 70px; background-color: #f0f0f0;"></div>
 	</div>
-
 </body>
 
 </html>

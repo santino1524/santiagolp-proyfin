@@ -163,3 +163,92 @@ async function searchByCategoryPageProducts(categoryId) {
 		window.location.href = urlError;
 	}
 }
+
+// Mostrar producto en modal 
+async function showModalProduct(product) {
+	//let modalProduct = document.getElementById('modalProduct');
+	//modalProduct.modal('show');
+	$('#modalProduct').modal('show');
+
+	// Limpiar el contenido anterior antes de agregar nuevo contenido
+	document.getElementById('carouselInner').innerHTML = '';
+	document.getElementById('carouselIndicators').innerHTML = '';
+
+	document.getElementById('titleModalProduct').textContent = await searchCategoryNameById(product.categoryId);
+
+	// Añadir imagenes
+	//Primera imagen
+	let divCarouselItemActive = document.createElement('div');
+	divCarouselItemActive.classList.add('carousel-item', 'active');
+	let imgActive = document.createElement('img');
+	imgActive.classList.add('d-block', 'w-100');
+	imgActive.src = 'data:image/jpeg;base64,' + product.images[0];
+	divCarouselItemActive.append(imgActive);
+	document.getElementById('carouselInner').append(divCarouselItemActive);
+
+	// Primera Slide
+	let liSlide1 = document.createElement('li');
+	liSlide1.setAttribute('data-target', '#carouselImagesProducts');
+	liSlide1.setAttribute('data-slide-to', '0');
+	liSlide1.classList.add('active');
+	document.getElementById('carouselIndicators').append(liSlide1);
+
+    // Otras imagenes
+	for (let i = 1; i < product.images.length; i++) {
+		let divCarouselItem = document.createElement('div');
+		divCarouselItem.classList.add('carousel-item');
+		let img = document.createElement('img');
+		img.classList.add('d-block', 'w-100');
+		img.src = 'data:image/jpeg;base64,' + product.images[i];
+		divCarouselItem.append(img);
+		document.getElementById('carouselInner').append(divCarouselItem);
+
+		// Crear Slide
+		let liSlide = document.createElement('li');
+		liSlide.setAttribute('data-target', '#carouselImagesProducts');
+		liSlide.setAttribute('data-slide-to', i);
+		document.getElementById('carouselIndicators').append(liSlide);
+	}
+
+	// Detalles del producto
+	document.getElementById('productName').textContent = product.productName;
+	document.getElementById('productPrice').textContent = product.pvpPrice + "€";
+	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
+	document.getElementById('productDescription').textContent = product.productDescription;
+
+	if (product.productQuantity < 5) {
+		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
+		document.getElementById('messageProductQuantity').classList.remove('d-none');
+	}
+}
+
+// Buscar categoria por ID
+async function searchCategoryNameById(categoryId) {
+	try {
+		let response = await fetch("/category/searchById?categoryId=" + categoryId, {
+			method: "GET",
+		});
+
+		if (!response.ok) {
+			window.location.href = urlError;
+		}
+
+		let data = await response.json();
+
+		if (data && data.category.categoryId) {
+			return data.category.categoryName;
+		} else {
+			window.location.href = urlError;
+		}
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+
+
+
+
+
