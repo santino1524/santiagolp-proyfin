@@ -7,15 +7,65 @@
 </head>
 
 <body>
+	<script>
+		// Obtener productos de la cesta 
+		window.onload = function() {
+			loadShoppingCart();
+		}
+	</script>
+
 	<!-- CONTENIDO DE CABECERA DE LA APP -->
 	<div th:replace="~{fragments/general-fragments :: headerContent}">
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3">
+	<div class="container text-center mt-5 mb-5">
+		<div class="col text-center mb-3">
+			<img src="/images/car.png" class="img-fluid"
+				style="max-height: 250px;" alt="Goku saluda"
+				title="Carrito de compras">
+		</div>
 		<h2 class="mb-3">Carrito de compras</h2>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Imagen</th>
+						<th>Nombre</th>
+						<th>Cantidad</th>
+						<th>Precio Unitario</th>
+						<th>Precio Total</th>
+						<th>Eliminar</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><img src="imagen1.jpg" alt="Producto 1"
+							class="img-thumbnail" style="width: 100px;"></td>
+						<td>Producto 1</td>
+						<td class=""><input type="number" class="form-control"
+							value="1" style="width: 80px;"></td>
+						<td>$10.00</td>
+						<td>$10.00</td>
+						<td><button class="btn btn-danger">
+								<i class="fas fa-trash"></i>
+							</button></td>
+					</tr>
+					<!-- Aquí se agregarían más filas para otros productos -->
+				</tbody>
+			</table>
+		</div>
+		<div class="text-right">
+			<h4 class="mb-3">Total: $10.00</h4>
+			<a th:href="@{/pay}" class="btn btn-success"><i
+				class="fa-solid fa-wallet mr-sm-2"></i>Realizar compra</a>
+		</div>
 	</div>
-
+	
+	<!-- Modal Pay -->
+	<div th:replace="~{fragments/general-fragments :: modalPay}">
+	</div>
+	
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>

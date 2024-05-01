@@ -44,7 +44,7 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
-						href="/">Inicio</a></li>
+						href="/#">Inicio</a></li>
 					<li class="nav-item dropdown mr-sm-4"><a
 						class="nav-link titleNav dropdown-toggle" href="#"
 						id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -53,7 +53,7 @@
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
 					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
-						th:href="@{/about}">Acerca de</a></li>
+						th:href="@{/about}	">Acerca de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
 						class="nav-link titleNav" th:href="@{/admin}" id="adminLink">Administración</a></li>
 				</ul>
@@ -135,8 +135,9 @@
 			</div>
 
 			<div class="navbar-nav">
-				<a class="nav-link titleNav" th:href="@{/shoppingCart}"
-					title="Cesta de compras"> <i class="fas fa-shopping-cart fa-lg"></i>
+				<a id="cartIcon" class="nav-link titleNav"
+					th:href="@{/shoppingCart}" title="Cesta de compras"> <i
+					class="fas fa-shopping-cart fa-lg"></i>
 				</a>
 			</div>
 		</nav>
@@ -188,8 +189,7 @@
 									data-ride="carousel">
 									<ol class="carousel-indicators" id="carouselIndicators">
 									</ol>
-									<div class="carousel-inner" id="carouselInner">
-									</div>
+									<div class="carousel-inner" id="carouselInner"></div>
 									<a class="carousel-control-prev" href="#carouselImagesProducts"
 										role="button" data-slide="prev"> <span
 										class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -204,46 +204,64 @@
 
 							<!-- Seccion de detalles del producto -->
 							<div class="col-md-6">
-								<div class="alert alert-danger d-none mb-3 text-center" role="alert"
-									id="messageProductQuantity"></div>
-								<div class="d-flex flex-column justify-content-between h-100">
-									<div class="mt-3 mb-3 text-center">
-										<h4 id="productName"></h4>
-									</div>
-									<div class="mb-3 text-center">
-										<h4 id="productPrice"></h4>
-									</div>
-									<div class="mb-3 text-center">
-										<h5>
-											<i class="fas fa-plane mr-2"></i>Envío gratis
-										</h5>
-									</div>
-									<div class="mb-3 text-center">
-										<h5 class="mb-0" id="productSize">Tamaño:</h5>
-									</div>
-									<div class="form-row text-center mt-3 mb-3">
+								<div
+									class="d-flex flex-column justify-content-between h-100 text-center">
+									<div class="alert alert-danger d-none mb-4 text-center"
+										role="alert" id="messageProductQuantity"></div>
+									<input type="hidden" id="productId">
+									<h4 id="productName"></h4>
+									<h4 id="productPrice"></h4>
+									<h5>
+										<i class="fas fa-plane mr-2"></i>Envío gratis
+									</h5>
+									<h5 id="productSize">Tamaño:</h5>
+
+									<div class="form-row text-center mb-1">
 										<div class="col-md-2">
-											<label class="sr-only" for="productQuantity">Cantidad</label> <input
-												type="number" class="form-control mb-2" id="productQuantity"
+											<label class="sr-only" for="quantity">Cantidad</label> <input
+												type="number" class="form-control mb-2" id="quantity"
 												placeholder="0">
 										</div>
 										<div class="col-md-4 mr-4">
-											<button type="button" class="btn btn-primary mb-2 btn-block">Añadir
-												al carrito</button>
+											<button type="button" class="btn btn-primary mb-2 btn-block"
+												onclick="addCart(document.getElementById('productId').value, document.getElementById('quantity').value)">
+												<i class="fa-solid fa-cart-plus mr-sm-2"></i>Añadir al
+												carrito
+											</button>
 										</div>
 										<div class="col-md-4">
-											<button type="button" class="btn btn-success mb-2 btn-block">Comprar
-												ahora</button>
+											<a th:href="@{/shoppingCart}"
+												class="btn btn-success mb-2 btn-block"> <i
+												class="fa-solid fa-list-check mr-sm-2"></i>Ver carrito
+											</a>
 										</div>
 									</div>
 									<div>
 										<!-- Descripción del producto -->
 										<h5>Descripción del producto:</h5>
-										<p id="productDescription"></p>
+										<p id="productDescription" class="text-justify"></p>
 									</div>
 								</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Pay -->
+	<div th:fragment="modalPay">
+		<div class="modal fade" id="loginPageModal" tabindex="-1"
+			role="dialog" aria-labelledby="generalModal" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Aviso</h5>
+					</div>
+					<div class="modal-body" id="bodyModalPay"></div>
+					<div class="modal-footer">
+						<a id="hrefModalPay" class="btn btn-secondary" data-dismiss="modal">Aceptar</a>
 					</div>
 				</div>
 			</div>
@@ -257,7 +275,7 @@
 		<div class="container">
 			<div class="row justify-content-between">
 				<div class="col-md-4 col-sm-6">
-					<div class="Shipping d-flex">
+					<div class="Shipping d-flex ">
 						<p>Envíos con: &nbsp;</p>
 						<div class="card-wrap ps-2">
 							<a href="https://www.dhl.com/es-es/home.html" target="_blank"><img
@@ -277,7 +295,7 @@
 					</div>
 				</div>
 				<div class="col-md-4 col-sm-6">
-					<div class="card-wrap ps-2">
+					<div class="card-wrap ps-2 ">
 						<p>&copy; Copyright 2024</p>
 					</div>
 				</div>

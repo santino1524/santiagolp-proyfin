@@ -80,7 +80,7 @@ async function layoutProducts(products) {
 		aCart.classList.add('add-to-cart');
 		aCart.href = '#'; // PONER URL DEV
 		aCart.onclick = function() {
-			addCart(product.productId);
+			addCart(product.productId, 1);
 		};
 		aCart.append('Añadir al carrito');
 		divProductsRating.append(ul);

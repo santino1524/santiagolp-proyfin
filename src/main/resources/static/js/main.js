@@ -146,9 +146,66 @@ async function listCategoriesInNav() {
 	}
 }
 
-// Annadir al carrito
-function addCart(productId) {
+// Llamar a la funcion para actualizar el numero de productos en el carrito cuando se cargue la pagina
+document.addEventListener('DOMContentLoaded', function() {
+	addCart();
+});
 
+// Actualizar cantidad en cesta
+function updateQuantityCart(quantity) {
+	let cartIcon = document.getElementById('cartIcon');
+
+	// Actualizar el contenido del icono con la cantidad de productos
+	cartIcon.innerHTML = '<i class="fas fa-shopping-cart fa-lg"></i> <span class="badge badge-pill badge-danger">' + quantity + '</span>';
+}
+
+// Mostrar productos de la cesta
+function loadShoppingCart() {
+	// Obtener el carrito de la cesta del localStorage
+	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
+
+	// Redireccionar a pagina principal si el carrito esta vacio
+	if (cartLfd.lenght === 0) {
+		document.getElementById('bodyModalPay').textContent = "¡Oops! Parece que el carrito está vacío. ¿Por qué no te das una vuelta por nuestra tienda y descubres nuestros increíbles productos? Estamos seguros de que encontrarás algo que te encantará.";
+		document.getElementById('modalPay').href = "/#";
+		
+		$('#modalPay').modal('show');
+		return;
+	}
+	
+	
+}
+
+
+// Annadir al carrito
+function addCart(productId, quantity) {
+	// Construir el objeto a guardar
+	let product;
+	if (productId && (quantity || 1)) {
+		product = {
+			productId: productId,
+			quantity: quantity || 1,
+		};
+	}
+
+	// Obtener el carrito de la cesta del localStorage
+	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
+
+	// Agregar el producto al carrito
+	if (productId && (quantity || 1)) {
+		cartLfd.push(product);
+	}
+
+	// Contar el numero total de productos en el carrito
+	let totalProducts = cartLfd.reduce((total, productCart) => total + parseInt(productCart.quantity), 0);
+
+	// Actualizar icono carrito
+	updateQuantityCart(totalProducts)
+
+	// Guardar el carrito actualizado en el localStorage
+	if (productId && (quantity || 1)) {
+		localStorage.setItem('cartLfd', JSON.stringify(cartLfd));
+	}
 }
 
 // Buscar productos y redirigir a pagina productos
@@ -166,13 +223,12 @@ async function searchByCategoryPageProducts(categoryId) {
 
 // Mostrar producto en modal 
 async function showModalProduct(product) {
-	//let modalProduct = document.getElementById('modalProduct');
-	//modalProduct.modal('show');
 	$('#modalProduct').modal('show');
 
 	// Limpiar el contenido anterior antes de agregar nuevo contenido
 	document.getElementById('carouselInner').innerHTML = '';
 	document.getElementById('carouselIndicators').innerHTML = '';
+	document.getElementById('messageProductQuantity').classList.add('d-none');
 
 	document.getElementById('titleModalProduct').textContent = await searchCategoryNameById(product.categoryId);
 
@@ -193,7 +249,7 @@ async function showModalProduct(product) {
 	liSlide1.classList.add('active');
 	document.getElementById('carouselIndicators').append(liSlide1);
 
-    // Otras imagenes
+	// Otras imagenes
 	for (let i = 1; i < product.images.length; i++) {
 		let divCarouselItem = document.createElement('div');
 		divCarouselItem.classList.add('carousel-item');
@@ -211,6 +267,7 @@ async function showModalProduct(product) {
 	}
 
 	// Detalles del producto
+	document.getElementById('productId').value = product.productId;
 	document.getElementById('productName').textContent = product.productName;
 	document.getElementById('productPrice').textContent = product.pvpPrice + "€";
 	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
@@ -246,6 +303,7 @@ async function searchCategoryNameById(categoryId) {
 		window.location.href = urlError;
 	}
 }
+
 
 
 
