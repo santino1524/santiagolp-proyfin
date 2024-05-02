@@ -5,29 +5,36 @@ function loadShoppingCart() {
 
 	// Redireccionar a pagina principal si el carrito esta vacio
 	if (cartLfd.length === 0) {
-		document.getElementById('bodyModalPay').textContent = "¡Oops! Parece que el carrito está vacío. ¿Por qué no te das una vuelta por nuestra tienda y descubres nuestros increíbles productos? Estamos seguros de que encontrarás algo que te encantará.";
-		document.getElementById("hrefModalPay").onclick = function() {
-			window.location.href = "/";
-		};
+		modalEmptyCar();
 
 		$('#modalPay').modal('show');
 	} else {
 		// Maquetar tabla con productos
 		layoutTableCar(cartLfd);
 	}
+}
 
-
+// Modal para carrito vacio
+function modalEmptyCar() {
+	document.getElementById('bodyModalPay').textContent = "¡Oops! Parece que el carrito está vacío. ¿Por qué no te das una vuelta por nuestra tienda y descubres nuestros increíbles productos? Estamos seguros de que encontrarás algo que te encantará.";
+	document.getElementById("hrefModalPay").onclick = function() {
+		window.location.href = "/";
+	};
 }
 
 // Maquetar tabla con productos
 async function layoutTableCar(cartLfd) {
 	let tbody = document.getElementById('tbodyProductsCar');
 
+	// Limpiar el contenido del tbody
+	tbody.innerHTML = '';
+
 	for (let productCar of cartLfd) {
 		let product = await searchProductById(productCar.productId);
 
 		let tr = document.createElement('tr');
 		tr.id = `productRow_${productCar.productId}`;
+		tr.classList.add('data-row');
 
 		// Columna Imagen
 		let tdImage = document.createElement('td');
@@ -93,7 +100,7 @@ async function layoutTableCar(cartLfd) {
 		let tdUnityPrice = document.createElement('td');
 		tdUnityPrice.classList.add('align-middle');
 		tdUnityPrice.id = `tdUnityPrice_${productCar.productId}`;
-		tdUnityPrice.textContent = product.pvpPrice + '€';
+		tdUnityPrice.textContent = Number(product.pvpPrice).toFixed(2);
 		// Annadir a la fila
 		tr.append(tdUnityPrice);
 
@@ -101,13 +108,14 @@ async function layoutTableCar(cartLfd) {
 		let tdTotalPrice = document.createElement('td');
 		tdTotalPrice.classList.add('align-middle');
 		tdTotalPrice.id = `tdTotalPrice_${productCar.productId}`;
-		tdTotalPrice.textContent = product.pvpPrice * productCar.quantity + '€';
+		tdTotalPrice.textContent = Number(product.pvpPrice * productCar.quantity).toFixed(2);
 		// Annadir a la fila
 		tr.append(tdTotalPrice);
 
 		// Columna eliminar
 		let tdDelete = document.createElement('td');
 		tdDelete.classList.add('align-middle');
+		tdDelete.id = `tdDelete_${productCar.productId}`;
 		let button = document.createElement('button');
 		button.classList.add('btn', 'btn-danger');
 		let i = document.createElement('i');
@@ -124,6 +132,16 @@ async function layoutTableCar(cartLfd) {
 
 			localStorage.setItem('cartLfd', JSON.stringify(cartLfd));
 			addCart();
+
+			// Calcular total del carrito
+			carTotal(cartLfd);
+
+			// Comprobar si no hay mas elementos en cartLfd
+			if (cartLfd.length === 0) {
+				// Mostrar modal de carrito vacio
+				modalEmptyCar();
+				$('#modalPay').modal('show');
+			}
 		};
 		tdDelete.append(button);
 		// Annadir a la fila
@@ -148,7 +166,7 @@ function carTotal(cartLfd) {
 	}
 
 	// Establecer el total en el h4
-	document.getElementById("carTotal").textContent = total.toFixed(2) + '€'; // Asegura que el total tenga dos decimales
+	document.getElementById("carTotal").textContent = total.toFixed(2) + '€';
 }
 
 // Buscar producto por ID
@@ -166,6 +184,80 @@ async function searchProductById(productId) {
 
 		if (data && data.product.productId) {
 			return data.product;
+		} else {
+			window.location.href = urlError;
+		}
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Checkear disponibilidad de los productos a comprar
+async function checkProducts() {
+	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
+
+	if (cartLfd.length === 0) {
+		modalEmptyCar();
+
+		$('#modalPay').modal('show');
+	}
+
+	let productsNotFound = await confirmAvailability(cartLfd);
+
+	// Iterar sobre las filas de la tabla
+	document.querySelectorAll('table tr.data-row').forEach(row => {
+		// Obtener el ID del producto de la fila actual
+		let productId = row.id.split('_')[1];
+
+		// Verificar si algun producto del carrito coincide con la lista
+		let product = productsNotFound.find(p => p.productSoldId == productId);
+
+		if (product) {
+			// Cambiar el estilo de la fila para que aparezca en rojo
+			row.style.backgroundColor = '#ffcccc';
+
+			// Obtener la celda del boton eliminar
+			let deleteCell = document.getElementById(`tdDelete_${product.productSoldId}`);
+
+			// Verificar si ya existe un mensaje en la celda
+			if (!deleteCell.querySelector('p')) {
+				// Crear un nuevo elemento de texto para el mensaje
+				let messageElement = document.createElement('p');
+				messageElement.textContent = `Solo quedan ${product.quantitySold} productos.`;
+
+				// Agregar el mensaje al final de la celda junto con el boton de eliminar
+				deleteCell.appendChild(messageElement);
+			}
+		}
+	});
+}
+
+// Confirmar disponibilidad
+async function confirmAvailability(productsToSold) {
+	try {
+		let response = await fetch("/orders/checkProducts", {
+			method: "POST",
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(productsToSold)
+		});
+
+		let data;
+
+		if (response.status === 204) {
+			window.location.href = '/pay';
+			return;
+		} else if (response.status === 422) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		if (data && data.products.length !== 0) {
+			return data.products;
 		} else {
 			window.location.href = urlError;
 		}

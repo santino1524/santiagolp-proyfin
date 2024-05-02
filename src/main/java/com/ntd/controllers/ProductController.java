@@ -490,4 +490,5 @@ public class ProductController {
 
 		return ResponseEntity.ok().body(Collections.singletonMap("product", productMgmtService.searchById(productId)));
 	}
+
 }

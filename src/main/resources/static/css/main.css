@@ -14,6 +14,12 @@
 }
 
 
+/* Efecto boton annadir al carrito */
+.loading {
+  opacity: 0.5;
+}
+
+
 /* Login */
 #login-dp {
 	min-width: 250px;

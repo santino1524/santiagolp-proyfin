@@ -1,8 +1,12 @@
 package com.ntd.controllers;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.ProductDTO;
+import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.OrderMgmtServiceI;
@@ -106,7 +111,8 @@ public class OrderController {
 		} else {
 
 			// Confirmar productos a comprar
-			final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto());
+			final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto(),
+					false);
 			if (productsDtoNotFound.isEmpty()) {
 				// Guardar pedido
 				result = orderMgmtService.insertOrder(orderDto);
@@ -137,6 +143,57 @@ public class OrderController {
 
 		// Retornar respuesta
 		return "VISTA MOSTRAR RESPUESTA DE PEDIDO REALIZADO";
+	}
+
+	/**
+	 * Chequear productos a vender
+	 * 
+	 * @param productsToSold
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping(path = "/checkProducts")
+	public ResponseEntity<Object> checkProductsToSold(@RequestBody @NotNull List<Map<String, Object>> productsToSold)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Chequear los productos a vender");
+
+		ResponseEntity<Object> result = null;
+
+		ValidateParams.isNullObject(productsToSold);
+
+		if (productsToSold.isEmpty()) {
+			throw new InternalException();
+		}
+
+		// Convertir objeto en ProductSoldDTO
+		List<ProductSoldDTO> productsDtoToSold = new ArrayList<>();
+		for (Map<String, Object> object : productsToSold) {
+			ProductDTO productDto = new ProductDTO((Long.parseLong((String) object.get("productId"))), null, null, null,
+					null, 0, null, null, null, null, null, null);
+
+			productsDtoToSold.add(new ProductSoldDTO(null, null, productDto, (Integer) object.get("quantity")));
+		}
+
+		// Confirmar productos a comprar
+		final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(productsDtoToSold, true);
+
+		if (productsDtoNotFound.isEmpty()) {
+			// Devolver una respuesta con codigo de estado 204
+			result = ResponseEntity.noContent().build();
+		} else {
+			// Eliminar datos innecesarios
+			final List<ProductSoldDTO> returnProducts = new ArrayList<>();
+			for (ProductDTO productDTO : productsDtoNotFound) {
+				returnProducts
+						.add(new ProductSoldDTO(productDTO.productId(), null, null, productDTO.productQuantity()));
+			}
+
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.unprocessableEntity().body(Collections.singletonMap("products", returnProducts));
+		}
+
+		return result;
 	}
 
 	/**
