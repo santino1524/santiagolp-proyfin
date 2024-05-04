@@ -91,7 +91,7 @@ public class User implements Serializable {
 	/** Direcciones */
 	@ManyToMany
 	@JoinTable(name = "T_USER_ADDRESS", joinColumns = @JoinColumn(name = "C_USER_ID"), inverseJoinColumns = {
-			@JoinColumn(name = "C_DIRECTION_LINE"), @JoinColumn(name = "C_PROVINCE"), @JoinColumn(name = "C_CITY") })
+			@JoinColumn(name = "C_ADDRESS_ID") })
 	private List<PostalAddress> addresses;
 
 	/** Pedidos */

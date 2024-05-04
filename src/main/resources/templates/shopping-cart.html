@@ -15,7 +15,7 @@
 	<div class="container text-center mt-5 mb-5">
 		<div class="col text-center mb-3">
 			<img src="/images/car.png" class="img-fluid"
-				style="max-height: 250px;" alt="Goku saluda"
+				style="max-height: 250px;" alt="Carrito de compras"
 				title="Carrito de compras">
 		</div>
 		<h2 class="mb-3">Carrito de compras</h2>
@@ -55,8 +55,8 @@
 	<script type="text/javascript" th:src="@{/js/shopping-cart.js}"></script>
 	<script>
 		// Obtener productos de la cesta 
-		window.onload = function() {
-			loadShoppingCart();
+		window.onload = async function() {
+			await loadShoppingCart();
 		}
 	</script>
 </body>

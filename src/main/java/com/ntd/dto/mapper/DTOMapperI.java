@@ -163,9 +163,6 @@ public interface DTOMapperI {
 	 * @param postalAddress
 	 * @return PostalAddressDTO
 	 */
-	@Mapping(target = "directionLine", source = "addressId.directionLine")
-	@Mapping(target = "city", source = "addressId.city")
-	@Mapping(target = "province", source = "addressId.province")
 	public PostalAddressDTO mapPostalAddressToDTO(PostalAddress postalAddress);
 
 	/**
@@ -175,10 +172,6 @@ public interface DTOMapperI {
 	 * @return PostalAddress
 	 */
 	@Mapping(target = "users", ignore = true)
-	@Mapping(source = "directionLine", target = "addressId.directionLine")
-	@Mapping(source = "city", target = "addressId.city")
-	@Mapping(source = "province", target = "addressId.province")
-	@Mapping(target = "addressId", ignore = true)
 	public PostalAddress mapDTOToPostalAddress(PostalAddressDTO postalAddressDto);
 
 	/**

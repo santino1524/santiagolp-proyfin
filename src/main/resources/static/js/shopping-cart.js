@@ -248,6 +248,10 @@ async function confirmAvailability(productsToSold) {
 		let data;
 
 		if (response.status === 204) {
+			// Almacenar total a pagar
+			let moneyToPay = document.getElementById("carTotal").textContent;
+			localStorage.setItem('moneyToPay', JSON.stringify(moneyToPay));
+
 			window.location.href = '/pay';
 			return;
 		} else if (response.status === 422) {

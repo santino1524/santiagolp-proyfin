@@ -78,7 +78,7 @@ async function layoutProducts(products) {
 		}
 		let aCart = document.createElement('a');
 		aCart.classList.add('add-to-cart');
-		aCart.href = '#'; // PONER URL DEV
+		aCart.href = '#';
 		aCart.onclick = function() {
 			addCart(product.productId, 1);
 		};

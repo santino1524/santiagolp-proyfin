@@ -8,11 +8,8 @@ import org.springframework.stereotype.Service;
 import com.ntd.dto.PostalAddressDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
-import com.ntd.persistence.AddressId;
 import com.ntd.persistence.PostalAddress;
 import com.ntd.persistence.PostalAddressRepositoryI;
-import com.ntd.persistence.User;
-import com.ntd.persistence.UserRepositoryI;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +26,14 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 	/** Dependencia de PostalAddreessRepository */
 	private final PostalAddressRepositoryI postalAddressRepository;
 
-	/** Dependencia de UserRepository */
-	private final UserRepositoryI userRepository;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param postalAddressRepository
 	 * @param userRepository
 	 */
-	public PostalAddressMgmtServiceImp(final PostalAddressRepositoryI postalAddressRepository,
-			UserRepositoryI userRepository) {
+	public PostalAddressMgmtServiceImp(final PostalAddressRepositoryI postalAddressRepository) {
 		this.postalAddressRepository = postalAddressRepository;
-		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -61,86 +53,93 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 	}
 
 	@Override
-	public void deletePostalAddress(PostalAddressDTO postalAddressDto) throws InternalException {
+	public void deleteRelationPostalAddress(Long userId, Long addressId) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Eliminar direccion del usuario");
+			log.info("Eliminar relacion usuario direccion");
 
 		// Validar campos del id
-		ValidateParams.isNullObject(postalAddressDto.city());
-		ValidateParams.isNullObject(postalAddressDto.directionLine());
-		ValidateParams.isNullObject(postalAddressDto.province());
+		ValidateParams.isNullObject(userId);
+		ValidateParams.isNullObject(addressId);
 
-		// Construir id
-		AddressId id = new AddressId(postalAddressDto.directionLine(), postalAddressDto.city(),
-				postalAddressDto.province());
-
-		// Eliminar direccion del usuario
-		PostalAddress postalAddress = postalAddressRepository.findById(id).orElseThrow(InternalException::new);
-		if (!postalAddress.getUsers().isEmpty()) {
-			for (User user : postalAddress.getUsers()) {
-				user.getAddresses().remove(postalAddress);
-				userRepository.save(user);
-			}
-		}
-
-		// Eliminar por Id
-		postalAddressRepository.deleteById(id);
-
+		postalAddressRepository.deleteRelationPostalAddress(userId, addressId);
 	}
 
 	@Override
-	public List<PostalAddressDTO> searchAll() {
-		if (log.isInfoEnabled())
-			log.info("Buscar todos las direcciones del usuario");
-
-		// Buscar todas las direcciones
-		final List<PostalAddress> addresses = postalAddressRepository.findAll();
-
-		// Mapear DTO
-		final List<PostalAddressDTO> addressesDto = new ArrayList<>();
-
-		if (!addresses.isEmpty()) {
-			for (PostalAddress postalAddress : addresses) {
-				addressesDto.add(DTOMapperI.MAPPER.mapPostalAddressToDTO(postalAddress));
-			}
-		}
-
-		// Retornar lista DTO
-		return addressesDto;
-	}
-
-	@Override
-	public PostalAddressDTO searchById(PostalAddressDTO postalAddressDto) throws InternalException {
+	public PostalAddressDTO searchById(Long addressId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar por direccion por id");
 
 		// Validar campos del id
-		ValidateParams.isNullObject(postalAddressDto.city());
-		ValidateParams.isNullObject(postalAddressDto.directionLine());
-		ValidateParams.isNullObject(postalAddressDto.province());
-
-		// Construir id
-		AddressId id = new AddressId(postalAddressDto.directionLine(), postalAddressDto.city(),
-				postalAddressDto.province());
+		ValidateParams.isNullObject(addressId);
 
 		// Buscar id
-		PostalAddress postalAddress = postalAddressRepository.findById(id).orElse(null);
+		PostalAddress postalAddress = postalAddressRepository.findById(addressId).orElse(null);
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapPostalAddressToDTO(postalAddress);
 	}
 
 	@Override
-	public void deleteRelationPostalAddress(Long userId, String city, String directionLine, String province)
-			throws InternalException {
+	public List<PostalAddressDTO> searchByUser(Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar direccion por usuario");
 
 		// Validar campos del id
 		ValidateParams.isNullObject(userId);
-		ValidateParams.isNullObject(city);
-		ValidateParams.isNullObject(directionLine);
-		ValidateParams.isNullObject(province);
 
-		postalAddressRepository.deleteRelationPostalAddress(userId, city, directionLine, province);
+		// Buscar id
+		List<PostalAddress> addresses = postalAddressRepository.findAddressByUser(userId);
+
+		List<PostalAddressDTO> addressesDto = new ArrayList<>();
+
+		for (PostalAddress postalAddress : addresses) {
+			addressesDto.add(DTOMapperI.MAPPER.mapPostalAddressToDTO(postalAddress));
+		}
+
+		// Retornar DTO
+		return addressesDto;
 	}
 
+	@Override
+	public boolean existsByUser(Long userId, Long addressId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Comprobar existencia por usuario");
+
+		// Validar campos del id
+		ValidateParams.isNullObject(userId);
+		ValidateParams.isNullObject(addressId);
+
+		return postalAddressRepository.existsByUser(userId, addressId);
+	}
+
+	@Override
+	public PostalAddressDTO findByCityDirectionLineProvince(String directionLine, String city, String province)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar por direccion por directionLine,city,province");
+
+		// Validar campos del id
+		ValidateParams.isNullObject(directionLine);
+		ValidateParams.isNullObject(city);
+		ValidateParams.isNullObject(province);
+
+		// Buscar id
+		PostalAddress postalAddress = postalAddressRepository
+				.findByCityIgnoreCaseDirectionLineIgnoreCaseProvinceIgnoreCase(directionLine, city, province);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapPostalAddressToDTO(postalAddress);
+	}
+
+	@Override
+	public void insertRelation(Long userId, Long addressId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Insertar relacion usuario direccion");
+
+		// Validar campos del id
+		ValidateParams.isNullObject(userId);
+		ValidateParams.isNullObject(addressId);
+
+		postalAddressRepository.insertRelation(userId, addressId);
+	}
 }

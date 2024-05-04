@@ -75,10 +75,10 @@ function showMessage(div, message) {
 	div.classList.remove('d-none'); // Mostrar el elemento
 	document.body.scrollIntoView(true);
 
-	// Ocultar el mensaje despues de 5 segundos
+	// Ocultar el mensaje despues de 10 segundos
 	setTimeout(function() {
 		div.classList.add('d-none'); // Ocultar el elemento nuevamente
-	}, 5000);
+	}, 10000);
 }
 
 
@@ -153,10 +153,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Actualizar cantidad en cesta
 function updateQuantityCart(quantity) {
-	let cartIcon = document.getElementById('cartIcon');
-
-	// Actualizar el contenido del icono con la cantidad de productos
-	cartIcon.innerHTML = '<i class="fas fa-shopping-cart fa-lg"></i> <span class="badge badge-pill badge-danger">' + quantity + '</span>';
+	// Actualizar el contenido del número de productos en la cesta
+	document.getElementById('cartQuantity').innerText = quantity;
 }
 
 // Carga de annadir al carrito
@@ -176,6 +174,9 @@ function loadingAddCart() {
 
 // Annadir al carrito
 function addCart(productId, quantity) {
+	if (productId) {
+		productId = productId.toString();
+	}
 	// Efecto de carga
 	loadingAddCart();
 
@@ -212,12 +213,15 @@ function addCart(productId, quantity) {
 
 // Al cerrar el modal si esta en el carrito que lo refresque
 document.addEventListener('DOMContentLoaded', function() {
-	document.getElementById("modalProductClose").onclick = function() {
-		// Verificar si la ruta de la pagina actual contiene "shoppingCart"
-		if (window.location.href.includes("shoppingCart")) {
-			window.location.href = "/shoppingCart";
-		}
-	};
+	let modalProductClose = document.getElementById("modalProductClose");
+	if (modalProductClose) {
+		modalProductClose.onclick = function() {
+			// Verificar si la ruta de la pagina actual contiene "shoppingCart"
+			if (window.location.href.includes("shoppingCart")) {
+				window.location.href = "/shoppingCart";
+			}
+		};
+	}
 });
 
 // Buscar productos y redirigir a pagina productos
