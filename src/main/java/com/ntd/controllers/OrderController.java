@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -96,18 +97,19 @@ public class OrderController {
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public String saveOrder(@RequestBody @Valid final OrderDTO orderDto, final Model model) throws InternalException {
+	@PostMapping(path = "/save")
+	public ResponseEntity<Object> saveOrder(@ModelAttribute @Valid final OrderDTO orderDto) throws InternalException {
 		log.info("Guardar pedido");
 
 		// Validar datos de productos a comprar
 		productSoldMgmtService.validateProductsToBuy(orderDto.soldProductsDto());
 
-		String result = null;
+		ResponseEntity<Object> result = null;
 
 		// Comprobar si el pedido existe
 		if (orderMgmtService.existsOrder(orderDto.orderNumber())) {
-			result = Constants.MSG_ORDER_EXISTS;
+			// Retornar 400 si existe el numero de pedido
+			result = ResponseEntity.badRequest().build();
 		} else {
 
 			// Confirmar productos a comprar
@@ -119,30 +121,14 @@ public class OrderController {
 			} else {
 				log.info("Retorno de productos con stock insuficiente");
 
-				StringBuilder builder = new StringBuilder();
-
-				// Preparar respuesta con productos no disponibles
-				builder.append("No hay sufcientes unidades en stock de:\n");
-
-				for (ProductDTO productDto : productsDtoNotFound) {
-					builder.append(productDto.productName());
-					builder.append(" - Talla: ");
-					builder.append(productDto.productSize());
-					builder.append(" - Disponibilidad: ");
-					builder.append(productDto.productQuantity());
-					builder.append("\n");
-				}
-
-				// Devolver una respuesta
-				result = builder.toString();
+				// Retornar 422 para productos faltantes
+				result = ResponseEntity.unprocessableEntity()
+						.body(Collections.singletonMap("products", productsDtoNotFound));
 			}
-
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE PEDIDO REALIZADO";
+		return result;
 	}
 
 	/**
@@ -169,10 +155,9 @@ public class OrderController {
 		// Convertir objeto en ProductSoldDTO
 		List<ProductSoldDTO> productsDtoToSold = new ArrayList<>();
 		for (Map<String, Object> object : productsToSold) {
-			ProductDTO productDto = new ProductDTO((Long.parseLong((String) object.get("productId"))), null, null, null,
-					null, 0, null, null, null, null, null, null);
 
-			productsDtoToSold.add(new ProductSoldDTO(null, null, productDto, (Integer) object.get("quantity")));
+			productsDtoToSold.add(new ProductSoldDTO(null, null, Long.parseLong((String) object.get("productId")),
+					(Integer) object.get("quantity")));
 		}
 
 		// Confirmar productos a comprar

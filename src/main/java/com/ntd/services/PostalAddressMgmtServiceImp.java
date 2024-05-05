@@ -10,6 +10,7 @@ import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.PostalAddress;
 import com.ntd.persistence.PostalAddressRepositoryI;
+import com.ntd.persistence.User;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,15 +54,14 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 	}
 
 	@Override
-	public void deleteRelationPostalAddress(Long userId, Long addressId) throws InternalException {
+	public void deletePostalAddress(Long addressId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar relacion usuario direccion");
 
 		// Validar campos del id
-		ValidateParams.isNullObject(userId);
 		ValidateParams.isNullObject(addressId);
 
-		postalAddressRepository.deleteRelationPostalAddress(userId, addressId);
+		postalAddressRepository.deleteById(addressId);
 	}
 
 	@Override
@@ -80,15 +80,15 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 	}
 
 	@Override
-	public List<PostalAddressDTO> searchByUser(Long userId) throws InternalException {
+	public List<PostalAddressDTO> searchByUser(User user) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar direccion por usuario");
 
 		// Validar campos del id
-		ValidateParams.isNullObject(userId);
+		ValidateParams.isNullObject(user);
 
 		// Buscar id
-		List<PostalAddress> addresses = postalAddressRepository.findAddressByUser(userId);
+		List<PostalAddress> addresses = postalAddressRepository.findByUser(user);
 
 		List<PostalAddressDTO> addressesDto = new ArrayList<>();
 
@@ -101,22 +101,10 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 	}
 
 	@Override
-	public boolean existsByUser(Long userId, Long addressId) throws InternalException {
+	public PostalAddressDTO findByCityDirectionLineProvinceUser(String city, String directionLine, String province,
+			User user) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Comprobar existencia por usuario");
-
-		// Validar campos del id
-		ValidateParams.isNullObject(userId);
-		ValidateParams.isNullObject(addressId);
-
-		return postalAddressRepository.existsByUser(userId, addressId);
-	}
-
-	@Override
-	public PostalAddressDTO findByCityDirectionLineProvince(String directionLine, String city, String province)
-			throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar por direccion por directionLine,city,province");
+			log.info("Buscar por direccion por directionLine,city,province,user");
 
 		// Validar campos del id
 		ValidateParams.isNullObject(directionLine);
@@ -125,21 +113,11 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 
 		// Buscar id
 		PostalAddress postalAddress = postalAddressRepository
-				.findByCityIgnoreCaseDirectionLineIgnoreCaseProvinceIgnoreCase(directionLine, city, province);
+				.findByCityIgnoreCaseAndDirectionLineIgnoreCaseAndProvinceIgnoreCaseAndUser(city, directionLine,
+						province, user);
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapPostalAddressToDTO(postalAddress);
 	}
 
-	@Override
-	public void insertRelation(Long userId, Long addressId) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Insertar relacion usuario direccion");
-
-		// Validar campos del id
-		ValidateParams.isNullObject(userId);
-		ValidateParams.isNullObject(addressId);
-
-		postalAddressRepository.insertRelation(userId, addressId);
-	}
 }

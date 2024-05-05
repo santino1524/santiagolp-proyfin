@@ -1,5 +1,7 @@
 //Expresiones regulares
 const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
+const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
+const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const ivaRegex = /^\d{1,2}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
@@ -80,8 +82,6 @@ function showMessage(div, message) {
 		div.classList.add('d-none'); // Ocultar el elemento nuevamente
 	}, 10000);
 }
-
-
 
 // Autenticacion de usuarios en el login pagina
 function submitLoginPage(event) {
@@ -320,9 +320,164 @@ async function searchCategoryNameById(categoryId) {
 	}
 }
 
+// Mostrar modal Address
+async function addAddress() {
+	$('#modalAddress').modal('show');
+}
 
+// Formulario guardar nueva direccion
+async function saveAddressForm() {
 
+	let addressId = document.getElementById("addressId").value;
+	let addressLine = document.getElementById("addressLine").value;
+	let city = document.getElementById("city").value;
+	let province = document.getElementById("province").value;
+	let postalCode = document.getElementById("postalCode").value;
+	let divMessageAddressError = document.getElementById("messageAddressError");
+	let email = document.getElementById("authenticatedUser").textContent ;
+	let formData = new FormData();
 
+	if (addressLine && city && province && postalCode) {
 
+		// Validar los valores usando el patron
+		if (!onlyWordsNumbersSpaces.test(addressLine)) {
+			showMessage(divMessageAddressError, "Para la dirección solo se permiten palabras, números y espacios");
 
+			return;
+		}
 
+		if (!regexOnlyWordSpaces.test(city)) {
+			showMessage(divMessageAddressError, "Para la ciudad solo se permiten palabras con espacios");
+
+			return;
+		}
+
+		if (!regexOnlyWordSpaces.test(province)) {
+			showMessage(divMessageAddressError, "Para la provincia solo se permiten palabras con espacios");
+
+			return;
+		}
+
+		if (!postalCodeRegExp.test(postalCode)) {
+			showMessage(divMessageAddressError, "El código postal introducido es incorrecto");
+
+			return;
+		}
+		
+		let user = await searchByEmail(email);
+
+		if (addressId) {
+			formData.append('addressId', addressId);
+		}
+		formData.append('cp', postalCode);
+		formData.append('directionLine', addressLine.trim());
+		formData.append('city', city.trim());
+		formData.append('province', province.trim());
+		formData.append('country', "España");
+		formData.append('userId', user.userId);
+
+		// Maquetar direccion
+		layoutAddresses(await saveAddress(formData));
+
+		document.getElementById('addressId').value = "";
+		form.reset();
+
+		// Cierra el modal
+		$('#modalAddress').modal('hide');
+	} else {
+		// Datos incompletas en el formulario
+		showMessage(divMessageAddressError, "Completa todos los campos del formulario");
+	}
+}
+
+// Guardar direccion
+async function saveAddress(formData) {
+	let data;
+
+	try {
+		let response = await fetch("/addresses/save", {
+			method: "POST",
+			body: formData
+		});
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else if (response.status === 422) {
+			showMessage(divMessageProductError, "El usuario ya tiene ragistrada un dirección con esos datos");
+			return;
+		} else {
+			window.location.href = urlError;
+		}
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+
+	if (data) {
+		return [data.address];
+	}
+}
+
+// Genera codigo EAN-13
+function generateEAN13() {
+	let cuerpoEAN = '';
+
+	for (let i = 0; i < 12; i++) {
+		cuerpoEAN += Math.floor(Math.random() * 10);
+	}
+
+	// Calcula el digito de control (ultimo digito) utilizando el algoritmo EAN-13
+	let sumaPares = 0;
+	let sumaImpares = 0;
+	for (let i = 0; i < cuerpoEAN.length; i++) {
+		if (i % 2 === 0) {
+			sumaPares += parseInt(cuerpoEAN[i]);
+		} else {
+			sumaImpares += parseInt(cuerpoEAN[i]);
+		}
+	}
+	let total = (sumaPares * 3) + sumaImpares;
+	let digitoControl = (10 - (total % 10)) % 10;
+
+	// Retorna el codigo EAN-13 completo
+	return cuerpoEAN + digitoControl;
+}
+
+// Calcular total del carrito
+function carTotal(cartLfd) {
+	// Obtener todos los elementos tdTotalPrice y sumar sus valores
+	let total = 0;
+	for (let productCar of cartLfd) {
+		let totalPriceElement = document.getElementById(`tdTotalPrice_${productCar.productId}`);
+		if (totalPriceElement) {
+			total += parseFloat(totalPriceElement.textContent);
+		}
+	}
+
+	return total;
+}
+
+// Buscar producto por ID
+async function searchProductById(productId) {
+	try {
+		let response = await fetch("/products/searchById?productId=" + productId, {
+			method: "GET",
+		});
+
+		if (!response.ok) {
+			window.location.href = urlError;
+		}
+
+		let data = await response.json();
+
+		if (data && data.product.productId) {
+			return data.product;
+		} else {
+			window.location.href = urlError;
+		}
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}

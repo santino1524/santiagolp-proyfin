@@ -40,8 +40,8 @@ public interface DTOMapperI {
 	 * @param productSold
 	 * @return ProductSoldDTO
 	 */
-	@Mapping(target = "orderDto", ignore = true)
-	@Mapping(target = "productDto", source = "product")
+	@Mapping(target = "orderId", source = "order.orderId")
+	@Mapping(target = "productId", source = "product.productId")
 	public ProductSoldDTO mapProductSoldToDTO(ProductSold productSold);
 
 	/**
@@ -50,8 +50,8 @@ public interface DTOMapperI {
 	 * @param productSoldDto
 	 * @return ProductSold
 	 */
-	@Mapping(target = "order", source = "orderDto")
-	@Mapping(target = "product", source = "productDto")
+	@Mapping(target = "order.orderId", source = "orderId")
+	@Mapping(target = "product.productId", source = "productId")
 	public ProductSold mapDTOToProductSold(ProductSoldDTO productSoldDto);
 
 	/**
@@ -101,7 +101,8 @@ public interface DTOMapperI {
 	 * @param order
 	 * @return OrderDTO
 	 */
-	@Mapping(target = "userDto", ignore = true)
+	@Mapping(target = "userId", source = "user.userId")
+	@Mapping(target = "addressId", source = "shippingAddress.addressId")
 	@Mapping(target = "soldProductsDto", expression = "java(listProductSoldToDTO(order.getSoldProducts()))")
 	public OrderDTO mapOrderToDTO(Order order);
 
@@ -132,7 +133,8 @@ public interface DTOMapperI {
 	 * @param orderDto
 	 * @return Order
 	 */
-	@Mapping(target = "user", source = "userDto")
+	@Mapping(target = "user.userId", source = "userId")
+	@Mapping(target = "shippingAddress.addressId", source = "addressId")
 	@Mapping(target = "soldProducts", expression = "java(dtoToListProductSold(orderDto.soldProductsDto()))")
 	public Order mapDTOToOrder(OrderDTO orderDto);
 
@@ -163,6 +165,7 @@ public interface DTOMapperI {
 	 * @param postalAddress
 	 * @return PostalAddressDTO
 	 */
+	@Mapping(target = "userId", source = "user.userId")
 	public PostalAddressDTO mapPostalAddressToDTO(PostalAddress postalAddress);
 
 	/**
@@ -171,7 +174,7 @@ public interface DTOMapperI {
 	 * @param postalAddressDto
 	 * @return PostalAddress
 	 */
-	@Mapping(target = "users", ignore = true)
+	@Mapping(target = "user.userId", source = "userId")
 	public PostalAddress mapDTOToPostalAddress(PostalAddressDTO postalAddressDto);
 
 	/**

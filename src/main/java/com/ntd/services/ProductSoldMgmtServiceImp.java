@@ -44,8 +44,8 @@ public class ProductSoldMgmtServiceImp implements ProductSoldMgmtServiceI {
 
 		// Validar datos
 		for (ProductSoldDTO productSoldDTO : soldProductsDto) {
-			ValidateParams.isNullObject(productSoldDTO.productDto());
-			ValidateParams.isNullObject(productSoldDTO.quantitySold());
+			ValidateParams.isNullObject(productSoldDTO.productId());
+			ValidateParams.isNullObject(productSoldDTO.quantity());
 		}
 
 	}

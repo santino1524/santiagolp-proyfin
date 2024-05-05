@@ -1,4 +1,4 @@
-// Mostrar productos de la cesta
+3// Mostrar productos de la cesta
 function loadShoppingCart() {
 	// Obtener el carrito de la cesta del localStorage
 	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
@@ -87,7 +87,9 @@ async function layoutTableCar(cartLfd) {
 			localStorage.setItem('cartLfd', JSON.stringify(cartLfd));
 
 			// Calcular total del carrito
-			carTotal(cartLfd);
+			let total = carTotal(cartLfd);
+			// Establecer el total en el h4
+			document.getElementById("carTotal").textContent = total.toFixed(2) + '€';
 
 			// Actualizar cantidad en carrito
 			addCart();
@@ -134,7 +136,9 @@ async function layoutTableCar(cartLfd) {
 			addCart();
 
 			// Calcular total del carrito
-			carTotal(cartLfd);
+			let total = carTotal(cartLfd);
+			// Establecer el total en el h4
+			document.getElementById("carTotal").textContent = total.toFixed(2) + '€';
 
 			// Comprobar si no hay mas elementos en cartLfd
 			if (cartLfd.length === 0) {
@@ -151,47 +155,10 @@ async function layoutTableCar(cartLfd) {
 	}
 
 	// Calcular total del carrito
-	carTotal(cartLfd);
-}
-
-// Calcular total del carrito
-function carTotal(cartLfd) {
-	// Obtener todos los elementos tdTotalPrice y sumar sus valores
-	let total = 0;
-	for (let productCar of cartLfd) {
-		let totalPriceElement = document.getElementById(`tdTotalPrice_${productCar.productId}`);
-		if (totalPriceElement) {
-			total += parseFloat(totalPriceElement.textContent);
-		}
-	}
+	let total = carTotal(cartLfd);
 
 	// Establecer el total en el h4
 	document.getElementById("carTotal").textContent = total.toFixed(2) + '€';
-}
-
-// Buscar producto por ID
-async function searchProductById(productId) {
-	try {
-		let response = await fetch("/products/searchById?productId=" + productId, {
-			method: "GET",
-		});
-
-		if (!response.ok) {
-			window.location.href = urlError;
-		}
-
-		let data = await response.json();
-
-		if (data && data.product.productId) {
-			return data.product;
-		} else {
-			window.location.href = urlError;
-		}
-
-	} catch (error) {
-		console.error(error);
-		window.location.href = urlError;
-	}
 }
 
 // Checkear disponibilidad de los productos a comprar

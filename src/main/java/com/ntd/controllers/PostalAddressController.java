@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.PostalAddressDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.User;
 import com.ntd.services.PostalAddressMgmtServiceI;
 
 import jakarta.transaction.Transactional;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/addresses")
 public class PostalAddressController {
 
+	private static final String ADDRESS = "address";
 	/** Dependencia del servicio de gestion de direcciones */
 	private final PostalAddressMgmtServiceI postalAddressMgmtService;
 
@@ -45,40 +48,32 @@ public class PostalAddressController {
 	 * Guardar direccion
 	 * 
 	 * @param postalAddressDto
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public ResponseEntity<Void> savePostalAddress(@RequestParam @Valid final PostalAddressDTO postalAddressDto)
+	@PostMapping(path = "/save")
+	public ResponseEntity<Object> savePostalAddress(@ModelAttribute @Valid final PostalAddressDTO postalAddressDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Guardar direccion");
 
-		ResponseEntity<Void> result = null;
+		ResponseEntity<Object> result = null;
 
-		// Comprobar si existe alguna direccion
-		PostalAddressDTO addressDto = postalAddressMgmtService.findByCityDirectionLineProvince(
-				postalAddressDto.directionLine(), postalAddressDto.city(), postalAddressDto.province());
+		// Comprobar si el usuario contiene esa direccion
+		PostalAddressDTO addressDto = postalAddressMgmtService.findByCityDirectionLineProvinceUser(
+				postalAddressDto.directionLine(), postalAddressDto.city(), postalAddressDto.province(),
+				new User(postalAddressDto.userId(), null, null, null, null, null, null, null, null, false, null, null,
+						null, null, null));
 
 		if (addressDto != null && addressDto.addressId() != null) {
-			boolean exists = postalAddressMgmtService.existsByUser(postalAddressDto.users().get(0).getUserId(),
-					addressDto.addressId());
-
-			if (exists) {
-				// Si existe para el usuario devolver codigo 422
-				return ResponseEntity.unprocessableEntity().build();
-			}
-
-			postalAddressMgmtService.insertRelation(postalAddressDto.users().get(0).getUserId(),
-					addressDto.addressId());
-
-			// devolver codigo 200
-			return ResponseEntity.ok().build();
+			// Si existe para el usuario devolver codigo 422
+			return ResponseEntity.unprocessableEntity().build();
 		}
 
 		// Guardar direccion
-		if (postalAddressMgmtService.insertPostalAddress(postalAddressDto) != null) {
-			result = ResponseEntity.ok().build();
+		PostalAddressDTO newAddressDto = postalAddressMgmtService.insertPostalAddress(postalAddressDto);
+		if (newAddressDto != null) {
+			return ResponseEntity.ok().body(Collections.singletonMap(ADDRESS, newAddressDto));
 		} else {
 			// Devolver codigo 500 si no se ha guardado correctamente
 			result = ResponseEntity.internalServerError().build();
@@ -97,14 +92,13 @@ public class PostalAddressController {
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping("/deleteRelation")
-	public ResponseEntity<Void> deleteRelationPostalAddress(@RequestParam @NotNull final Long addressId,
-			@NotNull final Long userId) throws InternalException {
+	@DeleteMapping("/delete")
+	public ResponseEntity<Void> deleteRelationPostalAddress(@RequestParam @NotNull final Long addressId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar direccion");
 
 		// Eliminar direccion
-		postalAddressMgmtService.deleteRelationPostalAddress(userId, addressId);
+		postalAddressMgmtService.deletePostalAddress(addressId);
 
 		return ResponseEntity.ok().build();
 	}
@@ -116,13 +110,14 @@ public class PostalAddressController {
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByUser")
-	public ResponseEntity<Object> searchByUser(@RequestParam @NotNull final Long userid) throws InternalException {
+	public ResponseEntity<Object> searchByUser(@RequestParam @NotNull final Long userId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Mostrar las direcciones por usuario");
 
 		// Retornar lista de direcciones
 		return ResponseEntity.ok()
-				.body(Collections.singletonMap("addresses", postalAddressMgmtService.searchByUser(userid)));
+				.body(Collections.singletonMap("addresses", postalAddressMgmtService.searchByUser(new User(userId, null,
+						null, null, null, null, null, null, null, false, null, null, null, null, null))));
 	}
 
 	/**
@@ -139,6 +134,6 @@ public class PostalAddressController {
 
 		// Retornar direccion
 		return ResponseEntity.ok()
-				.body(Collections.singletonMap("address", postalAddressMgmtService.searchById(addressId)));
+				.body(Collections.singletonMap(ADDRESS, postalAddressMgmtService.searchById(addressId)));
 	}
 }

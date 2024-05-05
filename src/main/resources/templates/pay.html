@@ -25,32 +25,35 @@
 
 			<div class="alert alert-danger d-none" role="alert"
 				id="messageNotFoundAddresses"></div>
-				
-<!-- 				<a href="#" class="list-group-item list-group-item-action">Dirección -->
-<!-- 					1</a> <a href="#" class="list-group-item list-group-item-action">Dirección -->
-<!-- 					2</a> <a href="#" class="list-group-item list-group-item-action">Dirección -->
-<!-- 					3</a> -->
-			<div class="list-group" id="addresses">
-<a href="#" class="list-group-item list-group-item-action">Dirección 3</a>
+
+			<!-- 				<a href="#" class="list-group-item list-group-item-action">Dirección -->
+			<!-- 					1</a> <a href="#" class="list-group-item list-group-item-action">Dirección -->
+			<!-- 					2</a> <a href="#" class="list-group-item list-group-item-action">Dirección -->
+			<!-- 					3</a> -->
+			<div class="list-group mb-5" id="addresses">
 			</div>
-			<button class="btn btn-primary mt-3 mb-3">
+			<button class="btn btn-primary mt-3 mb-3" id="addAddress" onclick="addAddress()">
 				<i class="fa-solid fa-plus mr-sm-2"></i>Agregar nueva dirección
 			</button>
 		</div>
 		<div class="mb-3 mt-3 text-right">
 			<button class="btn btn-success" onclick="pay()">
-				<i class="fa-brands fa-paypal mr-sm-2"></i>Pagar&nbsp;&nbsp;<span id="moneyToPay">0€</span>
+				<i class="fa-brands fa-paypal mr-sm-2"></i>Pagar&nbsp;&nbsp;<span
+					id="moneyToPay">0€</span>
 			</button>
 		</div>
 	</div>
-	
+
 	
 
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
-
+	
+	<!-- Modal Address -->
+	<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+	
 	<!-- Modal Pay -->
 	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
 

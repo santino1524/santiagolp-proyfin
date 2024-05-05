@@ -122,7 +122,7 @@
 						th:if="${#authorization.expression('isAuthenticated()')}"><a
 						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
 						role="button" aria-haspopup="true" aria-expanded="false"
-						sec:authentication="name"> </a>
+						id="authenticatedUser" sec:authentication="name"> </a>
 						<div class="dropdown-menu dropdown-menu-right bg-dark"
 							aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white" th:href="@{/}">Mis
@@ -136,11 +136,10 @@
 
 			<div class="navbar-nav">
 				<div class="cart-container">
-					<a id="cartIcon" class="nav-link titleNav" th:href="@{/shoppingCart}"
-						title="Cesta de compras"> <i
+					<a id="cartIcon" class="nav-link titleNav"
+						th:href="@{/shoppingCart}" title="Cesta de compras"> <i
 						class="fas fa-shopping-cart fa-lg"></i>
-					</a>
-					<span id="cartQuantity" class="badge badge-pill badge-danger"></span>
+					</a> <span id="cartQuantity" class="badge badge-pill badge-danger"></span>
 				</div>
 			</div>
 		</nav>
@@ -162,6 +161,109 @@
 						<button type="button" class="btn btn-secondary"
 							data-dismiss="modal" id="modalBtnOk"
 							onclick="document.getElementById('login-nav').submit()">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Address-->
+	<div th:fragment="modalAddress">
+		<div class="modal fade" id="modalAddress" tabindex="-1" role="dialog"
+			aria-labelledby="modalAddress" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- Encabezado del modal -->
+					<div class="modal-header">
+						<h5 class="modal-title">Introduce los datos de la dirección</h5>
+						<!-- Boton de cerrar -->
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<!-- Contenido del modal -->
+					<div class="modal-body">
+						<!-- Formulario para la nueva dirección -->
+						<form>
+							<div class="form-group">
+								<div class="alert alert-danger d-none" role="alert"
+									id="messageAddressError"></div>
+								<input type="hidden" id="addressId"> <label
+									for="addressLine">Línea de dirección</label> <input type="text"
+									class="form-control" id="addressLine"
+									placeholder="Ingrese la dirección">
+							</div>
+							<div class="form-group">
+								<label for="city">Ciudad</label> <input type="text"
+									class="form-control" id="city" placeholder="Ingrese la ciudad">
+							</div>
+							<div class="form-group">
+								<label for="province">Provincia</label> <select
+									class="form-control" id="province">
+									<option value="Álava">Álava</option>
+									<option value="Albacete">Albacete</option>
+									<option value="Alicante">Alicante</option>
+									<option value="Almería">Almería</option>
+									<option value="Asturias">Asturias</option>
+									<option value="Ávila">Ávila</option>
+									<option value="Badajoz">Badajoz</option>
+									<option value="Barcelona">Barcelona</option>
+									<option value="Burgos">Burgos</option>
+									<option value="Cáceres">Cáceres</option>
+									<option value="Cádiz">Cádiz</option>
+									<option value="Cantabria">Cantabria</option>
+									<option value="Castellón">Castellón</option>
+									<option value="Ciudad Real">Ciudad Real</option>
+									<option value="Córdoba">Córdoba</option>
+									<option value="Cuenca">Cuenca</option>
+									<option value="Gerona">Gerona</option>
+									<option value="Granada">Granada</option>
+									<option value="Guadalajara">Guadalajara</option>
+									<option value="Guipúzcoa">Guipúzcoa</option>
+									<option value="Huelva">Huelva</option>
+									<option value="Huesca">Huesca</option>
+									<option value="Jaén">Jaén</option>
+									<option value="La Coruña">La Coruña</option>
+									<option value="La Rioja">La Rioja</option>
+									<option value="León">León</option>
+									<option value="Lérida">Lérida</option>
+									<option value="Lugo">Lugo</option>
+									<option value="Madrid">Madrid</option>
+									<option value="Málaga">Málaga</option>
+									<option value="Murcia">Murcia</option>
+									<option value="Navarra">Navarra</option>
+									<option value="Orense">Orense</option>
+									<option value="Palencia">Palencia</option>
+									<option value="Pontevedra">Pontevedra</option>
+									<option value="Salamanca">Salamanca</option>
+									<option value="Segovia">Segovia</option>
+									<option value="Sevilla">Sevilla</option>
+									<option value="Soria">Soria</option>
+									<option value="Tarragona">Tarragona</option>
+									<option value="Teruel">Teruel</option>
+									<option value="Toledo">Toledo</option>
+									<option value="Valencia">Valencia</option>
+									<option value="Valladolid">Valladolid</option>
+									<option value="Vizcaya">Vizcaya</option>
+									<option value="Zamora">Zamora</option>
+									<option value="Zaragoza">Zaragoza</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="postalCode">Código postal</label> <input
+									type="number" minlength="5" maxlength="5" class="form-control"
+									id="postalCode" placeholder="Ingrese el código postal">
+							</div>
+							<div class="form-group">
+								<label for="country">País</label> <input type="text"
+									class="form-control" id="country" value="España" readonly>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="saveAddress"
+							onclick="saveAddressForm()">Guardar</button>
 					</div>
 				</div>
 			</div>

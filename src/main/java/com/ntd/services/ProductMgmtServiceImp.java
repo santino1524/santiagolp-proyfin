@@ -269,15 +269,14 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		for (ProductSoldDTO productSoldDto : productsDtoToBuy) {
 			// Buscar producto en Stock
-			final Product productInStock = productRepository.findById(productSoldDto.productDto().productId())
+			final Product productInStock = productRepository.findById(productSoldDto.productId())
 					.orElseThrow(InternalException::new);
 
 			// Verificar producto a comprar con el stock
-			if (productInStock.getProductQuantity() >= productSoldDto.quantitySold()) {
+			if (productInStock.getProductQuantity() >= productSoldDto.quantity()) {
 				if (!onlyCheck) {
 					// Reducir cantidad de producto en stock
-					productInStock
-							.setProductQuantity(productInStock.getProductQuantity() - productSoldDto.quantitySold());
+					productInStock.setProductQuantity(productInStock.getProductQuantity() - productSoldDto.quantity());
 
 					// Agregar a lista de productos confirmados
 					productsConfirm.add(productInStock);

@@ -1,12 +1,9 @@
 package com.ntd.dto;
 
-import java.util.List;
-
-import com.ntd.persistence.User;
 import com.ntd.utils.Constants;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 /**
@@ -30,8 +27,6 @@ public record PostalAddressDTO(Long addressId,
 		// Validar pais
 		@NotBlank(message = Constants.MSG_PROVINCE_NOT_VALID) String country,
 
-		@NotEmpty(message = Constants.MSG_USER_NOT_VALID) List<User> users
-
-) {
+		@NotNull(message = Constants.MSG_USER_NOT_VALID) Long userId) {
 
 }

@@ -1,27 +1,8 @@
-// Genera codigo EAN-13
-function generateEAN13() {
+// Genera codigo EAN-13 para producto
+function generateEAN13ForProduct() {
 	let inputNumber = document.getElementById("productNumber");
-	let cuerpoEAN = '';
 
-	for (let i = 0; i < 12; i++) {
-		cuerpoEAN += Math.floor(Math.random() * 10);
-	}
-
-	// Calcula el digito de control (ultimo digito) utilizando el algoritmo EAN-13
-	let sumaPares = 0;
-	let sumaImpares = 0;
-	for (let i = 0; i < cuerpoEAN.length; i++) {
-		if (i % 2 === 0) {
-			sumaPares += parseInt(cuerpoEAN[i]);
-		} else {
-			sumaImpares += parseInt(cuerpoEAN[i]);
-		}
-	}
-	let total = (sumaPares * 3) + sumaImpares;
-	let digitoControl = (10 - (total % 10)) % 10;
-
-	// Retorna el codigo EAN-13 completo
-	inputNumber.value = cuerpoEAN + digitoControl;
+	inputNumber.value = generateEAN13();
 }
 
 // Convertir un array de blobs a un array de cadenas Base64
@@ -410,20 +391,20 @@ async function submitFormProduct(form) {
 		formData.append('productQuantity', productQuantity);
 		formData.append('iva', iva);
 		formData.append('basePrice', basePrice);
-		
+
 		let imagesBase64 = [];
 		let imagesArray = [];
-		if(images && foundImages){
+		if (images && foundImages) {
 			imagesBase64 = await blobsToBase64(images);
 			imagesArray = foundImages.split(',');
 			imagesBase64.push(...imagesArray);
-		} else if(images && !foundImages){
+		} else if (images && !foundImages) {
 			imagesBase64 = await blobsToBase64(images);
 		} else {
 			imagesArray = foundImages.split(',');
 			imagesBase64.push(...imagesArray);
 		}
-		
+
 		for (let image of imagesBase64) {
 			formData.append('images', image)
 		}
@@ -449,7 +430,7 @@ async function submitFormProduct(form) {
 async function updateProduct(formData) {
 	let divMessageProduct = document.getElementById("messageProduct");
 	let divMessageProductError = document.getElementById("messageProductError");
-	
+
 	try {
 		let response = await fetch("/products/update", {
 			method: "POST",

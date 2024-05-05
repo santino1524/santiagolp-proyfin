@@ -66,7 +66,7 @@
 									for="productNumber">Número *</label> <input type="text"
 									class="form-control mb-3" name="productNumber"
 									id="productNumber" placeholder="Generar número"
-									onclick="generateEAN13()" readonly
+									onclick="generateEAN13ForProduct()" readonly
 									th:value="${productDto != null ? productDto.productNumber() : ''}">
 								<label for="productName">Nombre *</label> <input type="text"
 									class="form-control mb-3" name="productName" id="productName"

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ntd.dto.PostalAddressDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.User;
 
 /**
  * Servicio de gestion de direcciones del usuario
@@ -22,13 +23,12 @@ public interface PostalAddressMgmtServiceI {
 	public PostalAddressDTO insertPostalAddress(final PostalAddressDTO postalAddressDto) throws InternalException;
 
 	/**
-	 * Eliminar asociacion con direccion del usuario
+	 * Eliminar direccion
 	 * 
-	 * @param userId
 	 * @param addressId
 	 * @throws InternalException
 	 */
-	public void deleteRelationPostalAddress(final Long userId, final Long addressId) throws InternalException;
+	public void deletePostalAddress(final Long addressId) throws InternalException;
 
 	/**
 	 * Buscar por direccion por id
@@ -46,17 +46,7 @@ public interface PostalAddressMgmtServiceI {
 	 * @return List
 	 * @throws InternalException
 	 */
-	public List<PostalAddressDTO> searchByUser(final Long userId) throws InternalException;
-
-	/**
-	 * Comprobar existencia por usuario
-	 * 
-	 * @param userId
-	 * @param addressId
-	 * @return boolean
-	 * @throws InternalException
-	 */
-	public boolean existsByUser(Long userId, Long addressId) throws InternalException;
+	public List<PostalAddressDTO> searchByUser(final User user) throws InternalException;
 
 	/**
 	 * Buscar por linea de direccion, ciudad y provincia
@@ -64,19 +54,11 @@ public interface PostalAddressMgmtServiceI {
 	 * @param directionLine
 	 * @param city
 	 * @param province
+	 * @param user
 	 * @return PostalAddress
 	 * @throws InternalException
 	 */
-	public PostalAddressDTO findByCityDirectionLineProvince(String directionLine, String city, String province)
-			throws InternalException;
-
-	/**
-	 * Insertar relacion entre usuario y direccion
-	 * 
-	 * @param userId
-	 * @param addressId
-	 * @throws InternalException
-	 */
-	public void insertRelation(Long userId, Long addressId) throws InternalException;
+	public PostalAddressDTO findByCityDirectionLineProvinceUser(String directionLine, String city, String province,
+			User user) throws InternalException;
 
 }

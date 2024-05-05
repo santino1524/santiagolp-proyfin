@@ -5,6 +5,6 @@ package com.ntd.dto;
  * 
  * @author SLP
  */
-public record ProductSoldDTO(Long productSoldId, OrderDTO orderDto, ProductDTO productDto, Integer quantitySold) {
+public record ProductSoldDTO(Long productSoldId, Long orderId, Long productId, Integer quantity) {
 
 }
