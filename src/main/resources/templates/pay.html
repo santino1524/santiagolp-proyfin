@@ -12,14 +12,52 @@
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3">
-		<h2 class="mb-3">Pagar</h2>
+	<div class="container mb-5 mt-5 text-center">
+		<div class="col mb-3">
+			<img src="/images/ball-pay.png" class="img-fluid"
+				style="max-height: 150px;" alt="Pay Balls" title="Pay Balls">
+		</div>
+		<h2 class="mb-3">Proceso de pago</h2>
+
+		<!-- Lista de Direcciones -->
+		<div class="address-list">
+			<h5 class="mb-3">Seleccione la dirección para el envío</h5>
+
+			<div class="alert alert-danger d-none" role="alert"
+				id="messageNotFoundAddresses"></div>
+
+			<div class="list-group mb-5" id="addresses">
+			</div>
+			
+			<button class="btn btn-primary mt-3 mb-3" id="addAddress" onclick="addAddress()">
+				<i class="fa-solid fa-plus mr-sm-2"></i>Agregar nueva dirección
+			</button>
+		</div>
+		<div class="mb-3 mt-3 text-right">
+			<button class="btn btn-success" onclick="pay()">
+				<i class="fa-brands fa-paypal mr-sm-2"></i>Pagar&nbsp;&nbsp;<span
+					id="moneyToPay">0€</span>
+			</button>
+		</div>
 	</div>
+
+	
+
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
+					<div th:replace="~{fragments/general-fragments :: footerContent}">
+					</div> <!-- Modal Address -->
+					<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
 
+					<!-- Modal Pay -->
+					<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+
+					<script type="text/javascript" th:src="@{/js/pay.js}"></script> <script>
+		// Cargar pagina de pago
+		window.onload = async function() {
+			await loadPayPage();
+		}
+	</script>
 </body>
 
 </html>

@@ -12,14 +12,53 @@
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3">
+	<div class="container text-center mt-5 mb-5">
+		<div class="col text-center mb-3">
+			<img src="/images/car.png" class="img-fluid"
+				style="max-height: 250px;" alt="Carrito de compras"
+				title="Carrito de compras">
+		</div>
 		<h2 class="mb-3">Carrito de compras</h2>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Imagen</th>
+						<th>Nombre</th>
+						<th>Cantidad</th>
+						<th>Precio Unitario</th>
+						<th>Precio Total</th>
+						<th>Eliminar</th>
+					</tr>
+				</thead>
+				<tbody id="tbodyProductsCar"></tbody>
+			</table>
+		</div>
+		<div class="text-right">
+			<h4 class="mb-3" id="carTotal"></h4>
+			<button onclick="checkProducts()" class="btn btn-success" id="buyButton"><i
+				class="fa-solid fa-wallet mr-sm-2"></i>Realizar compra</a>
+		</div>
 	</div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
 
+	<!-- MODAL PRODUCT -->
+	<div th:replace="~{fragments/general-fragments :: modalProduct}">
+	</div>
+
+	<!-- Modal Pay -->
+	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+
+	<script type="text/javascript" th:src="@{/js/shopping-cart.js}"></script>
+	<script>
+		// Obtener productos de la cesta 
+		window.onload = async function() {
+			await loadShoppingCart();
+		}
+	</script>
 </body>
 
 </html>

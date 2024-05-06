@@ -46,5 +46,5 @@ public class ProductSold implements Serializable {
 
 	/** Cantidad de productos vendidos */
 	@Column(name = "C_QUANTITY_SOLD", nullable = false)
-	private Integer quantitySold;
+	private Integer quantity;
 }

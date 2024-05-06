@@ -32,9 +32,12 @@ public record OrderDTO(Long orderId,
 		@ValidOrderStatus String status,
 
 		// Validar usuario
-		@NotNull(message = Constants.MSG_USER_NOT_VALID) UserDTO userDto,
+		@NotNull(message = Constants.MSG_USER_NOT_VALID) Long userId,
 
 		// Validar productos vendidos
-		@NotNull(message = Constants.MSG_PRODUCT_LIST_NOT_VALID) List<ProductSoldDTO> soldProductsDto) {
+		@NotNull(message = Constants.MSG_PRODUCT_LIST_NOT_VALID) List<ProductSoldDTO> soldProductsDto,
+
+		// Validar direccion
+		@NotNull(message = Constants.MSG_ADDRESS_LIST_NOT_VALID) Long addressId) {
 
 }

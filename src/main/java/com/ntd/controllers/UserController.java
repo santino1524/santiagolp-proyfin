@@ -1,5 +1,6 @@
 package com.ntd.controllers;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -227,20 +228,16 @@ public class UserController {
 	/**
 	 * Buscar usuario por email
 	 * 
-	 * @param model
 	 * @param email
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByEmail")
-	public String searchByEmail(@RequestParam @NotNull final String email, final Model model) throws InternalException {
+	public ResponseEntity<Object> searchByEmail(@RequestParam @NotNull final String email) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar usuario por email");
 
-		// Retornar usuario
-		model.addAttribute("user", userMgmtService.searchByEmail(email));
-
-		return "VISTA MOSTRAR usuario por email";
+		return ResponseEntity.ok().body(Collections.singletonMap("user", userMgmtService.searchByEmail(email)));
 	}
 
 	/**

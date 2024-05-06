@@ -4,17 +4,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ntd.dto.OrderDTO;
-import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.dto.validators.OrderStatusValidator;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Order;
 import com.ntd.persistence.OrderRepositoryI;
-import com.ntd.utils.Constants;
+import com.ntd.persistence.ProductSold;
+import com.ntd.persistence.ProductSoldRepositoryI;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +32,22 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 	/** Dependencia de OrderRepository */
 	private final OrderRepositoryI orderRepository;
 
-	/** Dependencia de OrderRepository */
-	private final ProductSoldMgmtServiceI productSoldMgmtService;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param orderRepository
-	 * @param productSoldMgmtService
+	 * @param productSoldRepository
 	 */
-	public OrderMgmtServiceImp(final OrderRepositoryI orderRepository, ProductSoldMgmtServiceI productSoldMgmtService) {
+	public OrderMgmtServiceImp(OrderRepositoryI orderRepository, ProductSoldRepositoryI productSoldRepository) {
 		this.orderRepository = orderRepository;
-		this.productSoldMgmtService = productSoldMgmtService;
+		this.productSoldRepository = productSoldRepository;
 	}
 
+	/** Dependencia de ProductSoldRepository */
+	private final ProductSoldRepositoryI productSoldRepository;
+
 	@Override
-	public String insertOrder(OrderDTO orderDto) throws InternalException {
+	public ResponseEntity<Object> insertOrder(OrderDTO orderDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Insertar pedido");
 
@@ -54,7 +55,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		ValidateParams.isNullObject(orderDto);
 
 		// Extraer lista de productos vendidos
-		List<ProductSoldDTO> soldProductsDto = orderDto.soldProductsDto();
+		List<ProductSold> soldProducts = (DTOMapperI.MAPPER.dtoToListProductSold(orderDto.soldProductsDto()));
 
 		// Vaciar lista de productos vendidos para guardar pedido
 		Order order = DTOMapperI.MAPPER.mapDTOToOrder(orderDto);
@@ -63,14 +64,21 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		// Mapear DTO y guardar
 		order = orderRepository.save(order);
 
-		// Guardar lista de productos vendidos
-		List<ProductSoldDTO> soldProductsDtoRegistered = productSoldMgmtService.insertAllProductSold(soldProductsDto);
+		// Agregar order a soldProducts
+		for (ProductSold productSold : soldProducts) {
+			productSold.setOrder(order);
+		}
 
-		String result;
-		if (order != null && soldProductsDtoRegistered.size() == soldProductsDto.size()) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
+		// Guardar lista de productos vendidos
+		List<ProductSold> soldProductsRegistered = productSoldRepository.saveAll(soldProducts);
+
+		ResponseEntity<Object> result;
+		if (order != null && soldProductsRegistered.size() == soldProducts.size()) {
+			// Retornar 200 para operacion exitosa
+			result = ResponseEntity.ok().build();
 		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
+			// Retornar 500 para error
+			result = ResponseEntity.internalServerError().build();
 		}
 
 		// Retornar mensaje de operacion

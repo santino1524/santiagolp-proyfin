@@ -18,8 +18,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -89,9 +87,7 @@ public class User implements Serializable {
 	private boolean blocked;
 
 	/** Direcciones */
-	@ManyToMany
-	@JoinTable(name = "T_USER_ADDRESS", joinColumns = @JoinColumn(name = "C_USER_ID"), inverseJoinColumns = {
-			@JoinColumn(name = "C_DIRECTION_LINE"), @JoinColumn(name = "C_PROVINCE"), @JoinColumn(name = "C_CITY") })
+	@OneToMany(mappedBy = "user")
 	private List<PostalAddress> addresses;
 
 	/** Pedidos */

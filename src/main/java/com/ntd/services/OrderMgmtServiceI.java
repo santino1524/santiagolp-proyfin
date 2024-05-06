@@ -3,6 +3,8 @@ package com.ntd.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
@@ -18,10 +20,10 @@ public interface OrderMgmtServiceI {
 	 * Insertar nuevo pedido
 	 * 
 	 * @param orderDto
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	public String insertOrder(final OrderDTO orderDto) throws InternalException;
+	public ResponseEntity<Object> insertOrder(final OrderDTO orderDto) throws InternalException;
 
 	/**
 	 * Actualizar pedido

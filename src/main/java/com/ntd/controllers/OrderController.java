@@ -1,8 +1,12 @@
 package com.ntd.controllers;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,16 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.ProductDTO;
+import com.ntd.dto.ProductSoldDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.OrderMgmtServiceI;
 import com.ntd.services.ProductMgmtServiceI;
-import com.ntd.services.ProductSoldMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -48,21 +51,15 @@ public class OrderController {
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductMgmtServiceI productMgmtService;
 
-	/** Dependencia del servicio de gestion de productos vendidos */
-	private final ProductSoldMgmtServiceI productSoldMgmtService;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param orderMgmtService
 	 * @param productMgmtService
-	 * @param productSoldMgmtService
 	 */
-	public OrderController(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService,
-			ProductSoldMgmtServiceI productSoldMgmtService) {
+	public OrderController(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService) {
 		this.orderMgmtService = orderMgmtService;
 		this.productMgmtService = productMgmtService;
-		this.productSoldMgmtService = productSoldMgmtService;
 	}
 
 	/**
@@ -91,52 +88,88 @@ public class OrderController {
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public String saveOrder(@RequestBody @Valid final OrderDTO orderDto, final Model model) throws InternalException {
+	@PostMapping(path = "/save")
+	public ResponseEntity<Object> saveOrder(@RequestBody final OrderDTO orderDto) throws InternalException {
 		log.info("Guardar pedido");
 
 		// Validar datos de productos a comprar
-		productSoldMgmtService.validateProductsToBuy(orderDto.soldProductsDto());
+		ValidateParams.validateProductsToBuy(orderDto.soldProductsDto());
 
-		String result = null;
+		ResponseEntity<Object> result = null;
 
 		// Comprobar si el pedido existe
 		if (orderMgmtService.existsOrder(orderDto.orderNumber())) {
-			result = Constants.MSG_ORDER_EXISTS;
+			// Retornar 400 si existe el numero de pedido
+			result = ResponseEntity.badRequest().build();
 		} else {
 
 			// Confirmar productos a comprar
-			final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto());
+			final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto(),
+					false);
 			if (productsDtoNotFound.isEmpty()) {
 				// Guardar pedido
 				result = orderMgmtService.insertOrder(orderDto);
 			} else {
 				log.info("Retorno de productos con stock insuficiente");
 
-				StringBuilder builder = new StringBuilder();
-
-				// Preparar respuesta con productos no disponibles
-				builder.append("No hay sufcientes unidades en stock de:\n");
-
-				for (ProductDTO productDto : productsDtoNotFound) {
-					builder.append(productDto.productName());
-					builder.append(" - Talla: ");
-					builder.append(productDto.productSize());
-					builder.append(" - Disponibilidad: ");
-					builder.append(productDto.productQuantity());
-					builder.append("\n");
-				}
-
-				// Devolver una respuesta
-				result = builder.toString();
+				// Retornar 422 para productos faltantes
+				result = ResponseEntity.unprocessableEntity()
+						.body(Collections.singletonMap("products", productsDtoNotFound));
 			}
-
 		}
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
 		// Retornar respuesta
-		return "VISTA MOSTRAR RESPUESTA DE PEDIDO REALIZADO";
+		return result;
+	}
+
+	/**
+	 * Chequear productos a vender
+	 * 
+	 * @param productsToSold
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping(path = "/checkProducts")
+	public ResponseEntity<Object> checkProductsToSold(@RequestBody @NotNull List<Map<String, Object>> productsToSold)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Chequear los productos a vender");
+
+		ResponseEntity<Object> result = null;
+
+		ValidateParams.isNullObject(productsToSold);
+
+		if (productsToSold.isEmpty()) {
+			throw new InternalException();
+		}
+
+		// Convertir objeto en ProductSoldDTO
+		List<ProductSoldDTO> productsDtoToSold = new ArrayList<>();
+		for (Map<String, Object> object : productsToSold) {
+
+			productsDtoToSold.add(new ProductSoldDTO(null, null, Long.parseLong((String) object.get("productId")),
+					(Integer) object.get("quantity")));
+		}
+
+		// Confirmar productos a comprar
+		final List<ProductDTO> productsDtoNotFound = productMgmtService.confirmOrder(productsDtoToSold, true);
+
+		if (productsDtoNotFound.isEmpty()) {
+			// Devolver una respuesta con codigo de estado 204
+			result = ResponseEntity.noContent().build();
+		} else {
+			// Eliminar datos innecesarios
+			final List<ProductSoldDTO> returnProducts = new ArrayList<>();
+			for (ProductDTO productDTO : productsDtoNotFound) {
+				returnProducts
+						.add(new ProductSoldDTO(productDTO.productId(), null, null, productDTO.productQuantity()));
+			}
+
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.unprocessableEntity().body(Collections.singletonMap("products", returnProducts));
+		}
+
+		return result;
 	}
 
 	/**

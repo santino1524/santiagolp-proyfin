@@ -4,7 +4,6 @@ import java.util.Collections;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -162,20 +161,17 @@ public class ProductCategoryController {
 	/**
 	 * Buscar por id
 	 * 
-	 * @param model
 	 * @param id
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchById")
-	public String searchById(@RequestParam @NotNull final Long id, final Model model) throws InternalException {
+	public ResponseEntity<Object> searchById(@RequestParam @NotNull final Long categoryId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar Category por id");
 
-		// Retornar categoria
-		model.addAttribute("categoryDto", categoryMgmtService.searchById(id));
-
-		return "VISTA BUSCAR Category POR id";
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("category", categoryMgmtService.searchById(categoryId)));
 	}
 
 }

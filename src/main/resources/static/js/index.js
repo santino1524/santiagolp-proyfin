@@ -39,7 +39,11 @@ async function layoutCategoriesProducts(categories) {
 			divProductsImage.classList.add('product-image');
 			let aImage = document.createElement('a');
 			aImage.classList.add('image');
-			aImage.href = '#'; // PONER URL DEV
+			aImage.href = '#';
+			aImage.onclick = () => {
+				// Mostrar Modal con Product
+				showModalProduct(product);
+			};
 			let img1 = document.createElement('img');
 			img1.classList.add('pic-1');
 			let img2 = document.createElement('img');
@@ -74,9 +78,9 @@ async function layoutCategoriesProducts(categories) {
 			}
 			let aCart = document.createElement('a');
 			aCart.classList.add('add-to-cart');
-			aCart.href = '#'; // PONER URL DEV
+			aCart.href = '#';
 			aCart.onclick = function() {
-				addCart(product.productId);
+				addCart(product.productId, 1);
 			};
 			aCart.append('Añadir al carrito');
 			divProductsRating.append(ul);
@@ -90,7 +94,11 @@ async function layoutCategoriesProducts(categories) {
 			let h3Content = document.createElement('h3');
 			h3Content.classList.add('title');
 			let aTitle = document.createElement('a');
-			aTitle.href = '#'; // PONER URL DEV
+			aTitle.href = '#';
+			aTitle.onclick = () => {
+				// Mostrar Modal con Product
+				showModalProduct(product);
+			};
 			aTitle.append(product.productName);
 			let divPrice = document.createElement('div');
 			divPrice.classList.add('price');

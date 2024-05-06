@@ -202,11 +202,12 @@ public interface ProductMgmtServiceI {
 	 * Confirmar disponibilidad de producto
 	 * 
 	 * @param productsDtoToBuy
+	 * @param onlyCheck
 	 * @return List
 	 * @throws InternalException
 	 */
-	@Transactional
-	public List<ProductDTO> confirmOrder(final List<ProductSoldDTO> productsDtoToBuy) throws InternalException;
+	public List<ProductDTO> confirmOrder(final List<ProductSoldDTO> productsDtoToBuy, final boolean onlyCheck)
+			throws InternalException;
 
 	/**
 	 * Contar las ocurrencias de productos de una categoria
@@ -216,5 +217,14 @@ public interface ProductMgmtServiceI {
 	 * @throws InternalException
 	 */
 	public long countByProductCategory(ProductCategoryDTO productCategoryDto) throws InternalException;
+
+	/**
+	 * Buscar producto por id
+	 * 
+	 * @param id
+	 * @return ProductDTO
+	 * @throws InternalException
+	 */
+	public ProductDTO searchById(final Long id) throws InternalException;
 
 }

@@ -1,29 +1,34 @@
 package com.ntd.persistence;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 
-import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Repositorio T_POSTAL_ADDRESS
  * 
  * @author SLP
  */
-public interface PostalAddressRepositoryI extends JpaRepository<PostalAddress, AddressId> {
+public interface PostalAddressRepositoryI extends JpaRepository<PostalAddress, Long> {
 
 	/**
-	 * Eliminar direccion asociada a usuario
+	 * Buscar direcciones por usuario
 	 * 
-	 * @param userId
-	 * @param city
-	 * @param directionLine
-	 * @param province
+	 * @param user
+	 * @return List
 	 */
-	@Transactional
-	@Modifying
-	@Query(value = "DELETE FROM T_USER_ADDRESS WHERE C_USER_ID = :userId AND C_CITY = :city AND C_DIRECTION_LINE = :directionLine AND C_PROVINCE = :province", nativeQuery = true)
-	public void deleteRelationPostalAddress(Long userId, String city, String directionLine, String province);
+	public List<PostalAddress> findByUser(User user);
+
+	/**
+	 * Buscar por linea de direccion, ciudad y provincia
+	 * 
+	 * @param directionLine
+	 * @param city
+	 * @param province
+	 * @param user
+	 * @return PostalAddress
+	 */
+	public PostalAddress findByCityIgnoreCaseAndDirectionLineIgnoreCaseAndProvinceIgnoreCaseAndUser(String city,
+			String directionLine, String province, User user);
 
 }

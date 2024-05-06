@@ -15,6 +15,7 @@ import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductRepositoryI;
 import com.ntd.utils.ValidateParams;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -255,7 +256,8 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	}
 
 	@Override
-	public List<ProductDTO> confirmOrder(List<ProductSoldDTO> productsDtoToBuy) throws InternalException {
+	public List<ProductDTO> confirmOrder(List<ProductSoldDTO> productsDtoToBuy, boolean onlyCheck)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Confirmar disponibilidad de producto y actualizar stock");
 
@@ -267,16 +269,18 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 
 		for (ProductSoldDTO productSoldDto : productsDtoToBuy) {
 			// Buscar producto en Stock
-			final Product productInStock = productRepository.findById(productSoldDto.productDto().productId())
+			final Product productInStock = productRepository.findById(productSoldDto.productId())
 					.orElseThrow(InternalException::new);
 
 			// Verificar producto a comprar con el stock
-			if (productInStock.getProductQuantity() >= productSoldDto.quantitySold()) {
-				// Reducir cantidad de producto en stock
-				productInStock.setProductQuantity(productInStock.getProductQuantity() - productSoldDto.quantitySold());
+			if (productInStock.getProductQuantity() >= productSoldDto.quantity()) {
+				if (!onlyCheck) {
+					// Reducir cantidad de producto en stock
+					productInStock.setProductQuantity(productInStock.getProductQuantity() - productSoldDto.quantity());
 
-				// Agregar a lista de productos confirmados
-				productsConfirm.add(productInStock);
+					// Agregar a lista de productos confirmados
+					productsConfirm.add(productInStock);
+				}
 			} else {
 				// Si algun producto no esta disponible agregarlo a la lista de no disponibles
 				productsDtoNotFound.add(DTOMapperI.MAPPER.mapProductToDTO(productInStock));
@@ -285,19 +289,36 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		}
 
 		// Actualizar stock solo si todos los productos estan disponibles
-		if (productsDtoNotFound.isEmpty()) {
-			if (log.isInfoEnabled())
-				log.info("Actualizacion de stock por productos vendidos");
-
-			for (Product product : productsConfirm) {
-
-				// Actualizar stock
-				productRepository.save(product);
-			}
+		if (productsDtoNotFound.isEmpty() && !productsConfirm.isEmpty() && !onlyCheck) {
+			// Actualizar stock
+			updateStock(productsConfirm);
 		}
 
 		// Retornar lista
 		return productsDtoNotFound;
+	}
+
+	/**
+	 * Actualizar stock
+	 * 
+	 * @param productsConfirm
+	 */
+	@Transactional
+	private void updateStock(List<Product> productsToUpdate) {
+		if (log.isInfoEnabled())
+			log.info("Actualizacion de stock por productos vendidos");
+
+		// Guardar los productos por lotes
+		if (!productsToUpdate.isEmpty()) {
+			int batchSize = 50; // Tamanno del lote
+
+			for (int i = 0; i < productsToUpdate.size(); i += batchSize) {
+				int endIndex = Math.min(i + batchSize, productsToUpdate.size());
+				List<Product> batch = productsToUpdate.subList(i, endIndex);
+
+				productRepository.saveAll(batch);
+			}
+		}
 	}
 
 	@Override
@@ -491,5 +512,20 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		ValidateParams.isNullObject(productCategoryDto);
 
 		return productRepository.countByProductCategory(DTOMapperI.MAPPER.mapDTOtoProductCategory(productCategoryDto));
+	}
+
+	@Override
+	public ProductDTO searchById(Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por id");
+
+		// Validar parametro
+		ValidateParams.isNullObject(id);
+
+		// Buscar por id
+		final Product product = productRepository.findById(id).orElse(null);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapProductToDTO(product);
 	}
 }

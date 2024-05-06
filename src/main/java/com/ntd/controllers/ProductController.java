@@ -475,4 +475,20 @@ public class ProductController {
 		return ResponseEntity.ok()
 				.body(Collections.singletonMap("productDto", productMgmtService.searchByProductNumber(productNum)));
 	}
+
+	/**
+	 * Buscar por id
+	 * 
+	 * @param productId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchById")
+	public ResponseEntity<Object> searchById(@RequestParam @NotNull final Long productId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar producto por id");
+
+		return ResponseEntity.ok().body(Collections.singletonMap("product", productMgmtService.searchById(productId)));
+	}
+
 }

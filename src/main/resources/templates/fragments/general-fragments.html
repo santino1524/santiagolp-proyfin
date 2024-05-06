@@ -43,23 +43,27 @@
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
-					<li class="nav-item mr-sm-4"><a class="nav-link titleNav" href="/">Inicio</a></li>
+					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
+						href="/#">Inicio</a></li>
 					<li class="nav-item dropdown mr-sm-4"><a
-						class="nav-link titleNav dropdown-toggle" href="#" id="navbarDropdown"
-						role="button" data-toggle="dropdown" aria-haspopup="true"
-						aria-expanded="false" onclick="listCategoriesInNav()"> Tienda </a>
+						class="nav-link titleNav dropdown-toggle" href="#"
+						id="navbarDropdown" role="button" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false"
+						onclick="listCategoriesInNav()"> Tienda </a>
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
 					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
-						th:href="@{/about}">Acerca de</a></li>
+						th:href="@{/about}	">Acerca de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
 						class="nav-link titleNav" th:href="@{/admin}" id="adminLink">Administración</a></li>
 				</ul>
 
 				<ul class="navbar-nav ml-auto">
-					<form class="form-inline my-2 my-lg-0" action="/products/searchByProductNamePage" method="GET">
+					<form class="form-inline my-2 my-lg-0"
+						action="/products/searchByProductNamePage" method="GET">
 						<input class="form-control mr-sm-2" type="search"
-							name="productName" placeholder="Buscar" aria-label="Search" required title="Introduzca el término de búsqueda">
+							name="productName" placeholder="Buscar" aria-label="Search"
+							required title="Introduzca el término de búsqueda">
 						<button class="btn btn-outline-light my-2 my-sm-0 mr-sm-2"
 							type="submit" title="Buscar">
 							<i class="fas fa-search"></i>
@@ -95,8 +99,8 @@
 													id="inputPassword2" placeholder="Contraseña" required
 													autocomplete="password">
 												<div class="help-block text-right">
-													<a id="linkRecoverPassword" th:href="@{/recoverPassword}">¿Haz olvidado tu
-														contraseña?</a>
+													<a id="linkRecoverPassword" th:href="@{/recoverPassword}">¿Haz
+														olvidado tu contraseña?</a>
 												</div>
 											</div>
 											<div class="form-group">
@@ -107,7 +111,8 @@
 										</form>
 									</div>
 									<div class="bottom text-center">
-										¿Eres nuevo por aquí? <a id="linkRegister" th:href="@{/register}"><b>Resgístrate</b></a>
+										¿Eres nuevo por aquí? <a id="linkRegister"
+											th:href="@{/register}"><b>Resgístrate</b></a>
 									</div>
 								</div>
 							</li>
@@ -117,7 +122,7 @@
 						th:if="${#authorization.expression('isAuthenticated()')}"><a
 						class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
 						role="button" aria-haspopup="true" aria-expanded="false"
-						sec:authentication="name"> </a>
+						id="authenticatedUser" sec:authentication="name"> </a>
 						<div class="dropdown-menu dropdown-menu-right bg-dark"
 							aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white" th:href="@{/}">Mis
@@ -130,9 +135,12 @@
 			</div>
 
 			<div class="navbar-nav">
-				<a class="nav-link titleNav" th:href="@{/shoppingCart}"
-					title="Cesta de compras"> <i class="fas fa-shopping-cart fa-lg"></i>
-				</a>
+				<div class="cart-container">
+					<a id="cartIcon" class="nav-link titleNav"
+						th:href="@{/shoppingCart}" title="Cesta de compras"> <i
+						class="fas fa-shopping-cart fa-lg"></i>
+					</a> <span id="cartQuantity" class="badge badge-pill badge-danger"></span>
+				</div>
 			</div>
 		</nav>
 		<div class="invisible d-md-block w-100"
@@ -159,6 +167,215 @@
 		</div>
 	</div>
 
+	<!-- Modal Address-->
+	<div th:fragment="modalAddress">
+		<div class="modal fade" id="modalAddress" tabindex="-1" role="dialog"
+			aria-labelledby="modalAddress" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- Encabezado del modal -->
+					<div class="modal-header">
+						<h5 class="modal-title">Introduce los datos de la dirección</h5>
+						<!-- Boton de cerrar -->
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<!-- Contenido del modal -->
+					<div class="modal-body">
+						<!-- Formulario para la nueva dirección -->
+						<form>
+							<div class="form-group">
+								<div class="alert alert-danger d-none" role="alert"
+									id="messageAddressError"></div>
+								<input type="hidden" id="addressId"> <label
+									for="addressLine">Línea de dirección</label> <input type="text"
+									class="form-control" id="addressLine"
+									placeholder="Ingrese la dirección">
+							</div>
+							<div class="form-group">
+								<label for="city">Ciudad</label> <input type="text"
+									class="form-control" id="city" placeholder="Ingrese la ciudad">
+							</div>
+							<div class="form-group">
+								<label for="province">Provincia</label> <select
+									class="form-control" id="province">
+									<option value="Álava">Álava</option>
+									<option value="Albacete">Albacete</option>
+									<option value="Alicante">Alicante</option>
+									<option value="Almería">Almería</option>
+									<option value="Asturias">Asturias</option>
+									<option value="Ávila">Ávila</option>
+									<option value="Badajoz">Badajoz</option>
+									<option value="Barcelona">Barcelona</option>
+									<option value="Burgos">Burgos</option>
+									<option value="Cáceres">Cáceres</option>
+									<option value="Cádiz">Cádiz</option>
+									<option value="Cantabria">Cantabria</option>
+									<option value="Castellón">Castellón</option>
+									<option value="Ciudad Real">Ciudad Real</option>
+									<option value="Córdoba">Córdoba</option>
+									<option value="Cuenca">Cuenca</option>
+									<option value="Gerona">Gerona</option>
+									<option value="Granada">Granada</option>
+									<option value="Guadalajara">Guadalajara</option>
+									<option value="Guipúzcoa">Guipúzcoa</option>
+									<option value="Huelva">Huelva</option>
+									<option value="Huesca">Huesca</option>
+									<option value="Jaén">Jaén</option>
+									<option value="La Coruña">La Coruña</option>
+									<option value="La Rioja">La Rioja</option>
+									<option value="León">León</option>
+									<option value="Lérida">Lérida</option>
+									<option value="Lugo">Lugo</option>
+									<option value="Madrid">Madrid</option>
+									<option value="Málaga">Málaga</option>
+									<option value="Murcia">Murcia</option>
+									<option value="Navarra">Navarra</option>
+									<option value="Orense">Orense</option>
+									<option value="Palencia">Palencia</option>
+									<option value="Pontevedra">Pontevedra</option>
+									<option value="Salamanca">Salamanca</option>
+									<option value="Segovia">Segovia</option>
+									<option value="Sevilla">Sevilla</option>
+									<option value="Soria">Soria</option>
+									<option value="Tarragona">Tarragona</option>
+									<option value="Teruel">Teruel</option>
+									<option value="Toledo">Toledo</option>
+									<option value="Valencia">Valencia</option>
+									<option value="Valladolid">Valladolid</option>
+									<option value="Vizcaya">Vizcaya</option>
+									<option value="Zamora">Zamora</option>
+									<option value="Zaragoza">Zaragoza</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="postalCode">Código postal</label> <input
+									type="number" minlength="5" maxlength="5" class="form-control"
+									id="postalCode" placeholder="Ingrese el código postal">
+							</div>
+							<div class="form-group">
+								<label for="country">País</label> <input type="text"
+									class="form-control" id="country" value="España" readonly>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="saveAddress"
+							onclick="saveAddressForm()">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Product-->
+	<div th:fragment="modalProduct">
+		<div class="modal fade" id="modalProduct" tabindex="-1" role="dialog"
+			aria-labelledby="modalProduct" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<!-- Encabezado del modal -->
+					<div class="modal-header">
+						<h5 class="modal-title" id="titleModalProduct"></h5>
+						<!-- Boton de cerrar -->
+						<button type="button" class="close" data-dismiss="modal"
+							id="modalProductClose" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<!-- Contenido del modal -->
+					<div class="modal-body">
+						<div class="row">
+							<!-- Sección de imagenes del producto -->
+							<div class="col-md-6">
+								<div id="carouselImagesProducts" class="carousel slide"
+									data-ride="carousel">
+									<ol class="carousel-indicators" id="carouselIndicators">
+									</ol>
+									<div class="carousel-inner" id="carouselInner"></div>
+									<a class="carousel-control-prev" href="#carouselImagesProducts"
+										role="button" data-slide="prev"> <span
+										class="carousel-control-prev-icon" aria-hidden="true"></span>
+										<span class="sr-only">Anterior</span>
+									</a> <a class="carousel-control-next"
+										href="#carouselImagesProducts" role="button" data-slide="next">
+										<span class="carousel-control-next-icon" aria-hidden="true"></span>
+										<span class="sr-only">Siguiente</span>
+									</a>
+								</div>
+							</div>
+
+							<!-- Seccion de detalles del producto -->
+							<div class="col-md-6">
+								<div
+									class="d-flex flex-column justify-content-between h-100 text-center">
+									<div class="alert alert-danger d-none mb-4 text-center"
+										role="alert" id="messageProductQuantity"></div>
+									<input type="hidden" id="productId">
+									<h4 id="productName"></h4>
+									<h4 id="productPrice"></h4>
+									<h5>
+										<i class="fas fa-plane mr-2"></i>Envío gratis
+									</h5>
+									<h5 id="productSize">Tamaño:</h5>
+
+									<div class="form-row text-center mb-1">
+										<div class="col-md-2">
+											<label class="sr-only" for="quantity">Cantidad</label> <input
+												type="number" class="form-control mb-2" id="quantity"
+												placeholder="1" min="1" max="100">
+										</div>
+										<div class="col-md-4 mr-4">
+											<button type="button" class="btn btn-primary mb-2 btn-block"
+												id="addToCartButton"
+												onclick="addCart(document.getElementById('productId').value, document.getElementById('quantity').value)">
+												<i class="fa-solid fa-cart-plus mr-sm-2"></i>Añadir al
+												carrito
+											</button>
+										</div>
+										<div class="col-md-4">
+											<a th:href="@{/shoppingCart}"
+												class="btn btn-success mb-2 btn-block"> <i
+												class="fa-solid fa-list-check mr-sm-2"></i>Ver carrito
+											</a>
+										</div>
+									</div>
+									<div>
+										<!-- Descripción del producto -->
+										<h5>Descripción del producto:</h5>
+										<p id="productDescription" class="text-justify"></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Pay -->
+	<div th:fragment="modalPay">
+		<div class="modal fade" id="modalPay" tabindex="-1" role="dialog"
+			aria-labelledby="generalModal" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Aviso</h5>
+					</div>
+					<div class="modal-body" id="bodyModalPay"></div>
+					<div class="modal-footer">
+						<button id="hrefModalPay" class="btn btn-secondary"
+							data-dismiss="modal">
+							Aceptar</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
 	<div
 		class="d-flex flex-wrap  bg-dark text-white text-center py-3 bottom"
@@ -166,7 +383,7 @@
 		<div class="container">
 			<div class="row justify-content-between">
 				<div class="col-md-4 col-sm-6">
-					<div class="Shipping d-flex">
+					<div class="Shipping d-flex ">
 						<p>Envíos con: &nbsp;</p>
 						<div class="card-wrap ps-2">
 							<a href="https://www.dhl.com/es-es/home.html" target="_blank"><img
@@ -186,7 +403,7 @@
 					</div>
 				</div>
 				<div class="col-md-4 col-sm-6">
-					<div class="card-wrap ps-2">
+					<div class="card-wrap ps-2 ">
 						<p>&copy; Copyright 2024</p>
 					</div>
 				</div>
@@ -194,6 +411,7 @@
 		</div>
 
 		<script type="text/javascript" th:src="@{/js/main.js}"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/5.2.2/big.min.js"></script>
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
 			crossorigin="anonymous"></script>
@@ -212,7 +430,6 @@
 		<div class="invisible d-md-block w-100"
 			style="height: 70px; background-color: #f0f0f0;"></div>
 	</div>
-
 </body>
 
 </html>
