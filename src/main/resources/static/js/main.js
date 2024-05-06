@@ -195,7 +195,7 @@ function addCart(productId, quantity) {
 		if (productId && (quantity || 1)) {
 			product = {
 				productId: productId,
-				quantity: quantity || 1,
+				quantity: parseInt(quantity) || 1,
 			};
 			cartLfd.push(product);
 		}
@@ -403,7 +403,7 @@ async function saveAddress(formData) {
 		if (response.status === 200) {
 			data = await response.json();
 		} else if (response.status === 422) {
-			showMessage(divMessageProductError, "El usuario ya tiene ragistrada un dirección con esos datos");
+			showMessage(divMessageProductError, "El usuario ya tiene ragistrada una dirección con esos datos");
 			return;
 		} else {
 			window.location.href = urlError;
@@ -441,20 +441,6 @@ function generateEAN13() {
 
 	// Retorna el codigo EAN-13 completo
 	return cuerpoEAN + digitoControl;
-}
-
-// Calcular total del carrito
-function carTotal(cartLfd) {
-	// Obtener todos los elementos tdTotalPrice y sumar sus valores
-	let total = 0;
-	for (let productCar of cartLfd) {
-		let totalPriceElement = document.getElementById(`tdTotalPrice_${productCar.productId}`);
-		if (totalPriceElement) {
-			total += parseFloat(totalPriceElement.textContent);
-		}
-	}
-
-	return total;
 }
 
 // Buscar producto por ID

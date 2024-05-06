@@ -70,7 +70,7 @@ async function searchByEmail(email) {
 // Pagar
 function pay() {
 	let active = false;
-	
+
 	// Obtener la lista de direcciones
 	let addressesList = document.getElementById('addresses');
 
@@ -79,12 +79,12 @@ function pay() {
 
 	if (addressItems) {
 		// Iterar sobre los elementos para encontrar el elemento activo
-		addressItems.forEach(item => {
+		addressItems.forEach(async item => {
 			if (item.classList.contains('active')) {
 				active = true;
-				
+
 				// Crear Orden pendiente de pago y guardar direccion
-				let orderDto = newOrderPendingPayment(item.id);
+				let orderDto = await newOrderPendingPayment(item.id);
 
 				// DEV
 				// ENVIAR PETICION A PAYPAL
@@ -93,14 +93,21 @@ function pay() {
 				let pagoRealizado = true;
 				if (pagoRealizado) {
 					// Guardar orden
-					saveOrder(orderDto);
+					let confirmOrder = await saveOrder(orderDto);
 
-					document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente!";
-					document.getElementById("hrefModalPay").onclick = function() {
-						window.location.href = "/";
-					};
+					// Limpiar carrito
+					if (confirmOrder) {
+						localStorage.removeItem('cartLfd');
+						localStorage.removeItem('moneyToPay');
+						localStorage.removeItem('pendingOrder');
 
-					$('#modalPay').modal('show');
+						document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente!";
+						document.getElementById("hrefModalPay").onclick = function() {
+							window.location.href = "/";
+						};
+
+						$('#modalPay').modal('show');
+					}
 				} else {
 					document.getElementById('bodyModalPay').textContent = "¡Upss!, parece que el pago no se ha realizado.";
 
@@ -108,9 +115,9 @@ function pay() {
 				}
 			}
 		});
-	} 
-	
-	if (active) {
+	}
+
+	if (!active) {
 		document.getElementById('bodyModalPay').textContent = "Debe seleccionar una dirección de envío antes de proceder al pago";
 		$('#modalPay').modal('show');
 	}
@@ -123,27 +130,35 @@ async function saveOrder(orderDto) {
 	try {
 		let response = await fetch("/orders/save", {
 			method: "POST",
-			body: orderDto
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(orderDto)
 		});
 
-		if (response.status === 400) {
+
+		if (response.status === 200) {
+			return true;
+		} else if (response.status === 400) {
 			document.getElementById('bodyModalPay').textContent = "Ha ocurrido un error al registrar el pedido, contacte con el administrador de la tienda.";
 			$('#modalPay').modal('show');
-			
+
 			return;
 		} else if (response.status === 422) {
 			data = await response.json();
-			
-			let message = 'Se han modificado las existecias de los productos: ';
-			for(let productSold of data.products){
-				let product = await searchProductById(productSold.productId);
-				message = product.productName + ': ' + productSold.quantity;
+
+			let message = 'Se han modificado las existencias de los productos: ';
+			for (let product of data.products) {
+				message += product.productName + ': ' + product.productQuantity + ' unidades, ';
 			}
-			message = message + ', ajusta las cantidades a comprar. Lo sentimos';	
-			
+			message += 'ajusta las cantidades a comprar. Lo sentimos.';
+
 			document.getElementById('bodyModalPay').textContent = message;
+			document.getElementById("hrefModalPay").onclick = function() {
+				window.location.href = "/shoppingCart";
+			};
 			$('#modalPay').modal('show');
-			
+
 			return;
 		} else {
 			window.location.href = urlError;
@@ -160,18 +175,23 @@ async function saveOrder(orderDto) {
 
 // Crear Orden pendiente de pago y guardar direccion
 async function newOrderPendingPayment(addressId) {
+	// Obtener id de usuario autenticado
+	let email = document.getElementById("authenticatedUser").textContent;
+	let user = await searchByEmail(email);
 	localStorage.setItem('lastAddress', JSON.stringify(addressId));
 	// Obtener el carrito de la cesta del localStorage
 	let soldProductsDto = JSON.parse(localStorage.getItem('cartLfd')) || [];
-	// Obtener id de usuario autenticado
-	let email = document.getElementById("authenticatedUser").textContent ;
+	// Obtener el total
+	let total = JSON.parse(localStorage.getItem('moneyToPay'));
+	// Eliminar el simbolo de euro de la cadena
+	total = total.replace('€', '');
 
 	orderDto = {
 		orderNumber: generateEAN13(),
 		orderDate: getDate(),
-		total: carTotal(soldProductsDto),
+		total: parseFloat(total),
 		status: "CREADO",
-		userId: await searchByEmail(email),
+		userId: user.userId,
 		soldProductsDto: soldProductsDto,
 		addressId: addressId,
 	};
@@ -205,7 +225,7 @@ async function loadPayPage() {
 	document.getElementById("moneyToPay").textContent = moneyToPay;
 
 	// Obtener id de usuario autenticado
-	let email = document.getElementById("authenticatedUser").textContent ;
+	let email = document.getElementById("authenticatedUser").textContent;
 	let user = await searchByEmail(email);
 
 	// Obtener direcciones por usuario
@@ -232,16 +252,24 @@ function layoutAddresses(addresses) {
 	for (const address of addresses) {
 
 		let aAddress = document.createElement('a');
-		aAddress.classList.add('list-group-item', 'list-group-item-action');
+		aAddress.classList.add('list-group-item', 'list-group-item-action', 'item-address');
 		aAddress.id = address.addressId;
-		if (lastAddress && lastAddress.addressId == address.addressId) {
+		if (lastAddress == address.addressId) {
 			aAddress.classList.add('active');
 		}
 		aAddress.href = '#';
-		aAddress.onclick = () => {
-				// Guardar direccion seleccionada
-				localStorage.setItem('lastAddress', JSON.stringify(address.addressId));
-			};
+		aAddress.onclick = (event) => {
+			let clickedItem = event.target;
+			let listItems = document.querySelectorAll('.list-group-item.item-address');
+
+			// Desactivar todos los elementos del grupo
+			listItems.forEach(otherItem => {
+				otherItem.classList.remove('active');
+			});
+
+			// Activar el elemento en el que se hizo clic
+			clickedItem.classList.add('active');
+		};
 		aAddress.append(address.directionLine + ', ' + address.city + ', ' + address.province + ', C.P: ' + address.cp + ', ' + address.country);
 
 		addressesList.append(aAddress);

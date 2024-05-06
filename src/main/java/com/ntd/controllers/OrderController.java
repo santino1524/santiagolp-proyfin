@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,12 +24,10 @@ import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.OrderMgmtServiceI;
 import com.ntd.services.ProductMgmtServiceI;
-import com.ntd.services.ProductSoldMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -54,21 +51,15 @@ public class OrderController {
 	/** Dependencia del servicio de gestion de productos */
 	private final ProductMgmtServiceI productMgmtService;
 
-	/** Dependencia del servicio de gestion de productos vendidos */
-	private final ProductSoldMgmtServiceI productSoldMgmtService;
-
 	/**
 	 * Constructor
 	 * 
 	 * @param orderMgmtService
 	 * @param productMgmtService
-	 * @param productSoldMgmtService
 	 */
-	public OrderController(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService,
-			ProductSoldMgmtServiceI productSoldMgmtService) {
+	public OrderController(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService) {
 		this.orderMgmtService = orderMgmtService;
 		this.productMgmtService = productMgmtService;
-		this.productSoldMgmtService = productSoldMgmtService;
 	}
 
 	/**
@@ -98,11 +89,11 @@ public class OrderController {
 	 * @throws InternalException
 	 */
 	@PostMapping(path = "/save")
-	public ResponseEntity<Object> saveOrder(@ModelAttribute @Valid final OrderDTO orderDto) throws InternalException {
+	public ResponseEntity<Object> saveOrder(@RequestBody final OrderDTO orderDto) throws InternalException {
 		log.info("Guardar pedido");
 
 		// Validar datos de productos a comprar
-		productSoldMgmtService.validateProductsToBuy(orderDto.soldProductsDto());
+		ValidateParams.validateProductsToBuy(orderDto.soldProductsDto());
 
 		ResponseEntity<Object> result = null;
 

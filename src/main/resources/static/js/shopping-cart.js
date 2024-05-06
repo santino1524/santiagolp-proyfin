@@ -77,13 +77,13 @@ async function layoutTableCar(cartLfd) {
 		input.type = "number";
 		input.min = 1;
 		input.max = 100;
-		input.addEventListener('change', function() {
+		input.addEventListener('input', function() {
 			// Actualizar la cantidad en el array cartLfd
-			productCar.quantity = parseInt(this.value);
+			productCar.quantity = parseInt(this.value) || 1;
 
 			// Actualizar valores en la fila
 			let tdUnityPrice = document.getElementById(`tdUnityPrice_${productCar.productId}`).textContent;
-			document.getElementById(`tdTotalPrice_${productCar.productId}`).textContent = tdUnityPrice * productCar.quantity;
+			document.getElementById(`tdTotalPrice_${productCar.productId}`).textContent = Number(tdUnityPrice * productCar.quantity).toFixed(2);
 			localStorage.setItem('cartLfd', JSON.stringify(cartLfd));
 
 			// Calcular total del carrito
@@ -169,6 +169,8 @@ async function checkProducts() {
 		modalEmptyCar();
 
 		$('#modalPay').modal('show');
+		
+		return;
 	}
 
 	let productsNotFound = await confirmAvailability(cartLfd);
@@ -192,13 +194,27 @@ async function checkProducts() {
 			if (!deleteCell.querySelector('p')) {
 				// Crear un nuevo elemento de texto para el mensaje
 				let messageElement = document.createElement('p');
-				messageElement.textContent = `Solo quedan ${product.quantitySold} productos.`;
+				messageElement.textContent = `Solo quedan ${product.quantity} productos.`;
 
 				// Agregar el mensaje al final de la celda junto con el boton de eliminar
 				deleteCell.appendChild(messageElement);
 			}
 		}
 	});
+}
+
+// Calcular total del carrito
+function carTotal(cartLfd) {
+	// Obtener todos los elementos tdTotalPrice y sumar sus valores
+	let total = 0;
+	for (let productCar of cartLfd) {
+		let totalPriceElement = document.getElementById(`tdTotalPrice_${productCar.productId}`);
+		if (totalPriceElement) {
+			total += parseFloat(totalPriceElement.textContent);
+		}
+	}
+
+	return total;
 }
 
 // Confirmar disponibilidad

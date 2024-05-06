@@ -1,4 +1,13 @@
-/** Carrito */
+/* Cambiar el color del estado activo de un enlace */
+.item-address.active {
+    background-color: #3366ff;
+    border-color: #3366ff;
+    color: #ffffff;
+    box-shadow: 0 0 5px rgba(51, 102, 255, 0.5);
+}
+
+
+/* Carrito */
 .cart-container {
 	position: relative;
 	display: inline-flex;
@@ -12,7 +21,7 @@
 }
 
 
-/** Botones carrusel */
+/* Botones carrusel */
 .carousel-control-next,
 .carousel-control-prev, 
 .carousel-indicators {
