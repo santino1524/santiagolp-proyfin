@@ -52,6 +52,32 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	}
 
 	/**
+	 * Mostrar pagina de pedidos
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "myOrders")
+	public String showMyOrders() {
+		if (log.isInfoEnabled())
+			log.info("Mostrar pagina de pedidos");
+
+		return "my-orders";
+	}
+
+	/**
+	 * Mostrar pagina perfil de usuario
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "userProfile")
+	public String showUserProfile() {
+		if (log.isInfoEnabled())
+			log.info("Mostrar pagina perfil de usuario");
+
+		return "user-profile";
+	}
+
+	/**
 	 * Mostrar AdminProducts
 	 * 
 	 * @return String

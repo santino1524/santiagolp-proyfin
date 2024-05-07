@@ -467,3 +467,72 @@ async function searchProductById(productId) {
 		window.location.href = urlError;
 	}
 }
+
+// Obtener usuario por email 
+async function searchByEmail(email) {
+	try {
+		let response = await fetch("/users/searchByEmail?email=" + encodeURIComponent(email), {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.user;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Obtener todas las direcciones del usuario
+async function searchPostalAddressByUser(userId) {
+	try {
+		let response = await fetch("/addresses/searchByUser?userId=" + userId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.addresses;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Obtener la direccion por Id
+async function searchPostalAddressById(addressId) {
+	try {
+		let response = await fetch("/addresses/searchById?addressId=" + addressId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.address;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}

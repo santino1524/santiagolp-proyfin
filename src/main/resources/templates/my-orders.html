@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{fragments/general-fragments :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{fragments/general-fragments :: headerContent}">
+	</div>
+
+	<!-- CONTENIDO DE LA PAGINA -->
+	<div class="container text-center mt-3 mb-4" id="ordersContainer">
+		<h2 class="mb-3">Mis pedidos</h2>
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">
+					Pedido <span id="numeroPedido">123456</span> | <span
+						id="fechaPedido">04/05/2024</span>
+				</h5>
+				<p class="card-text" id="estadoPedido">En progreso</p>
+				<hr>
+				<h5 class="card-subtitle mb-2 text-muted">Datos de entrega</h5>
+				<h6 class="card-subtitle mb-2 text-muted">Dirección:</h6>
+				<p class="card-text" id="direccionEntrega">Calle Ejemplo,
+					Ciudad, País</p>
+				<h6 class="card-subtitle mb-2 text-muted">Factura:</h6>
+				<p class="card-text" id="factura">Santy Lopez, 11111111P, Calle
+					Ejemplo, Ciudad, País</p>
+				<hr>
+				<h6 class="card-subtitle mb-2 text-muted">Resumen del pedido</h6>
+				<ul class="list-group" id="resumenPedido">
+					<li class="list-group-item d-flex justify align-items-center">
+						<img src="ruta/a/la/imagen.jpg" class="mr-2" style="width: 50px;">
+						Producto 1 <span class="badge badge-primary badge-pill mr-5">2
+							unidades</span> <span class="badge badge-success">$10.00</span>
+					</li>
+					<li class="list-group-item d-flex justify align-items-center">
+						<img src="ruta/a/la/imagen.jpg" class="mr-2" style="width: 50px;">
+						Producto 1 <span class="badge badge-primary badge-pill mr-5">5
+							unidades</span> <span class="badge badge-success">$10.00</span>
+					</li>
+				</ul>
+				<hr>
+				<p class="lead" id="precioTotal">Precio total: $30.00</p>
+			</div>
+		</div>
+
+		<div class="container mt-3">
+			<a href="#" class="btn btn-primary d-none" onclick="showAllOrdersByUser()">Ver todos los pedidos</a>
+		</div>
+	</div>
+
+	<div class="col text-center d-none" id="not-found">
+	<h3 class="mb-3">Todavía no has realizado ningún pedido.</h3>
+		<img src="/images/not-found.png" class="img-fluid"
+			style="max-height: 400px;">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
+
+	<script type="text/javascript" th:src="@{/js/myOrders.js}"></script>
+	<script>
+		// Obtener productos de la cesta 
+		window.onload = async function() {
+			await loadOrders();
+		}
+	</script>
+
+</body>
+
+</html>

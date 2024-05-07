@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
-import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.OrderMgmtServiceI;
 import com.ntd.services.ProductMgmtServiceI;
@@ -331,23 +330,56 @@ public class OrderController {
 	}
 
 	/**
-	 * Buscar pedido por usuario
+	 * Buscar pedidos por usuario
 	 * 
-	 * @param model
-	 * @param userDto
-	 * @return List
+	 * @param userId
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/searchByUser")
-	public String searchByUser(@RequestBody @NotNull final UserDTO userDto, final Model model)
-			throws InternalException {
+	public ResponseEntity<Object> searchByUser(@RequestParam @NotNull final Long userId) throws InternalException {
 		if (log.isInfoEnabled())
-			log.info("Buscar pedido por usuario");
+			log.info("Buscar pedidos por usuario");
 
 		// Retornar lista de pedidos
-		model.addAttribute(ORDERS_DTO, orderMgmtService.searchByUser(userDto));
+		return ResponseEntity.ok().body(Collections.singletonMap("orders", orderMgmtService.searchByUser(userId)));
+	}
 
-		return "VISTA MOSTRAR pedidos por usuario";
+	/**
+	 * Buscar ultimo pedido por usuario
+	 * 
+	 * @param userId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchTopByUser")
+	public ResponseEntity<Object> searchTopByUser(@RequestParam @NotNull final Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ultimo pedido por usuario");
+
+		List<OrderDTO> ordersDto = new ArrayList<>();
+		ordersDto.add(orderMgmtService.searchTopByUser(userId));
+
+		// Retornar pedido
+		return ResponseEntity.ok().body(Collections.singletonMap("order", ordersDto));
+	}
+
+	/**
+	 * Buscar pedidos por usuario por fecha desc
+	 * 
+	 * @param userId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByUserDateDesc")
+	public ResponseEntity<Object> searchByUserDateDesc(@RequestParam @NotNull final Long userId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar pedidos por usuario por fecha desc");
+
+		// Retornar lista de pedidos
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("orders", orderMgmtService.searchByUserOrderDateDesc(userId)));
 	}
 
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import com.ntd.dto.OrderDTO;
-import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 
 /**
@@ -105,11 +104,29 @@ public interface OrderMgmtServiceI {
 	/**
 	 * Buscar pedidos por usuario
 	 * 
-	 * @param userDto
+	 * @param userId
 	 * @return List
 	 * @throws InternalException
 	 */
-	public List<OrderDTO> searchByUser(UserDTO userDto) throws InternalException;
+	public List<OrderDTO> searchByUser(Long userId) throws InternalException;
+
+	/**
+	 * Buscar pedidos por usuario por fecha desc
+	 * 
+	 * @param userId
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<OrderDTO> searchByUserOrderDateDesc(Long userId) throws InternalException;
+
+	/**
+	 * Buscar ultimo pedido del usuario
+	 * 
+	 * @param userId
+	 * @return List
+	 * @throws InternalException
+	 */
+	public OrderDTO searchTopByUser(Long userId) throws InternalException;
 
 	/**
 	 * Buscar por id y numero de pedido
