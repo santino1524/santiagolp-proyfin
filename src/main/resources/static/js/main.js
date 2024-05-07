@@ -327,7 +327,7 @@ async function addAddress() {
 
 // Formulario guardar nueva direccion
 async function saveAddressForm() {
-
+	let formAddress = document.getElementById("formAddress");
 	let addressId = document.getElementById("addressId").value;
 	let addressLine = document.getElementById("addressLine").value;
 	let city = document.getElementById("city").value;
@@ -380,7 +380,7 @@ async function saveAddressForm() {
 		layoutAddresses(await saveAddress(formData));
 
 		document.getElementById('addressId').value = "";
-		form.reset();
+		formAddress.reset();
 
 		// Cierra el modal
 		$('#modalAddress').modal('hide');
