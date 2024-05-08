@@ -12,6 +12,7 @@ const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 // Url error
 const urlError = "/internalError";
 // Tamanyo maximo permitido para la carga de imagenes (500KB)
+const maxSize = '500KB';
 const maxSizeInBytes = 500 * 1024;
 
 // Comprobacion de contrasennas al enviar formulario de registro

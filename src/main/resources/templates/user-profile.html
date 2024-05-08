@@ -13,13 +13,138 @@
 
 	<!-- CONTENIDO DE LA PAGINA -->
 	<div class="container text-center mt-3">
+
 		<h2 class="mb-3">Perfil de usuario</h2>
-		
+
+		<div class="row">
+			<div class="col-md-6">
+				<div class="card mb-4">
+					<div class="card-header">
+						<h5 class="card-title">Datos Personales</h5>
+					</div>
+					<div class="card-body">
+						<p>
+							<strong>Nombre:</strong> Juan
+						</p>
+						<p>
+							<strong>Apellidos:</strong> Pérez García
+						</p>
+						<p>
+							<strong>DNI:</strong> 11111111P
+						</p>
+						<p>
+							<strong>Teléfono:</strong> +34 123456789
+						</p>
+						<button class="btn btn-secondary" data-toggle="modal"
+							data-target="#editarDatosPersonales">Editar</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card mb-4">
+					<div class="card-header">
+						<h5 class="card-title">Email: ejemplo@example.com</h5>
+					</div>
+					<div class="card-body">
+						<button class="btn btn-secondary" data-toggle="modal"
+							data-target="#editarCorreo">Editar</button>
+					</div>
+				</div>
+
+				<div class="card mb-4">
+					<div class="card-header">
+						<h5 class="card-title">Contraseña</h5>
+					</div>
+					<div class="card-body">
+						<button class="btn btn-secondary" data-toggle="modal"
+							data-target="#editarContraseña">Cambiar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card mb-4">
+					<div class="card-header">
+						<h5 class="card-title">Direcciones</h5>
+					</div>
+					<div class="card-body">
+						
+						<!-- Listado de direcciones -->
+						<div class="list-group mb-5" id="addresses"></div>
+						
+						<!-- Boton para agregar direccion -->
+						<button class="btn btn-secondary" data-toggle="modal"
+							data-target="#añadirDireccion">Añadir Dirección</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modales para editar datos -->
+	<div class="modal fade" id="editarDatosPersonales">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Editar Datos Personales</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body">
+					<!-- Aquí iría el formulario para editar datos personales -->
+					<p>Formulario para editar datos personales...</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para editar correo -->
+	<div class="modal fade" id="editarCorreo">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Editar Correo Electrónico</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body">
+					<!-- Aquí iría el formulario para editar el correo -->
+					<p>Formulario para editar correo electrónico...</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para editar contraseña -->
+	<div class="modal fade" id="editarContraseña">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Editar Contraseña</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body">
+					<!-- Aquí iría el formulario para editar la contraseña -->
+					<p>Formulario para editar contraseña...</p>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
+
+	<!-- Modal Address -->
+	<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+
+	<script type="text/javascript" th:src="@{/js/userProfile.js}"></script>
+	<script>
+		// Obtener productos de la cesta 
+		window.onload = async function() {
+			await loadUserProfilePage();
+		}
+	</script>
 
 </body>
 

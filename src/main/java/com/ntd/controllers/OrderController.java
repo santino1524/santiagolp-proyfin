@@ -361,7 +361,7 @@ public class OrderController {
 		ordersDto.add(orderMgmtService.searchTopByUser(userId));
 
 		// Retornar pedido
-		return ResponseEntity.ok().body(Collections.singletonMap("order", ordersDto));
+		return ResponseEntity.ok().body(Collections.singletonMap("orders", ordersDto));
 	}
 
 	/**

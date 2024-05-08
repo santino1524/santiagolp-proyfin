@@ -73,7 +73,7 @@ public interface OrderRepositoryI extends JpaRepository<Order, Long> {
 	 * @param user
 	 * @return Order
 	 */
-	public List<Order> findByUserOrderByDateDesc(User user);
+	public List<Order> findByUserOrderByOrderDateDesc(User user);
 
 	/**
 	 * Buscar ultimo pedido por usuario
@@ -81,7 +81,7 @@ public interface OrderRepositoryI extends JpaRepository<Order, Long> {
 	 * @param user
 	 * @return Order
 	 */
-	public Order findTopByUserOrderByDateDesc(User user);
+	public Order findTopByUserOrderByOrderDateDesc(User user);
 
 	/**
 	 * Buscar por id y numero de pedido

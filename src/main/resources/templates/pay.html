@@ -26,10 +26,10 @@
 			<div class="alert alert-danger d-none" role="alert"
 				id="messageNotFoundAddresses"></div>
 
-			<div class="list-group mb-5" id="addresses">
-			</div>
-			
-			<button class="btn btn-primary mt-3 mb-3" id="addAddress" onclick="addAddress()">
+			<div class="list-group mb-5" id="addresses"></div>
+
+			<button class="btn btn-primary mt-3 mb-3" id="addAddress"
+				onclick="addAddress()">
 				<i class="fa-solid fa-plus mr-sm-2"></i>Agregar nueva dirección
 			</button>
 		</div>
@@ -41,18 +41,21 @@
 		</div>
 	</div>
 
-	
+
 
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
-					<div th:replace="~{fragments/general-fragments :: footerContent}">
-					</div> <!-- Modal Address -->
-					<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
 
-					<!-- Modal Pay -->
-					<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+	<!-- Modal Address -->
+	<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
 
-					<script type="text/javascript" th:src="@{/js/pay.js}"></script> <script>
+	<!-- Modal Pay -->
+	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+
+	<script type="text/javascript" th:src="@{/js/pay.js}"></script>
+	<script>
 		// Cargar pagina de pago
 		window.onload = async function() {
 			await loadPayPage();

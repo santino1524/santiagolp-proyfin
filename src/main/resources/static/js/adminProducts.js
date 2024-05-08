@@ -493,7 +493,7 @@ function verifySize() {
 
 		if (fileSize > maxSizeInBytes) {
 			// Mostrar error de archivo no valido
-			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido (500KB)");
+			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido "+ maxSize);
 
 			// Limpiar el input de archivo para evitar enviar archivos demasiado grandes
 			inputFiles.value = '';

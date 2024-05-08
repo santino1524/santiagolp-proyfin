@@ -317,7 +317,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		ValidateParams.isNullObject(userId);
 
 		// Buscar por usuario
-		final List<Order> orders = orderRepository.findByUserOrderByDateDesc(
+		final List<Order> orders = orderRepository.findByUserOrderByOrderDateDesc(
 				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
 
 		// Mapear DTO
@@ -342,7 +342,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		ValidateParams.isNullObject(userId);
 
 		// Buscar por usuario
-		final Order order = orderRepository.findTopByUserOrderByDateDesc(
+		final Order order = orderRepository.findTopByUserOrderByOrderDateDesc(
 				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
 
 		// Retornar DTO
