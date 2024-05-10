@@ -65,7 +65,7 @@ public class Order implements Serializable {
 	private List<ProductSold> soldProducts;
 
 	/** Direccion de envío */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "C_ADDRESS_ID", nullable = false)
 	private PostalAddress shippingAddress;
 

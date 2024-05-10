@@ -377,8 +377,14 @@ async function saveAddressForm() {
 		formData.append('country', "España");
 		formData.append('userId', user.userId);
 
+		let newAddress = await saveAddress(formData);
+
 		// Maquetar direccion
-		layoutAddresses(await saveAddress(formData));
+		if(document.getElementById("addressesList")){
+			layoutAddressesProfile(await searchByEmail(user.email));
+		} else {
+			layoutAddresses(newAddress);
+		}
 
 		document.getElementById('addressId').value = "";
 		formAddress.reset();

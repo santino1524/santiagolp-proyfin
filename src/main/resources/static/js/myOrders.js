@@ -130,7 +130,7 @@ async function layoutOrders(orders, user) {
 
 		let pTotal = document.createElement('p');
 		pTotal.classList.add('lead');
-		pTotal.append(sum + '€');
+		pTotal.append(sum.toFixed(2) + '€');
 		divCardBody.append(pTotal);
 
 		divCard.append(divCardBody);
