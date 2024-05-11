@@ -209,7 +209,8 @@ public class Constants {
 	private static final List<String> USER_ROLE = Arrays.asList("SELLER", "BUYER");
 
 	/** Endpoints protegidos */
-	private static final String[] AUTHENTICATED_ENDPOINTS = { "/pay", "/user-profile" };
+	private static final String[] AUTHENTICATED_ENDPOINTS = { "/pay", "/user-profile", "/userProfile", "/myOrders",
+			"/my-orders" };
 
 	/** Endpoints ADMIN */
 	private static final String[] ADMIN_ENDPOINTS = { "/admin", "/adminUsers", "/adminSendings", "/adminComplaints",
@@ -261,7 +262,7 @@ public class Constants {
 	public static final String REGEXP_CP = "^\\d{5}$";
 
 	/** REGEXP para numero telefonico */
-	public static final String REGEXP_PHONE_NUMBER = "^\\+34\s\\d{9}$";
+	public static final String REGEXP_PHONE_NUMBER = "^\\d{9}$";
 
 	/** Msg violacion de CONSTRAINT EN BBDD */
 	public static final String MSG_VIOLATION_CONSTRAINT = "No se pudo completar la operación debido a un problema con los datos proporcionados";

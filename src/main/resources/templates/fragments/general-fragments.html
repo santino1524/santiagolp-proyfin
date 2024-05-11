@@ -125,8 +125,9 @@
 						id="authenticatedUser" sec:authentication="name"> </a>
 						<div class="dropdown-menu dropdown-menu-right bg-dark"
 							aria-labelledby="navbarDropdown">
-							<a class="dropdown-item bg-dark text-white" th:href="@{/}">Mis
-								datos</a> <a class="dropdown-item bg-dark text-white" th:href="@{/}">Mis
+							<a class="dropdown-item bg-dark text-white"
+								th:href="@{/userProfile}">Mis datos</a> <a
+								class="dropdown-item bg-dark text-white" th:href="@{/myOrders}">Mis
 								compras</a> <a class="dropdown-item bg-dark text-white"
 								th:href="@{/logout}">Salir</a>
 						</div></li>
@@ -175,7 +176,7 @@
 				<div class="modal-content">
 					<!-- Encabezado del modal -->
 					<div class="modal-header">
-						<h5 class="modal-title">Introduce los datos de la dirección</h5>
+						<h5 class="modal-title">Datos de la dirección</h5>
 						<!-- Boton de cerrar -->
 						<button type="button" class="close" data-dismiss="modal"
 							aria-label="Close">
@@ -376,6 +377,27 @@
 		</div>
 	</div>
 
+	<!-- Modal alerta -->
+	<div th:fragment="adminModal">
+		<div class="modal fade" id="adminModal" tabindex="-1" role="dialog"
+			aria-labelledby="generalModal" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Alerta de Seguridad</h5>
+					</div>
+					<div class="modal-body" id="adminModalBody"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal"
+							id="modalAdminBtnOk">Aceptar</button>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal" id="modalAdminBtnCancel">Cancelar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
 	<div
 		class="d-flex flex-wrap  bg-dark text-white text-center py-3 bottom"
@@ -411,7 +433,8 @@
 		</div>
 
 		<script type="text/javascript" th:src="@{/js/main.js}"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/big.js/5.2.2/big.min.js"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/big.js/5.2.2/big.min.js"></script>
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
 			crossorigin="anonymous"></script>

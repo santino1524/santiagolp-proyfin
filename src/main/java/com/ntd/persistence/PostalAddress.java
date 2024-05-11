@@ -51,12 +51,12 @@ public class PostalAddress implements Serializable {
 	private String cp;
 
 	/** Pais */
-	@Column(name = "C_COUNTRY")
+	@Column(name = "C_COUNTRY", nullable = false)
 	private String country;
 
 	/** Usuarios FK */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "C_USER_ID", nullable = false)
+	@JoinColumn(name = "C_USER_ID")
 	private User user;
 
 }

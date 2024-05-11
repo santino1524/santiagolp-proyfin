@@ -3,6 +3,8 @@ package com.ntd.persistence;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * Repositorio T_POSTAL_ADDRESS
@@ -30,5 +32,12 @@ public interface PostalAddressRepositoryI extends JpaRepository<PostalAddress, L
 	 */
 	public PostalAddress findByCityIgnoreCaseAndDirectionLineIgnoreCaseAndProvinceIgnoreCaseAndUser(String city,
 			String directionLine, String province, User user);
+
+	/**
+	 * Eliminar direccion en usuario
+	 */
+	@Modifying
+	@Query(value = "UPDATE T_POSTAL_ADDRESS SET C_USER_ID = NULL WHERE C_ADDRESS_ID = :addressId", nativeQuery = true)
+	public void deleteAddress(Long addressId);
 
 }

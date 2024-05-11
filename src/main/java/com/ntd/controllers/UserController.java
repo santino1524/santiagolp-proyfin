@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
@@ -14,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,15 +49,22 @@ public class UserController {
 	/** Dependencia de SessionRegistry */
 	private final SessionRegistry sessionRegistry;
 
+	/** Dependencia AuthenticationManager */
+	private AuthenticationManager authenticationManager;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param userMgmtService
 	 * @param sessionRegistry
+	 * @param authenticationManager
+	 * @param passwordEncoder
 	 */
-	public UserController(UserMgmtServiceI userMgmtService, SessionRegistry sessionRegistry) {
+	public UserController(UserMgmtServiceI userMgmtService, SessionRegistry sessionRegistry,
+			AuthenticationManager authenticationManager) {
 		this.userMgmtService = userMgmtService;
 		this.sessionRegistry = sessionRegistry;
+		this.authenticationManager = authenticationManager;
 	}
 
 	/**
@@ -86,6 +96,37 @@ public class UserController {
 		response.put("sessionUser", userObject);
 
 		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * Comprobar contrasenna vieja
+	 * 
+	 * @param userDto
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping("/verifyOldPasswd")
+	public ResponseEntity<Void> cambiarContrasena(@RequestBody @Valid final UserDTO userDto) throws InternalException {
+
+		ResponseEntity<Void> result = null;
+		// Obtener el nombre de usuario del usuario actualmente autenticado
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+
+		// Autenticar al usuario para verificar la contraseña anterior
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, userDto.passwd());
+
+		try {
+			authenticationManager.authenticate(token);
+
+			// retornar codigo 200
+			result = ResponseEntity.ok().build();
+		} catch (Exception e) {
+			// retornar 422
+			result = ResponseEntity.unprocessableEntity().build();
+		}
+
+		return result;
 	}
 
 	/**
@@ -129,37 +170,35 @@ public class UserController {
 	 * Actualizar usuario
 	 * 
 	 * @param userDto
-	 * @return String
-	 * @param model
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PutMapping
-	public String updateUser(@RequestBody @Valid final UserDTO userDto, final Model model) throws InternalException {
+	@PostMapping(path = "/update")
+	public ResponseEntity<Object> updateUser(@RequestBody @Valid final UserDTO userDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar usuario");
 
-		String result = null;
+		ResponseEntity<Object> result = null;
 
 		// Comprobar si existe otro usuario
 		if (userMgmtService.searchByDniOrEmailOrPhoneNumber(userDto.dni(), userDto.email(), userDto.phoneNumber())
 				.size() > 1) {
-			result = Constants.MSG_USER_DATA_EXISTS;
+			// Devolver una respuesta con codigo de estado 422
+			result = ResponseEntity.unprocessableEntity().build();
 		} else {
 			// Actualizar usuario
 			final UserDTO userUpdated = userMgmtService.updateUser(userDto);
 
 			// Verificar retorno de actualizacion
 			if (userUpdated != null) {
-				result = Constants.MSG_SUCCESSFUL_OPERATION;
+				result = ResponseEntity.ok().body(Collections.singletonMap("user", userUpdated));
 			} else {
-				result = Constants.MSG_UNEXPECTED_ERROR;
+				// Devolver una respuesta con codigo de estado 500
+				result = ResponseEntity.internalServerError().build();
 			}
 		}
 
-		// Retornar respuesta
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE actualizar usuario";
+		return result;
 	}
 
 	/**

@@ -3,7 +3,10 @@ const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
 const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
 const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
+const passwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$/;
+const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ivaRegex = /^\d{1,2}$/;
+const phoneRegex = /^\d{9}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
 const numberProductRegex = /^\d{13}$/;
 const separatorsRegex = /[\\/]/;
@@ -12,14 +15,17 @@ const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 // Url error
 const urlError = "/internalError";
 // Tamanyo maximo permitido para la carga de imagenes (500KB)
+const maxSize = '500KB';
 const maxSizeInBytes = 500 * 1024;
 
 // Comprobacion de contrasennas al enviar formulario de registro
 document.addEventListener("DOMContentLoaded", function() {
 	let submitButton = document.getElementById("submitButtonRegister");
 	if (submitButton) {
+		let password = document.getElementById("passwd").value;
+		let confirmPassword = document.getElementById("confirmPasswd").value;
 		submitButton.addEventListener("click", function(event) {
-			if (!checkPasswords()) {
+			if (!checkPasswords(password, confirmPassword, document.getElementById("passwordError"))) {
 				event.preventDefault();
 			}
 		});
@@ -27,11 +33,10 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Comprobacion de contrasennas
-function checkPasswords() {
-	let password = document.getElementById("passwd").value;
-	let confirmPassword = document.getElementById("confirmPasswd").value;
+function checkPasswords(password, confirmPassword, divAlert) {
+
 	if (password && confirmPassword && password !== confirmPassword) {
-		showMessage(document.getElementById("passwordError"), "Las contraseñas no coinciden");
+		showMessage(divAlert, "Las contraseñas no coinciden");
 		return false;
 	}
 
@@ -334,7 +339,7 @@ async function saveAddressForm() {
 	let province = document.getElementById("province").value;
 	let postalCode = document.getElementById("postalCode").value;
 	let divMessageAddressError = document.getElementById("messageAddressError");
-	let email = document.getElementById("authenticatedUser").textContent ;
+	let email = document.getElementById("authenticatedUser").textContent;
 	let formData = new FormData();
 
 	if (addressLine && city && province && postalCode) {
@@ -363,7 +368,7 @@ async function saveAddressForm() {
 
 			return;
 		}
-		
+
 		let user = await searchByEmail(email);
 
 		if (addressId) {
@@ -376,8 +381,14 @@ async function saveAddressForm() {
 		formData.append('country', "España");
 		formData.append('userId', user.userId);
 
+		let newAddress = await saveAddress(formData);
+
 		// Maquetar direccion
-		layoutAddresses(await saveAddress(formData));
+		if (document.getElementById("addressesList")) {
+			layoutAddressesProfile(await searchByEmail(user.email));
+		} else {
+			layoutAddresses(newAddress);
+		}
 
 		document.getElementById('addressId').value = "";
 		formAddress.reset();
@@ -461,6 +472,75 @@ async function searchProductById(productId) {
 		} else {
 			window.location.href = urlError;
 		}
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Obtener usuario por email 
+async function searchByEmail(email) {
+	try {
+		let response = await fetch("/users/searchByEmail?email=" + encodeURIComponent(email), {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.user;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Obtener todas las direcciones del usuario
+async function searchPostalAddressByUser(userId) {
+	try {
+		let response = await fetch("/addresses/searchByUser?userId=" + userId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.addresses;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Obtener la direccion por Id
+async function searchPostalAddressById(addressId) {
+	try {
+		let response = await fetch("/addresses/searchById?addressId=" + addressId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.address;
 
 	} catch (error) {
 		console.error(error);

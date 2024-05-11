@@ -61,7 +61,7 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 		// Validar campos del id
 		ValidateParams.isNullObject(addressId);
 
-		postalAddressRepository.deleteById(addressId);
+		postalAddressRepository.deleteAddress(addressId);
 	}
 
 	@Override

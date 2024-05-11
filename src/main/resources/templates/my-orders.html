@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{fragments/general-fragments :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{fragments/general-fragments :: headerContent}">
+	</div>
+
+	<!-- CONTENIDO DE LA PAGINA -->
+	<div class="container text-center mt-3 mb-4" id="ordersContainer">
+		<h2 class="mb-3">Mis pedidos</h2>
+
+		<div id="ordersContainer"></div>
+
+	</div>
+
+	<div class="container text-center mt-3 mb-4 d-none" id="showAllOrders">
+		<button class="btn btn-primary" onclick="showAllOrdersByUser()">Ver
+			todos los pedidos</a>
+	</div>
+
+	<div class="col text-center d-none" id="not-found">
+		<h3 class="mb-3">Todavía no has realizado ningún pedido.</h3>
+		<img src="/images/not-found.png" class="img-fluid"
+			style="max-height: 400px;">
+	</div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
+
+	<script type="text/javascript" th:src="@{/js/myOrders.js}"></script>
+	<script>
+		// Obtener productos de la cesta 
+		window.onload = async function() {
+			await loadOrdersPage();
+		}
+	</script>
+
+</body>
+
+</html>

@@ -58,6 +58,7 @@ async function layoutTableCar(cartLfd) {
 		tdName.classList.add('align-middle');
 		let aName = document.createElement('a');
 		aName.href = '#';
+		aName.style.textDecoration = 'none';
 		aName.onclick = () => {
 			// Mostrar Modal con Product
 			showModalProduct(product);

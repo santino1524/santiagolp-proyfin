@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ntd.dto.OrderDTO;
-import com.ntd.dto.UserDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.dto.validators.OrderStatusValidator;
 import com.ntd.exceptions.InternalException;
@@ -16,6 +15,7 @@ import com.ntd.persistence.Order;
 import com.ntd.persistence.OrderRepositoryI;
 import com.ntd.persistence.ProductSold;
 import com.ntd.persistence.ProductSoldRepositoryI;
+import com.ntd.persistence.User;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -259,15 +259,16 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 	}
 
 	@Override
-	public List<OrderDTO> searchByUser(UserDTO userDto) throws InternalException {
+	public List<OrderDTO> searchByUser(Long userId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Buscar pedidos por usuario");
 
 		// Validar parametro
-		ValidateParams.isNullObject(userDto.userId());
+		ValidateParams.isNullObject(userId);
 
 		// Buscar por usuario
-		final List<Order> orders = orderRepository.findByUser(DTOMapperI.MAPPER.mapDTOToUser(userDto));
+		final List<Order> orders = orderRepository.findByUser(
+				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
 
 		// Mapear DTO
 		final List<OrderDTO> ordersDto = new ArrayList<>();
@@ -305,6 +306,47 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 
 		// Retornar lista DTO
 		return ordersDto;
+	}
+
+	@Override
+	public List<OrderDTO> searchByUserOrderDateDesc(Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar pedidos por usuario por fecha desc");
+
+		// Validar parametro
+		ValidateParams.isNullObject(userId);
+
+		// Buscar por usuario
+		final List<Order> orders = orderRepository.findByUserOrderByOrderDateDesc(
+				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
+
+		// Mapear DTO
+		final List<OrderDTO> ordersDto = new ArrayList<>();
+
+		if (!orders.isEmpty()) {
+			for (Order order : orders) {
+				ordersDto.add(DTOMapperI.MAPPER.mapOrderToDTO(order));
+			}
+		}
+
+		// Retornar lista DTO
+		return ordersDto;
+	}
+
+	@Override
+	public OrderDTO searchTopByUser(Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ultimo pedido del usuario");
+
+		// Validar parametro
+		ValidateParams.isNullObject(userId);
+
+		// Buscar por usuario
+		final Order order = orderRepository.findTopByUserOrderByOrderDateDesc(
+				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapOrderToDTO(order);
 	}
 
 }

@@ -68,6 +68,22 @@ public interface OrderRepositoryI extends JpaRepository<Order, Long> {
 	public List<Order> findByUser(User user);
 
 	/**
+	 * Buscar pedidos por usuario por fecha
+	 * 
+	 * @param user
+	 * @return Order
+	 */
+	public List<Order> findByUserOrderByOrderDateDesc(User user);
+
+	/**
+	 * Buscar ultimo pedido por usuario
+	 * 
+	 * @param user
+	 * @return Order
+	 */
+	public Order findTopByUserOrderByOrderDateDesc(User user);
+
+	/**
 	 * Buscar por id y numero de pedido
 	 * 
 	 * @param orderId

@@ -6,6 +6,8 @@ import com.ntd.dto.PostalAddressDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.User;
 
+import jakarta.transaction.Transactional;
+
 /**
  * Servicio de gestion de direcciones del usuario
  * 
@@ -28,6 +30,7 @@ public interface PostalAddressMgmtServiceI {
 	 * @param addressId
 	 * @throws InternalException
 	 */
+	@Transactional
 	public void deletePostalAddress(final Long addressId) throws InternalException;
 
 	/**
