@@ -6,7 +6,6 @@ import com.ntd.utils.Constants;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
 /**
@@ -29,8 +28,7 @@ public record UserDTO(Long userId,
 		// Validar email
 		@NotBlank(message = Constants.MSG_EMAIL_NOT_VALID) @Email(message = Constants.MSG_EMAIL_NOT_VALID) String email,
 
-		// Validar contrasena
-		@NotBlank(message = Constants.MSG_PASSWD_NOT_VALID) @Pattern(regexp = Constants.REGEXP_PASSWD, message = Constants.MSG_PASSWD_NOT_VALID) String passwd,
+		String passwd,
 
 		// Validar numero de telefono
 		@NotBlank(message = Constants.MSG_PHONE_NUMBER_NOT_VALID) @Pattern(regexp = Constants.REGEXP_PHONE_NUMBER, message = Constants.MSG_PHONE_NUMBER_NOT_VALID) String phoneNumber,
@@ -39,10 +37,10 @@ public record UserDTO(Long userId,
 		int role,
 
 		// Validar lista de preguntas
-		@NotEmpty(message = Constants.MSG_QUESTIONS_NOT_VALID) List<String> questions,
+		List<String> questions,
 
 		// Validar lista de respuestas
-		@NotEmpty(message = Constants.MSG_ANSWER_NOT_VALID) List<String> answers,
+		List<String> answers,
 
 		List<PostalAddressDTO> addressesDto,
 

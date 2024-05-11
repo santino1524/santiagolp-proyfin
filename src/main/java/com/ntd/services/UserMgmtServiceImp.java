@@ -82,8 +82,14 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		// Validar parametro
 		ValidateParams.isNullObject(userDto);
 
+		// Mapear DTO
+		User user = DTOMapperI.MAPPER.mapDTOToUser(userDto);
+
+		// Encriptar contrasenna
+		user.setPasswd(passwordEncoder.encode(userDto.passwd()));
+
 		// Mapear DTO y actualizar
-		final User user = userRepository.save(DTOMapperI.MAPPER.mapDTOToUser(userDto));
+		user = userRepository.save(user);
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapUserToDTO(user);

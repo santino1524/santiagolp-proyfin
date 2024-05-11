@@ -1,7 +1,5 @@
 package com.ntd;
 
-import java.util.Arrays;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -60,9 +58,8 @@ public class SantiagolpProyfinApplication {
 			if (userRepository.count() == 0) {
 				User userInit = User.builder().email(Constants.DEFAULT_USER)
 						.passwd(passwordEncoder.encode(Constants.DEFAULT_PASSWD)).name("Goku").surname("Goku")
-						.secondSurname("Goku").dni("11111111P").phoneNumber("123456789")
-						.role(UserRole.valueOf(UserRole.SELLER.name())).questions(Arrays.asList("1", "2", "3"))
-						.answers(Arrays.asList("1", "2", "3")).build();
+						.secondSurname("Goku").dni("11111111P").phoneNumber("666666666")
+						.role(UserRole.valueOf(UserRole.SELLER.name())).build();
 
 				userRepository.save(userInit);
 			}

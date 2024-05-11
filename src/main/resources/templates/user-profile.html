@@ -20,23 +20,18 @@
 			<div class="col-md-6">
 				<div class="card mb-4">
 					<div class="card-header">
-						<h5 class="card-title">Datos Personales</h5>
+						<h5 class="card-title">Datos personales</h5>
 					</div>
 					<div class="card-body">
-						<p id="userName">
-							<strong>Nombre:</strong>
-						</p>
-						<p id="surnames">
-							<strong>Apellidos:</strong>
-						</p>
-						<p id="userDni">
-							<strong>DNI:</strong>
-						</p>
-						<p id="phone">
-							<strong>Teléfono:</strong>
-						</p>
+						<div id="messagePersonalInformation"
+							class="alert alert-success d-none" role="alert"></div>
+						<p id="userName"></p>
+						<p id="surnames"></p>
+						<p id="userDni"></p>
+						<p id="phone"></p>
 						<button class="btn btn-secondary" data-toggle="modal"
-							data-target="#editarDatosPersonales">Editar</button>
+							data-target="#personalInformation"
+							onclick='showPersonalInformation()'>Editar</button>
 					</div>
 				</div>
 			</div>
@@ -60,8 +55,10 @@
 						</h5>
 					</div>
 					<div class="card-body">
+						<div id="messagePasswd" class="alert alert-success d-none"
+							role="alert"></div>
 						<button class="btn btn-secondary" data-toggle="modal"
-							data-target="#editarContraseña">Cambiar</button>
+							data-target="#changePasswd">Cambiar</button>
 					</div>
 				</div>
 			</div>
@@ -74,7 +71,6 @@
 						<h5 class="card-title">Direcciones</h5>
 					</div>
 					<div class="card-body">
-
 						<!-- Listado de direcciones -->
 						<div class="list-group mb-5" id="addressesList"></div>
 
@@ -87,17 +83,39 @@
 		</div>
 	</div>
 
-	<!-- Modales para editar datos -->
-	<div class="modal fade" id="editarDatosPersonales">
+	<!-- Modal para editar datos -->
+	<div class="modal fade" id="personalInformation">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Editar Datos Personales</h4>
+					<h4 class="modal-title">Editar datos personales</h4>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
 				<div class="modal-body">
-					<!-- Aquí iría el formulario para editar datos personales -->
-					<p>Formulario para editar datos personales...</p>
+					<form id='formPersonalInformation'>
+						<div class="form-group">
+							<div class="alert alert-danger d-none"
+								id='messagePersonalInformationError' role="alert"></div>
+							<label for="userNameInput">Nombre:</label> <input type="text"
+								class="form-control" id="userNameInput">
+						</div>
+						<div class="form-group">
+							<label for="surNameInput">Primer apellido:</label> <input
+								type="text" class="form-control" id="surNameInput">
+						</div>
+						<div class="form-group">
+							<label for="secondSurNameInput">Segundo apellido:</label> <input
+								type="text" class="form-control" id="secondSurNameInput">
+						</div>
+						<div class="form-group">
+							<label for="phoneInput">Teléfono:</label> <input type="tel"
+								class="form-control" id="phoneInput">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button onclick="savePersonalInformationForm()"
+						class="btn btn-primary">Guardar cambios</button>
 				</div>
 			</div>
 		</div>
@@ -114,8 +132,8 @@
 				<div class="modal-body">
 					<form id="emailChangeForm">
 						<div class="form-group">
-							<div class="alert alert-danger d-none" role="alert"
-								id="messageEmailError"></div>
+							<div class="alert alert-danger d-none" id='messageEmailError'
+								role="alert"></div>
 							<label for="newEmail">Nuevo correo electrónico:</label> <input
 								type="email" class="form-control" id="newEmail" name="newEmail"
 								required>
@@ -128,24 +146,63 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button onclick="saveAddressForm()" form="emailChangeForm"
-						class="btn btn-primary">Guardar Cambios</button>
+					<button onclick="saveEmailForm()" class="btn btn-primary">Guardar
+						cambios</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog"
+		aria-labelledby="generalModal" aria-hidden="true"
+		data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Aviso</h5>
+				</div>
+				<div class="modal-body">Es necesario cerrar sesión</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal"
+						onclick="logout()">Aceptar</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Modal para editar contraseña -->
-	<div class="modal fade" id="editarContraseña">
+	<div class="modal fade" id="changePasswd">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Editar Contraseña</h4>
+					<h4 class="modal-title">Cambiar contraseña</h4>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
 				<div class="modal-body">
-					<!-- Aquí iría el formulario para editar la contraseña -->
-					<p>Formulario para editar contraseña...</p>
+					<form id='formChangePasswd'>
+						<div class="form-group">
+							<div class="alert alert-danger d-none" id='messagePasswdError'
+								role="alert"></div>
+							<div class="form-group">
+								<label for="oldPassword">Contraseña anterior</label> <input
+									type="password" class="form-control" id="oldPassword"
+									placeholder="Contraseña anterior">
+							</div>
+							<div class="form-group">
+								<label for="newPassword">Nueva contraseña</label> <input
+									type="password" class="form-control" id="newPassword"
+									placeholder="Nueva contraseña">
+							</div>
+							<div class="form-group">
+								<label for="confirmPasswd">Confirmar contraseña</label> <input
+									type="password" class="form-control" id="confirmPasswd"
+									placeholder="Confirmar contraseña">
+							</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary"
+						onclick='savePasswdForm()'>Cambiar contraseña</button>
 				</div>
 			</div>
 		</div>
