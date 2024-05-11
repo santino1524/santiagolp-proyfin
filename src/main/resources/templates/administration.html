@@ -35,11 +35,11 @@
 				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
 					th:href="@{/adminComplaints}"> <i
 						class="fas fa-exclamation-triangle fa-sm"></i> Denuncias
-				</a></li>
+				</a><span id="newsComplaints" class="badge badge-pill badge-danger"></li>
 				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
 					th:href="@{/adminSendings}"> <i class="fas fa-truck fa-sm"></i>
 						Envíos
-				</a></li>
+				</a><span id="newsOrders" class="badge badge-pill badge-danger"></li>
 				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
 					th:href="@{/adminUsers}"> <i class="fas fa-users fa-sm"></i>
 						Clientes
@@ -86,15 +86,20 @@
 		</div>
 	</th:block>
 	</div>
-	
-	<div th:replace="~{fragments/general-fragments :: adminModal}">
-	</div>
-	
+
+	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
 
-
+	<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
+	<script>
+		// Cargar notificaciones 
+		window.onload = async function() {
+			await loadAlerts();
+		}
+	</script>
 
 
 </body>

@@ -146,20 +146,6 @@ async function layoutOrders(orders, user) {
 
 }
 
-// Formatear fecha
-function formatDate(orderDate){
-// Crear un objeto Date a partir de la cadena de fecha y hora
-let dataDate = new Date(orderDate);
-
-// Obtener los componentes de la fecha
-let day = dataDate.getDate();
-let month = dataDate.getMonth() + 1;
-let year = dataDate.getFullYear();
-
-// Formatear la fecha
-return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
-}
-
 // Mostrar todos los pedidos del usuario desc
 async function showAllOrdersByUser() {
 	// Limpiar productos existentes

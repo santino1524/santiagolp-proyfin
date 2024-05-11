@@ -203,7 +203,7 @@ public class Constants {
 	public static final String MSG_TOTAL_NOT_VALID = "El total del pedido no es válido";
 
 	/** Estados de pedido */
-	private static final List<String> ORDER_STATUSES = Arrays.asList("CREADO", "ENVIADO", "ENTREGADO");
+	private static final List<String> ORDER_STATUSES = Arrays.asList("CREADO", "ENVIADO", "CANCELADO");
 
 	/** Estados de los pedidos */
 	private static final List<String> USER_ROLE = Arrays.asList("SELLER", "BUYER");

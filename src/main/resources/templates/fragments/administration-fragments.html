@@ -123,16 +123,50 @@
 		</div>
 
 		<script type="text/javascript" th:src="@{/js/adminProducts.js}"></script>
+		<script th:inline="javascript">
+			// Obtener los pedidos del model 
+			const ordersPage = /*[[${orders}]]*/[];
+
+			if (!ordersPage || ordersPage.length === 0) {
+				showProductsNotFound();
+				$('#productsPageModal').modal('show').modal('show');
+			} else {
+				layoutProducts(productsPage);
+			}
+		</script>
 	</div>
 
 	<!-- FRAGMENTO DENUNCIAS -->
 	<div th:fragment="complaints">DENUNCIAS</div>
 
 	<!-- FRAGMENTO ENVIOS -->
-	<div th:fragment="sendings">ENVIOS</div>
+	<div th:fragment="sendings">
+
+		<div class="container text-center mt-5 mb-5">
+			<h2 class="mb-3">Gestionar envío de pedidos</h2>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Pedido</th>
+							<th>Fecha</th>
+							<th>Total</th>
+							<th>Procesar</th>
+							<th>Cancelar</th>
+						</tr>
+					</thead>
+					<tbody id="tbodyOrders"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
+	</div>
 
 	<!-- FRAGMENTO USUARIOS -->
 	<div th:fragment="users">USUARIOS</div>
+
+	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
 
 </body>
 

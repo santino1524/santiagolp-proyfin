@@ -92,4 +92,20 @@ public interface OrderRepositoryI extends JpaRepository<Order, Long> {
 	 */
 	public List<Order> findByOrderIdOrOrderNumber(Long orderId, String orderNumber);
 
+	/**
+	 * Contar los pedidos en estado 'CREADO'
+	 * 
+	 * @param status
+	 * @return int
+	 */
+	public int countByStatusEquals(String status);
+
+	/**
+	 * Buscar los pedidos en estado 'CREADO'
+	 * 
+	 * @param status
+	 * @return List
+	 */
+	public List<Order> findByStatusEqualsOrderByOrderDateAsc(String status);
+
 }

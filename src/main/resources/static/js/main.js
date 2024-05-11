@@ -547,3 +547,52 @@ async function searchPostalAddressById(addressId) {
 		window.location.href = urlError;
 	}
 }
+
+// Cargar notificaciones a gestionar
+async function loadAlerts() {
+	// Retornar cantidad de pedidos creados
+	let newsOrders = await countByStatus();
+
+	// Actualizar el contenido del número de pedidos
+	document.getElementById('newsOrders').innerText = newsOrders;
+	
+ //	await loadNewOrders();
+}
+
+// Retornar cantidad de pedidos creados
+async function countByStatus() {
+	try {
+		let response = await fetch("/orders/countByStatus", {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+
+// Formatear fecha
+function formatDate(orderDate){
+// Crear un objeto Date a partir de la cadena de fecha y hora
+let dataDate = new Date(orderDate);
+
+// Obtener los componentes de la fecha
+let day = dataDate.getDate();
+let month = dataDate.getMonth() + 1;
+let year = dataDate.getFullYear();
+
+// Formatear la fecha
+return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+}

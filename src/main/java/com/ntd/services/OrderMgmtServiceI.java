@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.ntd.dto.OrderDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.Order;
 
 /**
  * Servicio de gestion de pedidos
@@ -139,4 +140,30 @@ public interface OrderMgmtServiceI {
 	public List<OrderDTO> searchByOrderIdOrOrderNumber(final Long orderId, final String orderNumber)
 			throws InternalException;
 
+	/**
+	 * Retornar cantidad de pedidos creados
+	 * 
+	 * @param status
+	 * @return int
+	 * @throws InternalException
+	 */
+	public int countByStatusEquals(String status) throws InternalException;
+
+	/**
+	 * Buscar los pedidos en estado 'CREADO'
+	 * 
+	 * @param status
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<Order> findByStatusEquals(String status) throws InternalException;
+
+	/**
+	 * Buscar pedido por id
+	 * 
+	 * @param id
+	 * @return Order
+	 * @throws InternalException
+	 */
+	public Order searchById(final Long id) throws InternalException;
 }

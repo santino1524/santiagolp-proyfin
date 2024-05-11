@@ -349,4 +349,38 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		return DTOMapperI.MAPPER.mapOrderToDTO(order);
 	}
 
+	@Override
+	public int countByStatusEquals(String status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar cantidad de pedidos creados");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return orderRepository.countByStatusEquals(status);
+	}
+
+	@Override
+	public List<Order> findByStatusEquals(String status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar los pedidos en estado 'CREADO'");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return orderRepository.findByStatusEqualsOrderByOrderDateAsc(status);
+	}
+
+	@Override
+	public Order searchById(Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar pedido por id");
+
+		// Validar parametro
+		ValidateParams.isNullObject(id);
+
+		// Retornar DTO
+		return orderRepository.findById(id).orElse(null);
+	}
+
 }
