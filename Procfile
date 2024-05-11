@@ -1,1 +1,1 @@
-web: java -jar target/santiagolp-proyfin-5.1.0-SNAPSHOT.war
+web: java -jar target/santiagolp-proyfin-5.2.0-SNAPSHOT.war

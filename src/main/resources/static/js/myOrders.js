@@ -116,7 +116,7 @@ async function layoutOrders(orders, user) {
 			spanTotalProduct.classList.add('badge', 'badge-success');
 			let totalProduct = parseFloat(product.pvpPrice) * parseFloat(productSold.quantity)
 			sum += totalProduct;
-			spanTotalProduct.append(totalProduct + '€');
+			spanTotalProduct.append(totalProduct.toFixed(2) + '€');
 			li.append(spanTotalProduct);
 
 			ul.append(li);
