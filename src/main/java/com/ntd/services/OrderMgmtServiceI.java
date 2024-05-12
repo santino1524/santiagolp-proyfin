@@ -139,4 +139,39 @@ public interface OrderMgmtServiceI {
 	public List<OrderDTO> searchByOrderIdOrOrderNumber(final Long orderId, final String orderNumber)
 			throws InternalException;
 
+	/**
+	 * Retornar cantidad de pedidos creados
+	 * 
+	 * @param status
+	 * @return int
+	 * @throws InternalException
+	 */
+	public int countByStatusEquals(String status) throws InternalException;
+
+	/**
+	 * Buscar los pedidos en estado 'CREADO'
+	 * 
+	 * @param status
+	 * @return List
+	 * @throws InternalException
+	 */
+	public List<OrderDTO> findByStatusEquals(String status) throws InternalException;
+
+	/**
+	 * Buscar pedido por id
+	 * 
+	 * @param id
+	 * @return OrderDTO
+	 * @throws InternalException
+	 */
+	public OrderDTO searchById(final Long id) throws InternalException;
+
+	/**
+	 * Generar etiqueta de envio
+	 * 
+	 * @param id
+	 * @return byte[]
+	 * @throws InternalException
+	 */
+	public byte[] generateLabel(final Long orderId) throws InternalException;
 }

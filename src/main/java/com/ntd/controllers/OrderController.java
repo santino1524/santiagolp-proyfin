@@ -1,11 +1,15 @@
 package com.ntd.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/orders")
 public class OrderController {
 
+	/** Constante String orders */
+	private static final String ORDERS = "orders";
+
 	/** Constante String ordersDto */
 	private static final String ORDERS_DTO = "ordersDto";
 
@@ -59,6 +66,88 @@ public class OrderController {
 	public OrderController(final OrderMgmtServiceI orderMgmtService, ProductMgmtServiceI productMgmtService) {
 		this.orderMgmtService = orderMgmtService;
 		this.productMgmtService = productMgmtService;
+	}
+
+	/**
+	 * Generar etiqueta de envio
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(value = "/generateShippingLabel", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<Resource> generateShippingLabel(@RequestParam @NotNull final Long orderId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Generar etiqueta de envio");
+
+		// Generar PDF
+		byte[] pdfBytes = orderMgmtService.generateLabel(orderId);
+
+		// Devolver el PDF como respuesta
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		return ResponseEntity.ok().contentLength(pdfBytes.length).contentType(MediaType.APPLICATION_PDF).body(resource);
+	}
+
+	/**
+	 * Retornar cantidad de pedidos creados
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/countByStatus")
+	public ResponseEntity<Integer> countByStatusCreado() throws InternalException {
+		log.info("Retornar cantidad de pedidos creados");
+
+		return ResponseEntity.ok(orderMgmtService.countByStatusEquals(Constants.getOrderStatuses().get(0)));
+	}
+
+	/**
+	 * Actualizar estado a ENVIADO
+	 * 
+	 * @param orderId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/updateStatusEnviado")
+	public ResponseEntity<Object> updateStatusEnviado(@RequestParam @NotNull final Long orderId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Actualizar estado ENVIADO");
+
+		return ResponseEntity.ok().body(Collections.singletonMap("order",
+				orderMgmtService.updateOrderStatus(orderId, Constants.getOrderStatuses().get(1))));
+	}
+
+	/**
+	 * Actualizar estado a CANCELADO
+	 * 
+	 * @param orderId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/updateStatusCancelado")
+	public ResponseEntity<Object> updateStatusCancelado(@RequestParam @NotNull final Long orderId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Actualizar estado CANCELADO");
+
+		return ResponseEntity.ok().body(Collections.singletonMap("order",
+				orderMgmtService.updateOrderStatus(orderId, Constants.getOrderStatuses().get(2))));
+	}
+
+	/**
+	 * Buscar los pedidos en estado 'CREADO'
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByCreado")
+	public ResponseEntity<Object> searchByStatusCreado() throws InternalException {
+		log.info("Buscar los pedidos en estado CREADO");
+
+		return ResponseEntity.ok().body(Collections.singletonMap(ORDERS,
+				orderMgmtService.findByStatusEquals(Constants.getOrderStatuses().get(0))));
+
 	}
 
 	/**
@@ -342,7 +431,7 @@ public class OrderController {
 			log.info("Buscar pedidos por usuario");
 
 		// Retornar lista de pedidos
-		return ResponseEntity.ok().body(Collections.singletonMap("orders", orderMgmtService.searchByUser(userId)));
+		return ResponseEntity.ok().body(Collections.singletonMap(ORDERS, orderMgmtService.searchByUser(userId)));
 	}
 
 	/**
@@ -361,7 +450,7 @@ public class OrderController {
 		ordersDto.add(orderMgmtService.searchTopByUser(userId));
 
 		// Retornar pedido
-		return ResponseEntity.ok().body(Collections.singletonMap("orders", ordersDto));
+		return ResponseEntity.ok().body(Collections.singletonMap(ORDERS, ordersDto));
 	}
 
 	/**
@@ -379,7 +468,7 @@ public class OrderController {
 
 		// Retornar lista de pedidos
 		return ResponseEntity.ok()
-				.body(Collections.singletonMap("orders", orderMgmtService.searchByUserOrderDateDesc(userId)));
+				.body(Collections.singletonMap(ORDERS, orderMgmtService.searchByUserOrderDateDesc(userId)));
 	}
 
 }

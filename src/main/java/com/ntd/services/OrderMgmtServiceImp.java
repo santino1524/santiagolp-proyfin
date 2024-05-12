@@ -1,21 +1,41 @@
 package com.ntd.services;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.dto.validators.OrderStatusValidator;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Order;
 import com.ntd.persistence.OrderRepositoryI;
+import com.ntd.persistence.PostalAddress;
+import com.ntd.persistence.PostalAddressRepositoryI;
 import com.ntd.persistence.ProductSold;
 import com.ntd.persistence.ProductSoldRepositoryI;
 import com.ntd.persistence.User;
+import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,19 +52,25 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 	/** Dependencia de OrderRepository */
 	private final OrderRepositoryI orderRepository;
 
+	/** Dependencia de PostalAddressRepositoryI */
+	private final PostalAddressRepositoryI addressRepository;
+
+	/** Dependencia de ProductSoldRepository */
+	private final ProductSoldRepositoryI productSoldRepository;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param orderRepository
+	 * @param addressRepository
 	 * @param productSoldRepository
 	 */
-	public OrderMgmtServiceImp(OrderRepositoryI orderRepository, ProductSoldRepositoryI productSoldRepository) {
+	public OrderMgmtServiceImp(OrderRepositoryI orderRepository, PostalAddressRepositoryI addressRepository,
+			ProductSoldRepositoryI productSoldRepository) {
 		this.orderRepository = orderRepository;
+		this.addressRepository = addressRepository;
 		this.productSoldRepository = productSoldRepository;
 	}
-
-	/** Dependencia de ProductSoldRepository */
-	private final ProductSoldRepositoryI productSoldRepository;
 
 	@Override
 	public ResponseEntity<Object> insertOrder(OrderDTO orderDto) throws InternalException {
@@ -349,4 +375,196 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		return DTOMapperI.MAPPER.mapOrderToDTO(order);
 	}
 
+	@Override
+	public int countByStatusEquals(String status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar cantidad de pedidos creados");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return orderRepository.countByStatusEquals(status);
+	}
+
+	@Override
+	public List<OrderDTO> findByStatusEquals(String status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar los pedidos en estado 'CREADO'");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return DTOMapperI.MAPPER.listOrderToDTO(orderRepository.findByStatusEqualsOrderByOrderDateAsc(status));
+	}
+
+	@Override
+	public OrderDTO searchById(Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar pedido por id");
+
+		// Validar parametro
+		ValidateParams.isNullObject(id);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapOrderToDTO(orderRepository.findById(id).orElse(null));
+	}
+
+	/**
+	 * Generar etiqueta
+	 * 
+	 * @param order
+	 * @return byte[]
+	 */
+	private byte[] generateShippingLabelPDF(Order order) {
+		if (log.isInfoEnabled())
+			log.info("Generar PDF");
+
+		try {
+			Document document = new Document(PageSize.A4);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PdfWriter.getInstance(document, baos);
+
+			document.open();
+
+			// Configurar el estilo para los encabezados en negrita
+			com.itextpdf.text.Font boldFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.TIMES_ROMAN,
+					12, com.itextpdf.text.Font.BOLD);
+
+			// Configurar el estilo para el nombre de la tienda centrado
+			Paragraph store = new Paragraph(Constants.STORE_NAME, new com.itextpdf.text.Font(
+					com.itextpdf.text.Font.FontFamily.TIMES_ROMAN, 16, com.itextpdf.text.Font.BOLD));
+			store.setAlignment(Element.ALIGN_CENTER);
+			document.add(store);
+
+			// Direccion del remitente
+			List<PostalAddress> addresses = addressRepository.findByUser(new User(Long.valueOf(1), null, null, null,
+					null, null, null, null, null, false, null, null, null, null, null));
+
+			PostalAddress storePostalAddress = null;
+			for (PostalAddress address : addresses) {
+				if (address.getUser() != null) {
+					storePostalAddress = address;
+					break;
+				}
+			}
+
+			StringBuilder storeAddress = new StringBuilder();
+			storeAddress.append("Dirección de envío: ");
+			if (storePostalAddress != null && storePostalAddress.getAddressId() != null) {
+				storeAddress.append(storePostalAddress.getDirectionLine());
+				storeAddress.append(", ");
+				storeAddress.append(storePostalAddress.getCity());
+				storeAddress.append(", ");
+				storeAddress.append(storePostalAddress.getProvince());
+				storeAddress.append(", ");
+				storeAddress.append(storePostalAddress.getCp());
+				storeAddress.append(", ");
+				storeAddress.append(storePostalAddress.getCountry());
+			}
+
+			document.add(new Paragraph(storeAddress.toString()));
+
+			document.add(new com.itextpdf.text.Paragraph("\n"));
+
+			// Encabezado y datos del cliente
+			Paragraph datosClienteHeader = new Paragraph("Datos del cliente:", boldFont);
+			document.add(datosClienteHeader);
+			StringBuilder customer = new StringBuilder();
+			customer.append("Nombre y apellidos: ");
+			customer.append(order.getUser().getName());
+			customer.append(" ");
+			customer.append(order.getUser().getSurname());
+			customer.append(" ");
+			customer.append(order.getUser().getSecondSurname());
+			customer.append(", DNI: ");
+			customer.append(order.getUser().getDni());
+			document.add(new Paragraph(customer.toString()));
+
+			// Direccion de envio
+			StringBuilder address = new StringBuilder();
+			address.append("Dirección de envío: ");
+			address.append(order.getShippingAddress().getDirectionLine());
+			address.append(", ");
+			address.append(order.getShippingAddress().getCity());
+			address.append(", ");
+			address.append(order.getShippingAddress().getProvince());
+			address.append(", ");
+			address.append(order.getShippingAddress().getCp());
+			address.append(", ");
+			address.append(order.getShippingAddress().getCountry());
+			document.add(new Paragraph(address.toString()));
+
+			document.add(new com.itextpdf.text.Paragraph("\n"));
+
+			// Encabezado y datos del pedido
+			Paragraph datosPedidoHeader = new Paragraph("Datos del pedido:", boldFont);
+			document.add(datosPedidoHeader);
+			document.add(new Paragraph("Número del pedido: " + order.getOrderNumber()));
+
+			// Generar el codigo QR
+			String productNumber = order.getOrderNumber();
+			int qrCodeWidth = 150;
+			int qrCodeHeight = 150;
+			Image qrCodeImage = generateQRCodeImage(productNumber, qrCodeWidth, qrCodeHeight);
+			qrCodeImage.setAlignment(Element.ALIGN_CENTER);
+			document.add(qrCodeImage);
+
+			document.close();
+			return baos.toByteArray();
+
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error(e.getMessage());
+			}
+			return new byte[0];
+		}
+	}
+
+	/**
+	 * Generar QR
+	 * 
+	 * @param text
+	 * @param width
+	 * @param height
+	 * @return Image
+	 * @throws WriterException
+	 * @throws IOException
+	 * @throws BadElementException
+	 */
+	private Image generateQRCodeImage(String text, int width, int height)
+			throws WriterException, IOException, BadElementException {
+		if (log.isInfoEnabled())
+			log.info("Generar QR");
+
+		Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
+
+		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+		BitMatrix bitMatrix = new QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, width, height, hints);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out);
+		byte[] qrCodeBytes = out.toByteArray();
+
+		return Image.getInstance(qrCodeBytes);
+	}
+
+	@Override
+	public byte[] generateLabel(Long orderId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Generar etiqueta de envio");
+
+		// Validar parametro
+		ValidateParams.isNullObject(orderId);
+
+		byte[] result = new byte[0];
+
+		// Buscar pedido
+		Order order = orderRepository.findById(orderId).orElse(new Order());
+
+		if (order != null && order.getOrderId() != null) {
+			result = generateShippingLabelPDF(order);
+		}
+
+		// Generar etiqueta
+		return result;
+	}
 }

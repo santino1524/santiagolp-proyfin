@@ -116,7 +116,7 @@ async function layoutOrders(orders, user) {
 			spanTotalProduct.classList.add('badge', 'badge-success');
 			let totalProduct = parseFloat(product.pvpPrice) * parseFloat(productSold.quantity)
 			sum += totalProduct;
-			spanTotalProduct.append(totalProduct + '€');
+			spanTotalProduct.append(totalProduct.toFixed(2) + '€');
 			li.append(spanTotalProduct);
 
 			ul.append(li);
@@ -144,20 +144,6 @@ async function layoutOrders(orders, user) {
 		document.getElementById("showAllOrders").classList.remove('d-none');
 	}
 
-}
-
-// Formatear fecha
-function formatDate(orderDate){
-// Crear un objeto Date a partir de la cadena de fecha y hora
-let dataDate = new Date(orderDate);
-
-// Obtener los componentes de la fecha
-let day = dataDate.getDate();
-let month = dataDate.getMonth() + 1;
-let year = dataDate.getFullYear();
-
-// Formatear la fecha
-return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
 }
 
 // Mostrar todos los pedidos del usuario desc

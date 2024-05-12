@@ -1,4 +1,4 @@
-3// Mostrar productos de la cesta
+// Mostrar productos de la cesta
 function loadShoppingCart() {
 	// Obtener el carrito de la cesta del localStorage
 	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];

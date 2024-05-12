@@ -82,14 +82,27 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
+//	@GetMapping(path = "adminProducts")
+//	public String showProducts(final Model model) {
+//		if (log.isInfoEnabled())
+//			log.info("Mostrar AdminProducts");
+//
+//		model.addAttribute("showProducts", true);
+//
+//		return "admin-products";
+//	}
+
+	/**
+	 * Mostrar AdminProducts
+	 * 
+	 * @return String
+	 */
 	@GetMapping(path = "adminProducts")
-	public String showProducts(final Model model) {
+	public String showProducts() {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminProducts");
 
-		model.addAttribute("showProducts", true);
-
-		return ADMINISTRATION;
+		return "admin-products";
 	}
 
 	/**
@@ -110,15 +123,30 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "adminComplaints")
-	public String showComplaints(final Model model) {
-		if (log.isInfoEnabled())
-			log.info("Mostrar AdminComplaints");
+//	@GetMapping(path = "adminComplaints")
+//	public String showComplaints(final Model model) {
+//		if (log.isInfoEnabled())
+//			log.info("Mostrar AdminComplaints");
+//
+//		model.addAttribute("showComplaints", true);
+//
+//		return ADMINISTRATION;
+//	}
 
-		model.addAttribute("showComplaints", true);
-
-		return ADMINISTRATION;
-	}
+	/**
+	 * Mostrar AdminSendings
+	 * 
+	 * @return String
+	 */
+//	@GetMapping(path = "adminSendings")
+//	public String showSendings(final Model model) {
+//		if (log.isInfoEnabled())
+//			log.info("Mostrar AdminSendings");
+//
+//		model.addAttribute("showSendings", true);
+//
+//		return "admin-sendings";
+//	}
 
 	/**
 	 * Mostrar AdminSendings
@@ -126,13 +154,11 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * @return String
 	 */
 	@GetMapping(path = "adminSendings")
-	public String showSendings(final Model model) {
+	public String showSendings() {
 		if (log.isInfoEnabled())
 			log.info("Mostrar AdminSendings");
 
-		model.addAttribute("showSendings", true);
-
-		return ADMINISTRATION;
+		return "admin-sendings";
 	}
 
 	/**
@@ -140,15 +166,15 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
-	@GetMapping(path = "adminUsers")
-	public String showUsers(final Model model) {
-		if (log.isInfoEnabled())
-			log.info("Mostrar AdminUsers");
-
-		model.addAttribute("showUsers", true);
-
-		return ADMINISTRATION;
-	}
+//	@GetMapping(path = "adminUsers")
+//	public String showUsers(final Model model) {
+//		if (log.isInfoEnabled())
+//			log.info("Mostrar AdminUsers");
+//
+//		model.addAttribute("showUsers", true);
+//
+//		return ADMINISTRATION;
+//	}
 
 	/**
 	 * Redireccionar a pagina productos
@@ -239,23 +265,6 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 			log.info("Redireccionar a pagina Administracion");
 
 		return ADMINISTRATION;
-	}
-
-	/**
-	 * Error al intentar mostrarla pagina de administracion en un movil
-	 * 
-	 * @param model
-	 * @return String
-	 */
-	@GetMapping(path = "responsiveAdmin")
-	public String restrictedResponsive(final Model model) {
-		if (log.isErrorEnabled())
-			log.error(Constants.MSG_ADMIN_RESPONSIVE_EXC);
-
-		// Retornar mensaje de error
-		model.addAttribute(Constants.VIEW_ERROR_MESSAGE, Constants.MSG_ADMIN_RESPONSIVE_EXC);
-
-		return Constants.URL_ERROR_VIEW;
 	}
 
 	/**
