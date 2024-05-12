@@ -16,6 +16,9 @@ public class Constants {
 	private Constants() {
 	}
 
+	/** Nombre de la tienda */
+	public static final String STORE_NAME = "Tienda Luz Fuego y Destrucción";
+
 	/** Usuario predeterminado SELLER */
 	public static final String DEFAULT_USER = "goku@mail.com";
 

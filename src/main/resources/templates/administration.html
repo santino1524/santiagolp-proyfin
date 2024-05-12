@@ -12,82 +12,15 @@
 	<div th:replace="~{fragments/general-fragments :: headerContent}">
 	</div>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<button class="navbar-toggler" type="button" data-toggle="collapse"
-			data-target="#navbarSupportedContentAdmin"
-			aria-controls="navbarSupportedContent" aria-expanded="false"
-			aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<ul class="navbar-nav mr-auto mx-auto">
-			<li class="nav-item active mr-sm-5"><span class="nav-link"><i
-					class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i> Gestionar tienda</span></li>
-			<div class="collapse navbar-collapse"
-				id="navbarSupportedContentAdmin">
-				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-					th:href="@{/adminOrders}"> <i
-						class="fas fa-shopping-basket fa-sm"></i> Pedidos
-				</a></li>
-				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-					th:href="@{/adminProducts}"> <i class="fas fa-box-open fa-sm"></i>
-						Productos
-				</a></li>
-				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-					th:href="@{/adminComplaints}"> <i
-						class="fas fa-exclamation-triangle fa-sm"></i> Denuncias
-				</a><span id="newsComplaints" class="badge badge-pill badge-danger"></li>
-				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-					th:href="@{/adminSendings}"> <i class="fas fa-truck fa-sm"></i>
-						Envíos
-				</a><span id="newsOrders" class="badge badge-pill badge-danger"></li>
-				<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-					th:href="@{/adminUsers}"> <i class="fas fa-users fa-sm"></i>
-						Clientes
-				</a></li>
-			</div>
-		</ul>
-	</nav>
+	<!-- PANEL DE ADMINISTRACION -->
+	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
+	</div>
 
-	<div
-		th:if="${(showUsers == null and showOrders == null and showProducts == null and showComplaints == null and showSendings == null)}"
-		class="col text-center">
+	<div class="col text-center">
 		<img src="/images/admin.png" class="img-fluid"
 			style="max-height: 420px;" alt="Panel de administración"
 			title="Gestiona en las diferentes opciones la tienda" id="adminImage">
 	</div>
-
-	<!-- ADMIN PEDIDOS style="max-height: 80px;"-->
-	<th:block th:if="${showOrders}">
-		<div th:replace="~{fragments/administration-fragments :: orders}">
-		</div>
-	</th:block>
-
-	<!-- ADMIN PRODUCTOS -->
-	<th:block th:if="${showProducts}">
-		<div th:replace="~{fragments/administration-fragments :: products}">
-		</div>
-	</th:block>
-
-	<!-- ADMIN DENUNCIAS -->
-	<th:block th:if="${showComplaints}">
-		<div th:replace="~{fragments/administration-fragments :: complaints}">
-		</div>
-	</th:block>
-
-	<!-- ADMIN ENVIOS -->
-	<th:block th:if="${showSendings}">
-		<div th:replace="~{fragments/administration-fragments :: sendings}">
-		</div>
-	</th:block>
-
-	<!-- ADMIN USUARIOS -->
-	<th:block th:if="${showUsers}">
-		<div th:replace="~{fragments/administration-fragments :: users}">
-		</div>
-	</th:block>
-	</div>
-
-	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- HEAD DEL HTML -->
+<head th:replace="~{fragments/general-fragments :: headers}">
+</head>
+
+<body>
+	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<div th:replace="~{fragments/general-fragments :: headerContent}">
+	</div>
+
+	<!-- PANEL DE ADMINISTRACION -->
+	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
+	</div>
+
+	<div class="container text-center mt-5 mb-5 d-none" id="ordersFound">
+		<h2 class="mb-5 mt-5">Gestionar envío de pedidos</h2>
+		<div class="table-responsive">
+			<table class="table" id="ordersTable">
+				<thead>
+					<tr>
+						<th>Pedido</th>
+						<th>Fecha</th>
+						<th>Total</th>
+						<th>Procesar</th>
+						<th>Cancelar</th>
+					</tr>
+				</thead>
+				<tbody id="tbodyOrders"></tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="d-none" id="msgNotFound">
+		<div class="text-center mt-5">
+			<p class="font-weight-bold" style="font-size: 24px;">No hay
+				pedidos pendientes a procesar.</p>
+		</div>
+
+		<div class="col text-center">
+			<img src="/images/not-found.png" class="img-fluid"
+				style="max-height: 400px;">
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
+
+	<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
+	<script>
+		// Actualizar select de Categorias
+		window.onload = async function() {
+			await loadNewOrders();
+		}
+	</script>
+
+	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+
+	<!-- CONTENIDO DE PIE DE PAGINA -->
+	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
+
+</body>
+
+</html>

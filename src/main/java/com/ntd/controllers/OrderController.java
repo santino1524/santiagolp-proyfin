@@ -1,11 +1,15 @@
 package com.ntd.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,6 +69,26 @@ public class OrderController {
 	}
 
 	/**
+	 * Generar etiqueta de envio
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(value = "/generateShippingLabel", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<Resource> generateShippingLabel(@RequestParam @NotNull final Long orderId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Generar etiqueta de envio");
+
+		// Generar PDF
+		byte[] pdfBytes = orderMgmtService.generateLabel(orderId);
+
+		// Devolver el PDF como respuesta
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		return ResponseEntity.ok().contentLength(pdfBytes.length).contentType(MediaType.APPLICATION_PDF).body(resource);
+	}
+
+	/**
 	 * Retornar cantidad de pedidos creados
 	 * 
 	 * @return ResponseEntity
@@ -85,7 +109,7 @@ public class OrderController {
 	 * @throws InternalException
 	 */
 	@GetMapping(path = "/updateStatusEnviado")
-	public ResponseEntity<Object> updateStatusENviado(@RequestParam @NotNull final Long orderId)
+	public ResponseEntity<Object> updateStatusEnviado(@RequestParam @NotNull final Long orderId)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar estado ENVIADO");
@@ -123,6 +147,7 @@ public class OrderController {
 
 		return ResponseEntity.ok().body(Collections.singletonMap(ORDERS,
 				orderMgmtService.findByStatusEquals(Constants.getOrderStatuses().get(0))));
+
 	}
 
 	/**

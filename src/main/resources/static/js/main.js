@@ -555,8 +555,7 @@ async function loadAlerts() {
 
 	// Actualizar el contenido del número de pedidos
 	document.getElementById('newsOrders').innerText = newsOrders;
-	
- //	await loadNewOrders();
+
 }
 
 // Retornar cantidad de pedidos creados
