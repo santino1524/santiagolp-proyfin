@@ -294,7 +294,10 @@ async function showModalProduct(product) {
 	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
 	document.getElementById('productDescription').textContent = product.productDescription;
 
-	if (product.productQuantity < 5) {
+	if (product.productQuantity === 0) {
+		document.getElementById('messageProductQuantity').innerText = "Este producto está temporalmente agotado";
+		document.getElementById('messageProductQuantity').classList.remove('d-none');
+	} else if (product.productQuantity < 5) {
 		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
 		document.getElementById('messageProductQuantity').classList.remove('d-none');
 	}
@@ -583,15 +586,15 @@ async function countByStatus() {
 
 
 // Formatear fecha
-function formatDate(orderDate){
-// Crear un objeto Date a partir de la cadena de fecha y hora
-let dataDate = new Date(orderDate);
+function formatDate(orderDate) {
+	// Crear un objeto Date a partir de la cadena de fecha y hora
+	let dataDate = new Date(orderDate);
 
-// Obtener los componentes de la fecha
-let day = dataDate.getDate();
-let month = dataDate.getMonth() + 1;
-let year = dataDate.getFullYear();
+	// Obtener los componentes de la fecha
+	let day = dataDate.getDate();
+	let month = dataDate.getMonth() + 1;
+	let year = dataDate.getFullYear();
 
-// Formatear la fecha
-return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+	// Formatear la fecha
+	return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
 }

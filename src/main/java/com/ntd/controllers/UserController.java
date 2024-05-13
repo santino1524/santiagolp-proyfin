@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ntd.dto.AnswersDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.UserMgmtServiceI;
@@ -164,6 +165,34 @@ public class UserController {
 		model.addAttribute("message", result);
 
 		return result.equals(Constants.MSG_REGISTER_USER) ? "login-page" : "register";
+	}
+
+	/**
+	 * Resetear contrasenna
+	 * 
+	 * @param answersDto
+	 * @param model
+	 * @return String
+	 * @throws InternalException
+	 */
+	@PostMapping
+	public String resetPasswd(@Valid final AnswersDTO answersDto, final Model model) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Resetear contrasenna");
+
+		String result = null;
+		com.ntd.persistence.User user = userMgmtService.resetPasswd(answersDto);
+
+		if (user == null) {
+			result = "Las respuestas proporcionadas son incorrectas";
+		} else {
+			result = "La contraseña se ha restablecido correctamente";
+		}
+
+		// Retornar respuesta
+		model.addAttribute("message", result);
+
+		return user == null ? "register" : "login-page";
 	}
 
 	/**

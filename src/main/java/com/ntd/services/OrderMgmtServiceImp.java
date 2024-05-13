@@ -1,28 +1,19 @@
 package com.ntd.services;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.ntd.dto.OrderDTO;
 import com.ntd.dto.mapper.DTOMapperI;
@@ -36,6 +27,7 @@ import com.ntd.persistence.ProductSold;
 import com.ntd.persistence.ProductSoldRepositoryI;
 import com.ntd.persistence.User;
 import com.ntd.utils.Constants;
+import com.ntd.utils.QRCode;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -420,7 +412,18 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 			log.info("Generar PDF");
 
 		try {
-			Document document = new Document(PageSize.A4);
+			// Obtener el tamaño de pagina A4
+			Rectangle a4PageSize = PageSize.A4;
+
+			// Calcular la mitad del ancho y la mitad de la altura de A4
+			float halfWidth = a4PageSize.getWidth() / 2;
+			float halfHeight = a4PageSize.getHeight() / 2;
+
+			// Crear un nuevo tamanno de pagina
+			Rectangle customPageSize = new Rectangle(halfWidth, halfHeight);
+
+			Document document = new Document(customPageSize);
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PdfWriter.getInstance(document, baos);
 
@@ -503,9 +506,9 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 
 			// Generar el codigo QR
 			String productNumber = order.getOrderNumber();
-			int qrCodeWidth = 150;
-			int qrCodeHeight = 150;
-			Image qrCodeImage = generateQRCodeImage(productNumber, qrCodeWidth, qrCodeHeight);
+			int qrCodeWidth = 120;
+			int qrCodeHeight = 120;
+			Image qrCodeImage = QRCode.generateQRCodeImage(productNumber, qrCodeWidth, qrCodeHeight);
 			qrCodeImage.setAlignment(Element.ALIGN_CENTER);
 			document.add(qrCodeImage);
 
@@ -518,33 +521,6 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 			}
 			return new byte[0];
 		}
-	}
-
-	/**
-	 * Generar QR
-	 * 
-	 * @param text
-	 * @param width
-	 * @param height
-	 * @return Image
-	 * @throws WriterException
-	 * @throws IOException
-	 * @throws BadElementException
-	 */
-	private Image generateQRCodeImage(String text, int width, int height)
-			throws WriterException, IOException, BadElementException {
-		if (log.isInfoEnabled())
-			log.info("Generar QR");
-
-		Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
-
-		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-		BitMatrix bitMatrix = new QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, width, height, hints);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		MatrixToImageWriter.writeToStream(bitMatrix, "PNG", out);
-		byte[] qrCodeBytes = out.toByteArray();
-
-		return Image.getInstance(qrCodeBytes);
 	}
 
 	@Override

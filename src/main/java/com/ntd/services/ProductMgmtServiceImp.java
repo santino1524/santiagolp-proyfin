@@ -1,11 +1,18 @@
 package com.ntd.services;
 
+import java.io.ByteArrayOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.ntd.dto.ProductCategoryDTO;
 import com.ntd.dto.ProductDTO;
 import com.ntd.dto.ProductSoldDTO;
@@ -13,6 +20,7 @@ import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductRepositoryI;
+import com.ntd.utils.QRCode;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
@@ -528,4 +536,76 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductToDTO(product);
 	}
+
+	@Override
+	public byte[] generateLabel(Long productId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Generar etiqueta");
+
+		// Validar parametro
+		ValidateParams.isNullObject(productId);
+
+		byte[] result = new byte[0];
+
+		// Buscar pedido
+		Product product = productRepository.findById(productId).orElse(new Product());
+
+		if (product != null && product.getProductId() != null) {
+			result = generateLabelPDF(product.getProductNumber());
+		}
+
+		// Generar etiqueta
+		return result;
+	}
+
+	/**
+	 * Generar etiqueta
+	 * 
+	 * @param productNumber
+	 * @return byte[]
+	 */
+	private byte[] generateLabelPDF(String productNumber) {
+		if (log.isInfoEnabled())
+			log.info("Generar PDF");
+
+		try {
+			// Crear pagina para la etiqueta
+			float widthInInches = 2.3f;
+			float heightInInches = 3f;
+			float widthInPoints = widthInInches * 72f;
+			float heightInPoints = heightInInches * 72f;
+
+			Rectangle labelPageSize = new Rectangle(widthInPoints, heightInPoints);
+
+			// Crear un nuevo documento
+			Document document = new Document(labelPageSize);
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PdfWriter.getInstance(document, baos);
+
+			document.open();
+
+			// Numero de producto
+			Paragraph productNumberText = new Paragraph(productNumber);
+			productNumberText.setAlignment(Element.ALIGN_CENTER);
+			document.add(productNumberText);
+
+			// Generar el codigo QR
+			int qrCodeWidth = 120;
+			int qrCodeHeight = 120;
+			Image qrCodeImage = QRCode.generateQRCodeImage(productNumber, qrCodeWidth, qrCodeHeight);
+			qrCodeImage.setAlignment(Element.ALIGN_CENTER);
+			document.add(qrCodeImage);
+
+			document.close();
+			return baos.toByteArray();
+
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error(e.getMessage());
+			}
+			return new byte[0];
+		}
+	}
+
 }

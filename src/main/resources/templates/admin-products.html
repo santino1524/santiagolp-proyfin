@@ -54,6 +54,10 @@
 					id="formProduct">
 					<input type="hidden" name="categoryId">
 					<h5>Producto</h5>
+					<button type="button" class="btn btn-secondary mb-3 d-none"
+						id="printLabel" onclick="printLabelProduct()">
+						<i class="fa-solid fa-print mr-sm-2"></i>Etiqueta de producto
+					</button>
 
 					<div id="messageProduct" class="alert alert-success d-none"
 						role="alert"></div>
@@ -92,10 +96,10 @@
 								type="number" class="form-control mb-3" name="productQuantity"
 								id="productQuantity" placeholder="Ingrese la cantidad"
 								th:value="${productDto != null ? productDto.productQuantity() : ''}">
-							<label for="images">Cargar imágenes (Máx: 500KB) *</label> <input type="file"
-								class="form-control-file mb-3" id="images" name="images"
-								multiple onchange="verifyFiles()"> <input type="hidden"
-								id="foundImages">
+							<label for="images">Cargar imágenes (Máx: 500KB) *</label> <input
+								type="file" class="form-control-file mb-3" id="images"
+								name="images" multiple onchange="verifyFiles()"> <input
+								type="hidden" id="foundImages">
 							<div class="form-row justify-content-center">
 								<button type="button" class="btn btn-danger mb-3 d-none"
 									id="buttonDeleteImages" onclick="deleteImages()">Eliminar

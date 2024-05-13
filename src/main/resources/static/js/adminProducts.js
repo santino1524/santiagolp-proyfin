@@ -284,10 +284,12 @@ function showDeleteImages() {
 function showDeleteProduct() {
 	let inputProductId = document.getElementById('productId');
 	let buttonDeleteProduct = document.getElementById('buttonDeleteProduct');
-
+	let buttonPrint = document.getElementById('printLabel');
 	if (inputProductId.value) {
 		buttonDeleteProduct.classList.remove("d-none");
+		buttonPrint.classList.remove("d-none");
 	} else {
+		buttonPrint.classList.add("d-none");
 		buttonDeleteProduct.classList.add("d-none");
 	}
 }
@@ -413,7 +415,12 @@ async function submitFormProduct(form) {
 		if (productId) {
 			await updateProduct(formData);
 		} else {
-			productId = await saveProduct(formData);
+			let product = await saveProduct(formData);
+
+			if (product) {
+				//Generar etiqueta PDF
+				await generateLabel(product);
+			}
 		}
 
 		document.getElementById('productId').value = "";
@@ -424,6 +431,44 @@ async function submitFormProduct(form) {
 		// Datos incompletas en el formulario
 		showMessage(divMessageProductError, "Completa los datos obligatorios (*) en el formulario");
 	}
+}
+
+//Generar etiqueta PDF
+async function generateLabel(product) {
+
+	try {
+		let response = await fetch("/products/generateProductLabel?productId=" + product.productId, {
+			method: "GET"
+		});
+
+		if (response.ok) {
+			let blob = await response.blob();
+			let url = window.URL.createObjectURL(blob);
+
+			let a = document.createElement("a");
+			a.href = url;
+			a.download = `Producto-${product.productNumber}.pdf`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+		} else {
+			window.location.href = urlError;
+		}
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Imprimir etiqueta 
+async function printLabelProduct() {
+	let productId = document.getElementById('productId').value;
+
+	let product = await searchProductById(BigInt(productId));
+
+	//Generar etiqueta PDF
+	await generateLabel(product);
 }
 
 // Peticion para actualizar producto
@@ -478,7 +523,7 @@ async function saveProduct(formData) {
 	}
 
 	if (data) {
-		return data.productId;
+		return data.product;
 	}
 }
 
@@ -493,7 +538,7 @@ function verifySize() {
 
 		if (fileSize > maxSizeInBytes) {
 			// Mostrar error de archivo no valido
-			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido "+ maxSize);
+			showMessage(divMessageProductError, "Hay imágenes que exceden el peso máximo permitido " + maxSize);
 
 			// Limpiar el input de archivo para evitar enviar archivos demasiado grandes
 			inputFiles.value = '';
