@@ -335,4 +335,15 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		return user;
 	}
 
+	@Override
+	public UserDTO searchById(Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar usuario por Id");
+
+		// Validar parametros
+		ValidateParams.isNullObject(userId);
+
+		return DTOMapperI.MAPPER.mapUserToDTO(userRepository.findById(userId).orElse(null));
+	}
+
 }

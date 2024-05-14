@@ -19,5 +19,6 @@ public record AnswersDTO(
 		// Validar respuestas
 		@NotEmpty(message = Constants.MSG_ANSWER_NOT_VALID) List<String> answers,
 
-		String passwd) {
+		// Validar respuestas
+		@NotEmpty(message = Constants.MSG_PASSWD_NOT_VALID) String passwd) {
 }

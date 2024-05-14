@@ -143,4 +143,12 @@ public interface UserMgmtServiceI {
 	public List<UserDTO> searchByDniOrEmailOrPhoneNumber(final String dni, final String email, final String phoneNumber)
 			throws InternalException;
 
+	/**
+	 * Buscar por usuario por id
+	 * 
+	 * @param userId
+	 * @return UserDTO
+	 * @throws InternalException
+	 */
+	public UserDTO searchById(final Long userId) throws InternalException;
 }

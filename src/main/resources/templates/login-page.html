@@ -14,7 +14,7 @@
 	<!-- CONTENIDO DE LA PAGINA -->
 	<div class="container mt-3  mb-3">
 		<div class="row justify-content-center">
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<div class="col text-center">
 					<img src="/images/login.png" class="img-fluid"
 						style="max-height: 150px;" alt="Login" title="Login">
@@ -28,6 +28,8 @@
 						role="alert">
 						<span th:text="${message}"></span>
 					</div>
+					<div class="alert alert-danger d-none" id='messageEmailErrorPage'
+						role="alert"></div>
 					<div class="form-group">
 						<label for="inputEmail">Correo electrónico</label> <input
 							type="email" name="username" class="form-control" id="inputEmail"
@@ -37,8 +39,9 @@
 						<label for="inputPassword">Contraseña</label> <input
 							type="password" name="password" class="form-control"
 							id="inputPassword" placeholder="Contraseña" required
-							autocomplete="password"> <small><a
-							href="/recoverPassword">¿Haz olvidado tu contraseña?</a></small>
+							autocomplete="password"> <small><a href="#"
+							onclick="loadRecoverPasswd(document.getElementById('inputEmail').value)">¿Haz
+								olvidado tu contraseña?</a></small>
 					</div>
 					<button type="submit" value="Login" class="btn btn-dark btn-block"
 						onclick="submitLoginPage(event)">Iniciar sesión</button>
@@ -56,15 +59,15 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Alerta de
-						Seguridad</h5>
+					<h5 class="modal-title">Alerta de Seguridad</h5>
 				</div>
-				<div class="modal-body">La contraseña
-					utilizada tiene como objetivo el primer inicio de sesión, debe cambiarla
-					de inmediato o la aplicación será expuesta a brechas de seguridad.</div>
+				<div class="modal-body">La contraseña utilizada tiene como
+					objetivo el primer inicio de sesión, debe cambiarla de inmediato o
+					la aplicación será expuesta a brechas de seguridad.</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
-						data-dismiss="modal" id="modalBtnOk" onclick="document.getElementById('formLoginPage').submit()">Aceptar</button>
+						data-dismiss="modal" id="modalBtnOk"
+						onclick="document.getElementById('formLoginPage').submit()">Aceptar</button>
 				</div>
 			</div>
 		</div>

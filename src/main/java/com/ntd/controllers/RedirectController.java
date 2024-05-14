@@ -228,18 +228,18 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 		return "register";
 	}
 
-	/**
-	 * Redireccionar a pagina Reiniciar contrasena
-	 * 
-	 * @return String
-	 */
-	@GetMapping(path = "recoverPassword")
-	public String goRecoverPassword() {
-		if (log.isInfoEnabled())
-			log.info("Redireccionar a pagina Reiniciar contrasena");
-
-		return "recover-password";
-	}
+//	/**
+//	 * Redireccionar a pagina Reiniciar contrasena
+//	 * 
+//	 * @return String
+//	 */
+//	@GetMapping(path = "recoverPassword")
+//	public String goRecoverPassword() {
+//		if (log.isInfoEnabled())
+//			log.info("Redireccionar a pagina Reiniciar contrasena");
+//
+//		return "recover-password";
+//	}
 
 	/**
 	 * Redireccionar a pagina Carrito de compras
