@@ -315,7 +315,9 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 			// Comprobar respuestas
 			boolean confirm = false;
 			for (int j = 0; j < answersDto.answers().size(); j++) {
-				if (!encryptionUtils.decrypt(answers.get(j)).equalsIgnoreCase(answersDto.answers().get(j))) {
+				String answerDecript = encryptionUtils.decrypt(answers.get(j)).trim();
+				String answersInto = answersDto.answers().get(j).trim();
+				if (!answerDecript.equalsIgnoreCase(answersInto)) {
 					confirm = false;
 					break;
 				} else {
