@@ -169,7 +169,7 @@ public interface OrderMgmtServiceI {
 	/**
 	 * Generar etiqueta de envio
 	 * 
-	 * @param id
+	 * @param orderId
 	 * @return byte[]
 	 * @throws InternalException
 	 */

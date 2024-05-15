@@ -2,8 +2,10 @@ package com.ntd.services;
 
 import java.util.List;
 
+import com.ntd.dto.AnswersDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.User;
 
 /**
  * Servicio de gestion de usuarios
@@ -82,6 +84,15 @@ public interface UserMgmtServiceI {
 	public UserDTO searchByDni(final String dni) throws InternalException;
 
 	/**
+	 * Reiniciar contrasenna
+	 * 
+	 * @param answersDto
+	 * @return User
+	 * @throws InternalException
+	 */
+	public User resetPasswd(final AnswersDTO answersDto) throws InternalException;
+
+	/**
 	 * Buscar por email
 	 * 
 	 * @param email
@@ -132,4 +143,22 @@ public interface UserMgmtServiceI {
 	public List<UserDTO> searchByDniOrEmailOrPhoneNumber(final String dni, final String email, final String phoneNumber)
 			throws InternalException;
 
+	/**
+	 * Buscar por usuario por id
+	 * 
+	 * @param userId
+	 * @return UserDTO
+	 * @throws InternalException
+	 */
+	public UserDTO searchById(final Long userId) throws InternalException;
+
+	/**
+	 * Servicio para buscar usuarios
+	 * 
+	 * @param criterio
+	 * @param value
+	 * @return UserDTO
+	 * @throws InternalException
+	 */
+	public UserDTO searchUserByCriterio(String criterio, String value) throws InternalException;
 }

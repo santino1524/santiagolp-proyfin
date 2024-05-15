@@ -1,8 +1,12 @@
 package com.ntd.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,7 +81,7 @@ public class ProductController {
 
 			if (savedProduct.productId() != null) {
 				// Devolver una respuesta con codigo de estado 200
-				result = ResponseEntity.ok().body(Collections.singletonMap("productId", savedProduct.productId()));
+				result = ResponseEntity.ok().body(Collections.singletonMap("product", savedProduct));
 
 			} else {
 				// Devolver una respuesta con codigo de estado 500
@@ -86,6 +90,26 @@ public class ProductController {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Generar etiqueta de producto
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(value = "/generateProductLabel", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<Resource> generateShippingLabel(@RequestParam @NotNull final Long productId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Generar etiqueta de producto");
+
+		// Generar PDF
+		byte[] pdfBytes = productMgmtService.generateLabel(productId);
+
+		// Devolver el PDF como respuesta
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		return ResponseEntity.ok().contentLength(pdfBytes.length).contentType(MediaType.APPLICATION_PDF).body(resource);
 	}
 
 	/**

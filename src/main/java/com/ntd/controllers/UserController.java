@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ntd.dto.AnswersDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.security.EncryptionUtils;
 import com.ntd.services.UserMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
@@ -52,19 +54,23 @@ public class UserController {
 	/** Dependencia AuthenticationManager */
 	private AuthenticationManager authenticationManager;
 
+	/** Dependencia EncryptionUtils */
+	private final EncryptionUtils encryptionUtils;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param userMgmtService
 	 * @param sessionRegistry
 	 * @param authenticationManager
-	 * @param passwordEncoder
+	 * @param encryptionUtils
 	 */
 	public UserController(UserMgmtServiceI userMgmtService, SessionRegistry sessionRegistry,
-			AuthenticationManager authenticationManager) {
+			AuthenticationManager authenticationManager, EncryptionUtils encryptionUtils) {
 		this.userMgmtService = userMgmtService;
 		this.sessionRegistry = sessionRegistry;
 		this.authenticationManager = authenticationManager;
+		this.encryptionUtils = encryptionUtils;
 	}
 
 	/**
@@ -103,10 +109,9 @@ public class UserController {
 	 * 
 	 * @param userDto
 	 * @return ResponseEntity
-	 * @throws InternalException
 	 */
 	@PostMapping("/verifyOldPasswd")
-	public ResponseEntity<Void> cambiarContrasena(@RequestBody @Valid final UserDTO userDto) throws InternalException {
+	public ResponseEntity<Void> verifyOldPasswd(@RequestBody @Valid final UserDTO userDto) {
 
 		ResponseEntity<Void> result = null;
 		// Obtener el nombre de usuario del usuario actualmente autenticado
@@ -164,6 +169,41 @@ public class UserController {
 		model.addAttribute("message", result);
 
 		return result.equals(Constants.MSG_REGISTER_USER) ? "login-page" : "register";
+	}
+
+	/**
+	 * Resetear contrasenna
+	 * 
+	 * @param answersDto
+	 * @param model
+	 * @return String
+	 * @throws InternalException
+	 */
+	@PostMapping("resetPasswd")
+	public String resetPasswd(@Valid final AnswersDTO answersDto, final Model model) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Resetear contrasenna");
+
+		String result = null;
+		com.ntd.persistence.User user = userMgmtService.resetPasswd(answersDto);
+
+		if (user == null) {
+			result = "Las respuestas proporcionadas son incorrectas";
+
+			// Retornar respuestas y usuario
+			UserDTO userDto = userMgmtService.searchById(answersDto.userId());
+			model.addAttribute("userId", userDto.userId());
+			model.addAttribute("question1", encryptionUtils.decrypt(userDto.questions().get(0)));
+			model.addAttribute("question2", encryptionUtils.decrypt(userDto.questions().get(1)));
+			model.addAttribute("question3", encryptionUtils.decrypt(userDto.questions().get(2)));
+		} else {
+			result = "La contraseña se ha restablecido correctamente";
+		}
+
+		// Retornar respuesta
+		model.addAttribute("message", result);
+
+		return user == null ? "recover-password" : "login-page";
 	}
 
 	/**
@@ -228,6 +268,31 @@ public class UserController {
 	}
 
 	/**
+	 * Retornar preguntas de usuario en pagina de recuperacion de contrasenna
+	 * 
+	 * @param model
+	 * @return String
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/recoverPassword")
+	public String showUsers(@RequestParam @NotNull final Long userId, final Model model) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Retornar preguntas de usuario en pagina de recuperacion de contrasenna");
+
+		UserDTO userDto = userMgmtService.searchById(userId);
+
+		if (userDto != null && userDto.userId() != null && userDto.userId() != 1) {
+			// Retornar respuestas y usuario
+			model.addAttribute("userId", userDto.userId());
+			model.addAttribute("question1", encryptionUtils.decrypt(userDto.questions().get(0)));
+			model.addAttribute("question2", encryptionUtils.decrypt(userDto.questions().get(1)));
+			model.addAttribute("question3", encryptionUtils.decrypt(userDto.questions().get(2)));
+		}
+
+		return "recover-password";
+	}
+
+	/**
 	 * Buscar todos los usuarios
 	 * 
 	 * @param model
@@ -243,6 +308,21 @@ public class UserController {
 		model.addAttribute("users", userMgmtService.searchAll());
 
 		return "VISTA MOSTRAR lista usuario";
+	}
+
+	/**
+	 * Metodo para devolucion de los empleados buscados.
+	 * 
+	 * @param criterio
+	 * @param value
+	 * @throws InternalException
+	 */
+	@PostMapping("/searchByCriterio")
+	public ResponseEntity<Object> searchEmployees(@RequestParam @NotNull final String criterio,
+			@RequestParam @NotNull final String value) throws InternalException {
+
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("user", userMgmtService.searchUserByCriterio(criterio, value)));
 	}
 
 	/**
@@ -277,6 +357,21 @@ public class UserController {
 			log.info("Buscar usuario por email");
 
 		return ResponseEntity.ok().body(Collections.singletonMap("user", userMgmtService.searchByEmail(email)));
+	}
+
+	/**
+	 * Buscar usuario por id
+	 * 
+	 * @param userId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchById")
+	public ResponseEntity<Object> searchById(@RequestParam @NotNull final Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar usuario por id");
+
+		return ResponseEntity.ok().body(Collections.singletonMap("user", userMgmtService.searchById(userId)));
 	}
 
 	/**

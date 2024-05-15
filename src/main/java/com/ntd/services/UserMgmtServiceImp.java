@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ntd.dto.AnswersDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
@@ -291,6 +292,92 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 
 		// Retornar lista DTO
 		return usersDto;
+	}
+
+	@Override
+	public User resetPasswd(AnswersDTO answersDto) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Resetear contrasenna");
+
+		// Validar parametros
+		ValidateParams.isNullObject(answersDto);
+
+		User user = null;
+
+		// Buscar usuario
+		User userToResetPass = userRepository.findById(answersDto.userId()).orElse(null);
+
+		if (userToResetPass != null && userToResetPass.getUserId() != null) {
+
+			// Obtener contrasennas decodificadas
+			List<String> answers = userToResetPass.getAnswers();
+
+			// Comprobar respuestas
+			boolean confirm = false;
+			for (int j = 0; j < answersDto.answers().size(); j++) {
+				String answerDecript = encryptionUtils.decrypt(answers.get(j)).trim();
+				String answersInto = answersDto.answers().get(j).trim();
+				if (!answerDecript.equalsIgnoreCase(answersInto)) {
+					confirm = false;
+					break;
+				} else {
+					confirm = true;
+				}
+			}
+
+			if (confirm) {
+				// Codificar nueva contrasenna
+				userToResetPass.setPasswd(passwordEncoder.encode(answersDto.passwd()));
+
+				// Guardar
+				user = userRepository.save(userToResetPass);
+			}
+		}
+
+		return user;
+	}
+
+	@Override
+	public UserDTO searchById(Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar usuario por Id");
+
+		// Validar parametros
+		ValidateParams.isNullObject(userId);
+
+		return DTOMapperI.MAPPER.mapUserToDTO(userRepository.findById(userId).orElse(null));
+	}
+
+	@Override
+	public UserDTO searchUserByCriterio(String criterio, String value) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar por criterios");
+
+		// Validar parametros
+		ValidateParams.isNullObject(criterio);
+		ValidateParams.isNullObject(value);
+
+		User user = null;
+
+		switch (criterio) {
+		case "dni":
+			user = userRepository.findByDniIgnoreCase(value);
+			break;
+		case "email":
+			user = userRepository.findByEmailIgnoreCase(value);
+			break;
+		case "numberPhone":
+			user = userRepository.findByPhoneNumber(value);
+			break;
+		default:
+			if (log.isErrorEnabled()) {
+				log.error("Valor invalido en el criterio de busqueda");
+			}
+
+			throw new InternalException();
+		}
+
+		return DTOMapperI.MAPPER.mapUserToDTO(user);
 	}
 
 }

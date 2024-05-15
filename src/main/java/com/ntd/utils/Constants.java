@@ -131,7 +131,7 @@ public class Constants {
 	public static final String MSG_QUESTION_NOT_VALID = "Debe introducir la pregunta";
 
 	/** Msg de respuesta NotValid */
-	public static final String MSG_ANSWER_NOT_VALID = "Debe introducir la respuestas";
+	public static final String MSG_ANSWER_NOT_VALID = "Debe introducir las respuestas";
 
 	/** Msg de productSizes NotValid */
 	public static final String MSG_PRODUCT_SIZES_NOT_VALID = "Debe introducir la talla del producto";

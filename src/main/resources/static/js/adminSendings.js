@@ -1,18 +1,3 @@
-// Cargar nuevos pedidos
-async function loadNewOrders() {
-	await loadAlerts();
-	let orders = await searchByCreado();
-
-	if (orders && orders.length > 0) {
-		document.getElementById("ordersFound").classList.remove('d-none');
-
-		// Maquetar tabla
-		await layoutTableOrders(orders);
-	} else {
-		document.getElementById("msgNotFound").classList.remove('d-none');
-	}
-}
-
 // Maquetar tabla con pedidos a enviar
 async function layoutTableOrders(orders) {
 	let tbody = document.getElementById('tbodyOrders');
@@ -152,30 +137,6 @@ async function generateShippingLabel(order) {
 		} else {
 			window.location.href = urlError;
 		}
-	} catch (error) {
-		console.error(error);
-		window.location.href = urlError;
-	}
-}
-
-
-// Obtener pedidos en estado CREADO
-async function searchByCreado() {
-	try {
-		let response = await fetch("/orders/searchByCreado", {
-			method: "GET"
-		});
-
-		let data;
-
-		if (response.status === 200) {
-			data = await response.json();
-		} else {
-			window.location.href = urlError;
-		}
-
-		return data.orders;
-
 	} catch (error) {
 		console.error(error);
 		window.location.href = urlError;

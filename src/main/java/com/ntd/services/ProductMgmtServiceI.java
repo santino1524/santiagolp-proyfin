@@ -39,6 +39,15 @@ public interface ProductMgmtServiceI {
 	public ProductDTO updateProduct(final ProductDTO productDto) throws InternalException;
 
 	/**
+	 * Generar etiqueta de envio
+	 * 
+	 * @param productId
+	 * @return byte[]
+	 * @throws InternalException
+	 */
+	public byte[] generateLabel(final Long productId) throws InternalException;
+
+	/**
 	 * Eliminar producto
 	 * 
 	 * @param id

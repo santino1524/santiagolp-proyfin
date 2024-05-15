@@ -1,3 +1,4 @@
+
 //Expresiones regulares
 const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
 const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
@@ -5,6 +6,7 @@ const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const passwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const dniRegExp = /^\d{8}[a-zA-Z]$/;
 const ivaRegex = /^\d{1,2}$/;
 const phoneRegex = /^\d{9}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
@@ -22,9 +24,9 @@ const maxSizeInBytes = 500 * 1024;
 document.addEventListener("DOMContentLoaded", function() {
 	let submitButton = document.getElementById("submitButtonRegister");
 	if (submitButton) {
-		let password = document.getElementById("passwd").value;
-		let confirmPassword = document.getElementById("confirmPasswd").value;
 		submitButton.addEventListener("click", function(event) {
+			let password = document.getElementById("passwd").value;
+			let confirmPassword = document.getElementById("confirmPasswd").value;
 			if (!checkPasswords(password, confirmPassword, document.getElementById("passwordError"))) {
 				event.preventDefault();
 			}
@@ -294,7 +296,10 @@ async function showModalProduct(product) {
 	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
 	document.getElementById('productDescription').textContent = product.productDescription;
 
-	if (product.productQuantity < 5) {
+	if (product.productQuantity === 0) {
+		document.getElementById('messageProductQuantity').innerText = "Este producto está temporalmente agotado";
+		document.getElementById('messageProductQuantity').classList.remove('d-none');
+	} else if (product.productQuantity < 5) {
 		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
 		document.getElementById('messageProductQuantity').classList.remove('d-none');
 	}
@@ -583,15 +588,121 @@ async function countByStatus() {
 
 
 // Formatear fecha
-function formatDate(orderDate){
-// Crear un objeto Date a partir de la cadena de fecha y hora
-let dataDate = new Date(orderDate);
+function formatDate(orderDate) {
+	// Crear un objeto Date a partir de la cadena de fecha y hora
+	let dataDate = new Date(orderDate);
 
-// Obtener los componentes de la fecha
-let day = dataDate.getDate();
-let month = dataDate.getMonth() + 1;
-let year = dataDate.getFullYear();
+	// Obtener los componentes de la fecha
+	let day = dataDate.getDate();
+	let month = dataDate.getMonth() + 1;
+	let year = dataDate.getFullYear();
 
-// Formatear la fecha
-return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+	// Formatear la fecha
+	return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+}
+
+// Abrir pagina de recuperar contrasenna
+async function loadRecoverPasswd(email) {
+	let divMessagePage = document.getElementById('messageEmailErrorPage');
+	let divMessageNav = document.getElementById('messageEmailErrorNav');
+
+	if (!email) {
+		// Mostrar mensaje de introducir el email
+		let message = "Debe introducir el correo electrónico";
+		if (divMessagePage) {
+			showMessage(divMessagePage, message);
+		}
+		if (divMessageNav) {
+			showMessage(divMessageNav, message);
+		}
+
+		return;
+	}
+
+	// Validar email
+	if (!emailRegExp.test(email)) {
+		let message = "Debe introducir una dirección de correo válida";
+		if (divMessageNav) {
+			showMessage(divMessageNav, message);
+		}
+		if (divMessagePage) {
+			showMessage(divMessagePage, message);
+		}
+
+		return;
+	}
+
+	// Obtener id de usuario
+	let user = await searchByEmail(email);
+
+
+
+	if (user && user.userId) {
+		if (user.userId === 1) {
+			// El usuario del sistema no contiene preguntas de recuperación
+			let message = "El usuario de inicio de la aplicación no contiene preguntas de recuperación";
+			if (divMessageNav) {
+				showMessage(divMessageNav, message);
+			}
+			if (divMessagePage) {
+				showMessage(divMessagePage, message);
+			}
+
+			return;
+		}
+
+		// Redireccionar a pagina de recuperacion de contrasennas
+		window.location.href = "/users/recoverPassword?userId=" + user.userId;
+	} else {
+		// No hay usuario registrado con ese email
+		let message = "No existe ningún usuario registrado con ese correo electrónico";
+		if (divMessageNav) {
+			showMessage(divMessageNav, message);
+		}
+		if (divMessagePage) {
+			showMessage(divMessagePage, message);
+		}
+	}
+}
+
+// Cargar nuevos pedidos
+async function loadNewOrders() {
+	await loadAlerts();
+	let orders = await searchByCreado();
+	let ordersFound = document.getElementById("ordersFound");
+	let msgNotFound = document.getElementById("msgNotFound");
+
+	if (orders && orders.length > 0) {
+		if (ordersFound) {
+			ordersFound.classList.remove('d-none');
+		}
+		
+		// Maquetar tabla
+		await layoutTableOrders(orders);
+	} else if (msgNotFound) {
+		msgNotFound.classList.remove('d-none');
+	}
+}
+
+// Obtener pedidos en estado CREADO
+async function searchByCreado() {
+	try {
+		let response = await fetch("/orders/searchByCreado", {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.orders;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
 }
