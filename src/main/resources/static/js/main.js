@@ -6,6 +6,7 @@ const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const passwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const dniRegExp = /^\d{8}[a-zA-Z]$/;
 const ivaRegex = /^\d{1,2}$/;
 const phoneRegex = /^\d{9}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
@@ -661,5 +662,47 @@ async function loadRecoverPasswd(email) {
 		if (divMessagePage) {
 			showMessage(divMessagePage, message);
 		}
+	}
+}
+
+// Cargar nuevos pedidos
+async function loadNewOrders() {
+	await loadAlerts();
+	let orders = await searchByCreado();
+	let ordersFound = document.getElementById("ordersFound");
+	let msgNotFound = document.getElementById("msgNotFound");
+
+	if (orders && orders.length > 0) {
+		if (ordersFound) {
+			ordersFound.classList.remove('d-none');
+		}
+		
+		// Maquetar tabla
+		await layoutTableOrders(orders);
+	} else if (msgNotFound) {
+		msgNotFound.classList.remove('d-none');
+	}
+}
+
+// Obtener pedidos en estado CREADO
+async function searchByCreado() {
+	try {
+		let response = await fetch("/orders/searchByCreado", {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.orders;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
 	}
 }

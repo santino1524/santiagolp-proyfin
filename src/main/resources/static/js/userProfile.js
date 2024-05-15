@@ -229,6 +229,7 @@ async function savePasswdForm() {
 		return;
 	}
 
+	// Comprobar complejidad
 	if (!passwdRegex.test(newPassword)) {
 		showMessage(divMessagePasswdError, "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un dígito, un carácter especial y tener al menos 7 caracteres");
 
@@ -332,7 +333,7 @@ async function savePersonalInformationForm() {
 	}
 }
 
-// Peticion para actualizar producto
+// Peticion para actualizar usuario
 async function updateUser(user) {
 	let divMessageEmailError = document.getElementById("messageEmailError");
 	let divMessagePersonalInformationError = document.getElementById("messagePersonalInformationError");

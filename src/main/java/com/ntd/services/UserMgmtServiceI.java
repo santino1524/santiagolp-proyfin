@@ -151,4 +151,14 @@ public interface UserMgmtServiceI {
 	 * @throws InternalException
 	 */
 	public UserDTO searchById(final Long userId) throws InternalException;
+
+	/**
+	 * Servicio para buscar usuarios
+	 * 
+	 * @param criterio
+	 * @param value
+	 * @return UserDTO
+	 * @throws InternalException
+	 */
+	public UserDTO searchUserByCriterio(String criterio, String value) throws InternalException;
 }

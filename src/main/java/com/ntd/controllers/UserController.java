@@ -311,6 +311,21 @@ public class UserController {
 	}
 
 	/**
+	 * Metodo para devolucion de los empleados buscados.
+	 * 
+	 * @param criterio
+	 * @param value
+	 * @throws InternalException
+	 */
+	@PostMapping("/searchByCriterio")
+	public ResponseEntity<Object> searchEmployees(@RequestParam @NotNull final String criterio,
+			@RequestParam @NotNull final String value) throws InternalException {
+
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("user", userMgmtService.searchUserByCriterio(criterio, value)));
+	}
+
+	/**
 	 * Buscar usuario por DNI
 	 * 
 	 * @param model
@@ -342,6 +357,21 @@ public class UserController {
 			log.info("Buscar usuario por email");
 
 		return ResponseEntity.ok().body(Collections.singletonMap("user", userMgmtService.searchByEmail(email)));
+	}
+
+	/**
+	 * Buscar usuario por id
+	 * 
+	 * @param userId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchById")
+	public ResponseEntity<Object> searchById(@RequestParam @NotNull final Long userId) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar usuario por id");
+
+		return ResponseEntity.ok().body(Collections.singletonMap("user", userMgmtService.searchById(userId)));
 	}
 
 	/**

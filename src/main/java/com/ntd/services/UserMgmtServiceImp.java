@@ -348,4 +348,36 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		return DTOMapperI.MAPPER.mapUserToDTO(userRepository.findById(userId).orElse(null));
 	}
 
+	@Override
+	public UserDTO searchUserByCriterio(String criterio, String value) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar por criterios");
+
+		// Validar parametros
+		ValidateParams.isNullObject(criterio);
+		ValidateParams.isNullObject(value);
+
+		User user = null;
+
+		switch (criterio) {
+		case "dni":
+			user = userRepository.findByDniIgnoreCase(value);
+			break;
+		case "email":
+			user = userRepository.findByEmailIgnoreCase(value);
+			break;
+		case "numberPhone":
+			user = userRepository.findByPhoneNumber(value);
+			break;
+		default:
+			if (log.isErrorEnabled()) {
+				log.error("Valor invalido en el criterio de busqueda");
+			}
+
+			throw new InternalException();
+		}
+
+		return DTOMapperI.MAPPER.mapUserToDTO(user);
+	}
+
 }
