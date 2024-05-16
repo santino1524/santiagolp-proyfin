@@ -123,7 +123,7 @@ async function layoutCategoriesProducts(categories) {
 }
 
 // Cargar index
-async function loadIndex() {
+async function loadIndex() {	
 	try {
 		let response = await fetch("/category/searchAll", {
 			method: "GET",

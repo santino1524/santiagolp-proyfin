@@ -34,6 +34,14 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 
+
+// Limitar entrada en input cantidad de productos
+function limitInput(element) {
+	if (element.value.length > 2) {
+		element.value = element.value.slice(0, 2);
+	}
+}
+
 // Comprobacion de contrasennas
 function checkPasswords(password, confirmPassword, divAlert) {
 
@@ -192,10 +200,18 @@ function addCart(productId, quantity) {
 
 	// Verificar si el producto ya esta en el carrito
 	let existingProduct = cartLfd.find(product => product.productId == productId);
+	let sumProductsCar;
 
 	if (existingProduct) {
 		// Si el producto ya existe en el carrito, incrementar la cantidad
-		existingProduct.quantity = parseInt(existingProduct.quantity) + parseInt(quantity || 1);
+		sumProductsCar = parseInt(existingProduct.quantity) + parseInt(quantity || 1);
+		if (sumProductsCar <= 99) {
+			existingProduct.quantity = sumProductsCar;
+
+			// Actualizar cantidad en carrito y guardar productos en el
+			operationCart(cartLfd);
+		}
+
 	} else {
 		// Si el producto no existe, agregarlo al carrito
 		let product;
@@ -206,8 +222,16 @@ function addCart(productId, quantity) {
 			};
 			cartLfd.push(product);
 		}
+
+		// Actualizar cantidad en carrito y guardar productos en el
+		operationCart(cartLfd);
 	}
 
+
+}
+
+// Actualizar cantidad en carrito y guardar productos en el
+function operationCart(cartLfd) {
 	// Contar el numero total de productos en el carrito
 	let totalProducts = cartLfd.reduce((total, productCart) => total + parseInt(productCart.quantity), 0);
 
@@ -676,7 +700,7 @@ async function loadNewOrders() {
 		if (ordersFound) {
 			ordersFound.classList.remove('d-none');
 		}
-		
+
 		// Maquetar tabla
 		await layoutTableOrders(orders);
 	} else if (msgNotFound) {

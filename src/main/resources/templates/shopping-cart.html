@@ -12,7 +12,7 @@
 	</div>
 
 	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-5 mb-5">
+	<div class="container text-center mt-5 mb-5" id="carContainer">
 		<div class="col text-center mb-3">
 			<img src="/images/car.png" class="img-fluid"
 				style="max-height: 250px;" alt="Carrito de compras"
@@ -38,6 +38,17 @@
 			<h4 class="mb-3" id="carTotal"></h4>
 			<button onclick="checkProducts()" class="btn btn-success" id="buyButton"><i
 				class="fa-solid fa-wallet mr-sm-2"></i>Realizar compra</a>
+		</div>
+	</div>
+	
+	<div class="d-none mt-5 mb-5" id="msgNotFound">
+		<div class="text-center">
+			<p class="font-weight-bold" style="font-size: 24px;">¡Oops! Parece que el carrito está vacío.</p>
+		</div>
+
+		<div class="col text-center">
+			<img src="/images/not-found.png" class="img-fluid"
+				style="max-height: 400px;">
 		</div>
 	</div>
 

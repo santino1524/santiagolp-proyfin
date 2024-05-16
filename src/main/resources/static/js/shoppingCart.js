@@ -5,21 +5,17 @@ function loadShoppingCart() {
 
 	// Redireccionar a pagina principal si el carrito esta vacio
 	if (cartLfd.length === 0) {
-		modalEmptyCar();
-
-		$('#modalPay').modal('show');
+		showEmptyCar();
 	} else {
 		// Maquetar tabla con productos
 		layoutTableCar(cartLfd);
 	}
 }
 
-// Modal para carrito vacio
-function modalEmptyCar() {
-	document.getElementById('bodyModalPay').textContent = "¡Oops! Parece que el carrito está vacío. ¿Por qué no te das una vuelta por nuestra tienda y descubres nuestros increíbles productos? Estamos seguros de que encontrarás algo que te encantará.";
-	document.getElementById("hrefModalPay").onclick = function() {
-		window.location.href = "/";
-	};
+// Carro vacio
+function showEmptyCar() {
+	document.getElementById('msgNotFound').classList.remove('d-none');
+	document.getElementById('carContainer').classList.add('d-none');
 }
 
 // Maquetar tabla con productos
@@ -76,9 +72,10 @@ async function layoutTableCar(cartLfd) {
 		input.value = productCar.quantity;
 		input.style.width = "50px";
 		input.type = "number";
-		input.min = 1;
-		input.max = 100;
+		input.placeholder = "1";
 		input.addEventListener('input', function() {
+			limitInput(this);
+
 			// Actualizar la cantidad en el array cartLfd
 			productCar.quantity = parseInt(this.value) || 1;
 
@@ -144,8 +141,7 @@ async function layoutTableCar(cartLfd) {
 			// Comprobar si no hay mas elementos en cartLfd
 			if (cartLfd.length === 0) {
 				// Mostrar modal de carrito vacio
-				modalEmptyCar();
-				$('#modalPay').modal('show');
+				showEmptyCar();
 			}
 		};
 		tdDelete.append(button);
@@ -167,10 +163,8 @@ async function checkProducts() {
 	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
 
 	if (cartLfd.length === 0) {
-		modalEmptyCar();
+		showEmptyCar();
 
-		$('#modalPay').modal('show');
-		
 		return;
 	}
 

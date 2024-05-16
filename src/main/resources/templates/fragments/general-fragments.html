@@ -186,10 +186,10 @@
 						class="fas fa-tachometer-alt mr-sm-2 fa-sm"></i> Gestionar tienda</span></li>
 				<div class="collapse navbar-collapse"
 					id="navbarSupportedContentAdmin">
-					<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-						th:href="@{/adminOrders}"> <i
-							class="fas fa-shopping-basket fa-sm"></i> Pedidos
-					</a></li>
+<!-- 					<li class="nav-item dropdown mr-sm-5"><a class="nav-link" -->
+<!-- 						th:href="@{/adminOrders}"> <i -->
+<!-- 							class="fas fa-shopping-basket fa-sm"></i> Pedidos -->
+<!-- 					</a></li> -->
 					<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
 						th:href="@{/adminProducts}"> <i class="fas fa-box-open fa-sm"></i>
 							Productos
@@ -369,7 +369,7 @@
 										<div class="col-md-2">
 											<label class="sr-only" for="quantity">Cantidad</label> <input
 												type="number" class="form-control mb-2" id="quantity"
-												placeholder="1" min="1" max="100">
+												placeholder="1" oninput="limitInput(this)">
 										</div>
 										<div class="col-md-4 mr-4">
 											<button type="button" class="btn btn-primary mb-2 btn-block"
