@@ -4,6 +4,8 @@ let mapCategories = {};
 
 // Maquetar productos
 async function layoutProducts(products) {
+	loaderActive();
+
 	// Obtener categorias
 	await listCategories();
 
@@ -116,6 +118,8 @@ async function layoutProducts(products) {
 
 	// Conformar categoria con productos
 	divContainer.append(divContainerProducts);
+
+	loaderDeactivate();
 
 	// Establecer nombre de select de categorias
 	if (oneCategory) {

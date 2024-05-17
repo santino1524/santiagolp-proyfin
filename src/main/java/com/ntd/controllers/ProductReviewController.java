@@ -1,5 +1,8 @@
 package com.ntd.controllers;
 
+import java.util.Collections;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.Product;
 import com.ntd.services.ProductReviewMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
@@ -41,6 +45,28 @@ public class ProductReviewController {
 	 */
 	public ProductReviewController(final ProductReviewMgmtServiceI productReviewMgmtService) {
 		this.productReviewMgmtService = productReviewMgmtService;
+	}
+
+	/**
+	 * Buscar resenna por producto
+	 * 
+	 * @param productId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByProduct")
+	public ResponseEntity<Object> searchByProduct(@RequestParam @NotNull final Long productId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar resenna por producto");
+
+		ValidateParams.isNullObject(productId);
+
+		Product product = new Product(productId, null, null, null, null, null, 0, null, null, null, null, null, null);
+
+		// Retornar lista de resennas
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productReviews", productReviewMgmtService.findByProduct(product)));
 	}
 
 	/**

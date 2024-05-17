@@ -184,26 +184,3 @@ async function lastOrder(userId) {
 		window.location.href = urlError;
 	}
 }
-
-// Obtener pedidos por usuario ordenados desc
-async function listOrdersDesc(userId) {
-	try {
-		let response = await fetch("/orders/searchByUserDateDesc?userId=" + userId, {
-			method: "GET"
-		});
-
-		let data;
-
-		if (response.status === 200) {
-			data = await response.json();
-		} else {
-			window.location.href = urlError;
-		}
-
-		return data.orders;
-
-	} catch (error) {
-		console.error(error);
-		window.location.href = urlError;
-	}
-}

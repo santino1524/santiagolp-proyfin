@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductReview;
 import com.ntd.persistence.ProductReviewRepositoryI;
 import com.ntd.utils.ValidateParams;
@@ -97,6 +98,21 @@ public class ProductReviewMgmtServiceImp implements ProductReviewMgmtServiceI {
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductReviewToDTO(productReview);
+	}
+
+	@Override
+	public List<ProductReviewDTO> findByProduct(Product product) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ProductReview por producto");
+
+		// Validar parametro
+		ValidateParams.isNullObject(product);
+
+		// Buscar por id
+		final List<ProductReview> productReviewsDto = productReviewRepository.findByProduct(product);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.listProductReviewToDTO(productReviewsDto);
 	}
 
 }

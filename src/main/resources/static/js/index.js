@@ -69,10 +69,18 @@ async function layoutCategoriesProducts(categories) {
 			divProductsRating.classList.add('product-rating');
 			let ul = document.createElement('ul');
 			ul.classList.add('rating');
-			let li = document.createElement('li');
-			li.classList.add('fas', 'fa-star');
 			if (product.reviewsDto) {
-				for (let i = 0; i < product.reviewsDto.rating; i++) {
+				// Calcular promedio rating
+				let sum = 0;
+				let reviews = product.reviewsDto.length;
+				for (let i = 0; i < reviews; i++) {
+					sum += product.reviewsDto[i].rating;
+				}
+				ave = parseInt(sum / reviews);
+
+				for (let i = 0; i < ave; i++) {
+					let li = document.createElement('li');
+					li.classList.add('fas', 'fa-star');
 					ul.append(li);
 				}
 			}
@@ -119,11 +127,13 @@ async function layoutCategoriesProducts(categories) {
 
 		// Conformar categoria con productos
 		divContainer.append(divContainerProducts);
+
+		loaderDeactivate();
 	}
 }
 
 // Cargar index
-async function loadIndex() {	
+async function loadIndex() {
 	try {
 		let response = await fetch("/category/searchAll", {
 			method: "GET",

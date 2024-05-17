@@ -92,7 +92,7 @@ public interface DTOMapperI {
 	 */
 	@Mapping(target = "user", source = "userDto")
 	@Mapping(target = "product", source = "productDto")
-	@Mapping(target = "reports", ignore = true)
+//	@Mapping(target = "reports", ignore = true)
 	public ProductReview mapDTOToProductReview(ProductReviewDTO productReviewDto);
 
 	/**

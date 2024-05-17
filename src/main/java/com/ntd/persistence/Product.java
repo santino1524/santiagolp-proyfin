@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +31,7 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
+@AllArgsConstructor
 @Table(name = "T_PRODUCT")
 public class Product implements Serializable {
 
@@ -91,7 +93,7 @@ public class Product implements Serializable {
 	private List<ProductSold> soldProducts;
 
 	/** Critica de producto */
-	@OneToMany(mappedBy = "product")
+	@OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
 	@Cascade(CascadeType.ALL)
 	private List<ProductReview> reviews;
 

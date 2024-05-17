@@ -53,6 +53,21 @@ function checkPasswords(password, confirmPassword, divAlert) {
 	return true;
 }
 
+
+// Desactivar loader
+function loaderDeactivate() {
+	let loaderWrapper = document.getElementById('loader-wrapper');
+
+	loaderWrapper.style.display = 'none';
+}
+
+// Activar loader
+function loaderActive() {
+	let loaderWrapper = document.getElementById('loader-wrapper');
+
+	loaderWrapper.style.display = 'flex';
+}
+
 // Activar enlaces navlink
 //document.addEventListener("DOMContentLoaded", function() {
 //	const navLinks = document.querySelectorAll(".nav-link");
@@ -316,6 +331,74 @@ async function showModalProduct(product) {
 	// Detalles del producto
 	document.getElementById('productId').value = product.productId;
 	document.getElementById('productName').textContent = product.productName;
+
+	// Rating
+	let ulRating = document.getElementById('rating');
+	let spanRatio = document.createElement('span');
+	if (product.reviewsDto && product.reviewsDto.length > 0) {
+		ulRating.classList.remove('d-none');
+
+		// Calcular promedio rating
+		let sum = 0;
+		let reviews = product.reviewsDto.length;
+		for (let i = 0; i < reviews; i++) {
+			sum += product.reviewsDto[i].rating;
+		}
+		ave = sum / reviews;
+		spanRatio.append(`${ave.toFixed(1)}/5  `);
+		ulRating.append(spanRatio);
+
+		for (let i = 0; i < parseInt(ave); i++) {
+			let li = document.createElement('li');
+			li.classList.add('fas', 'fa-star');
+			li.style.color = '#FFD700';
+			ulRating.append(li);
+		}
+		let spanCount = document.createElement('span');
+		let aCountReviews = document.createElement('a');
+		let reviewText = reviews === 1 ? 'valoración' : 'valoraciones';
+		aCountReviews.append(`  (${reviews} ${reviewText})`);
+		aCountReviews.href = '#';
+		aCountReviews.onclick = async () => {
+
+			// Maquetar resennas
+			await layoutReviews(product.reviewsDto);
+
+			// Mostrar resennas
+			document.getElementById('reviewsUser').classList.remove('remove');
+
+			// Verificar si el usuario puede comentar el producto
+			let email = document.getElementById("authenticatedUser");
+			if (email && email.textContent) {
+				let user = await searchByEmail(email);
+
+				// Obtener lista de pedidos del usuario
+				orders = await listOrdersDesc(user.userId);
+
+				if (orders) {
+					let bought = false;
+					for (let order of orders) {
+						for (let productSold of order.soldProductsDto) {
+							if (productSold.productId === product.productId) {
+								bought = true;
+								break;
+							}
+						}
+					}
+
+					// Mostar textarea para nueva resenna
+					if (bought) {
+						document.getElementById("postReview").classList.remove("d-none");
+					}
+				}
+
+			}
+		};
+		aCountReviews.style.textDecoration = 'none';
+		spanCount.append(aCountReviews);
+		ulRating.append(spanCount);
+	}
+
 	document.getElementById('productPrice').textContent = product.pvpPrice.toFixed(2) + "€";
 	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
 	document.getElementById('productDescription').textContent = product.productDescription;
@@ -326,6 +409,110 @@ async function showModalProduct(product) {
 	} else if (product.productQuantity < 5) {
 		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
 		document.getElementById('messageProductQuantity').classList.remove('d-none');
+	}
+}
+
+// Obtener usuario por email 
+async function searchById(userId) {
+	try {
+		let response = await fetch("/users/searchById?userId=" + userId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.user;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Maquetar resennas
+async function layoutReviews(reviewsDto) {
+	let divContainer = document.getElementById('container-reviews');
+
+	for (let review of reviewsDto) {
+		// Card
+		let divCardContainer = document.createElement('div');
+		divCardContainer.classList.add('card', 'mt-3');
+
+		// Card body
+		let divCard = document.createElement('div');
+		divCard.classList.add('card-body');
+
+		// Titutlo
+		let user = await searchById(review.userDto.userId);
+		let divTitle = document.createElement('h6');
+		divTitle.classList.add('card-title');
+		divTitle.append(`${user.name} ${user.surname} ${user.secondSurname}`);
+		divCard.append(divTitle);
+
+		// Rating
+		let ulRating = document.createElement('rating');
+		for (let i = 0; i < reviewsDto.rating; i++) {
+			let li = document.createElement('li');
+			li.classList.add('fas', 'fa-star');
+			li.style.color = '#FFD700';
+			ulRating.append(li);
+		}
+		divCard.append(ulRating);
+
+		// Comentario
+		let pComment = document.createElement('p');
+		pComment.classList.add('card-text');
+		pComment.append(reviewsDto.comment);
+		divCard.append(pComment);
+
+		// Button denuncia
+		// Comprobar si se ha logado el usuario
+		let email = document.getElementById("authenticatedUser");
+		if (email && email.textContent) {
+			let buttonReport = document.createElement('button');
+			buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
+			buttonReport.append(Denunciar);
+			buttonReport.onclick = () => {
+				let inputReviewId = document.createElement('input');
+				inputReviewId.type = 'hidden';
+				inputReviewId.textContent = reviewsDto.productReviewId;
+
+				$('#modalSendReport').modal('show');
+			};
+			divCard.append(buttonReport);
+		}
+
+		divCardContainer.append(divCard);
+		divContainer.append(divCard);
+	}
+}
+
+// Obtener pedidos por usuario ordenados desc
+async function listOrdersDesc(userId) {
+	try {
+		let response = await fetch("/orders/searchByUserDateDesc?userId=" + userId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.orders;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
 	}
 }
 

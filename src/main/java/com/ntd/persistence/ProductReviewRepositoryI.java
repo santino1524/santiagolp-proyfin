@@ -1,5 +1,7 @@
 package com.ntd.persistence;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -9,4 +11,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ProductReviewRepositoryI extends JpaRepository<ProductReview, Long> {
 
+	/**
+	 * Buscar resennas por producto
+	 * 
+	 * @param product
+	 * @return List
+	 */
+	public List<ProductReview> findByProduct(Product product);
 }
