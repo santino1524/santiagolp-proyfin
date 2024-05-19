@@ -1,11 +1,10 @@
-
 //Expresiones regulares
-const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
 const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
 const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const passwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
 const dniRegExp = /^\d{8}[a-zA-Z]$/;
 const ivaRegex = /^\d{1,2}$/;
 const phoneRegex = /^\d{9}$/;
@@ -285,11 +284,25 @@ async function searchByCategoryPageProducts(categoryId) {
 
 // Mostrar producto en modal 
 async function showModalProduct(product) {
+	let divUserId = document.getElementById('userId');
+	let email = document.getElementById("authenticatedUser");
+	if (email) {
+		let user = await searchByEmail(email.textContent);
+		divUserId.value = user.userId;
+	} else {
+		divUserId.value = "";
+	}
+	document.getElementById('productId').value = product.productId;
+
 	$('#modalProduct').modal('show');
 
 	// Limpiar el contenido anterior antes de agregar nuevo contenido
 	document.getElementById('carouselInner').innerHTML = '';
 	document.getElementById('carouselIndicators').innerHTML = '';
+	document.getElementById('productId').value = '';
+	document.getElementById('container-reviews').innerText = "";
+	document.getElementById('reviewsUser').classList.add('d-none');
+	document.getElementById("postReview").classList.add("d-none");
 	document.getElementById('messageProductQuantity').classList.add('d-none');
 
 	document.getElementById('titleModalProduct').textContent = await searchCategoryNameById(product.categoryId);
@@ -332,9 +345,28 @@ async function showModalProduct(product) {
 	document.getElementById('productId').value = product.productId;
 	document.getElementById('productName').textContent = product.productName;
 
-	// Rating
+	// Maquetar rating
+	layoutRating(product, email);
+
+	document.getElementById('productPrice').textContent = product.pvpPrice.toFixed(2) + "€";
+	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
+	document.getElementById('productDescription').textContent = product.productDescription;
+
+	if (product.productQuantity === 0) {
+		document.getElementById('messageProductQuantity').innerText = "Este producto está temporalmente agotado";
+		document.getElementById('messageProductQuantity').classList.remove('d-none');
+	} else if (product.productQuantity < 5) {
+		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
+		document.getElementById('messageProductQuantity').classList.remove('d-none');
+	}
+}
+
+// Maquetar rating
+async function layoutRating(product, email) {
 	let ulRating = document.getElementById('rating');
+	document.getElementById('rating').innerHTML = '';
 	let spanRatio = document.createElement('span');
+
 	if (product.reviewsDto && product.reviewsDto.length > 0) {
 		ulRating.classList.remove('d-none');
 
@@ -359,56 +391,158 @@ async function showModalProduct(product) {
 		let reviewText = reviews === 1 ? 'valoración' : 'valoraciones';
 		aCountReviews.append(`  (${reviews} ${reviewText})`);
 		aCountReviews.href = '#';
+		aCountReviews.style.textDecoration = 'none';
 		aCountReviews.onclick = async () => {
-
+			document.getElementById('container-reviews').innerText = "";
+			
 			// Maquetar resennas
-			await layoutReviews(product.reviewsDto);
+			let isComment = await layoutReviews(product.reviewsDto);
 
-			// Mostrar resennas
-			document.getElementById('reviewsUser').classList.remove('remove');
+			// Mostar textarea para nueva resenna
+			let isNewReview = await verifyPostReview(email, product);
 
-			// Verificar si el usuario puede comentar el producto
-			let email = document.getElementById("authenticatedUser");
-			if (email && email.textContent) {
-				let user = await searchByEmail(email);
+			if (isNewReview) {
+				document.getElementById("postReview").classList.remove("d-none");
+			}
 
-				// Obtener lista de pedidos del usuario
-				orders = await listOrdersDesc(user.userId);
-
-				if (orders) {
-					let bought = false;
-					for (let order of orders) {
-						for (let productSold of order.soldProductsDto) {
-							if (productSold.productId === product.productId) {
-								bought = true;
-								break;
-							}
-						}
-					}
-
-					// Mostar textarea para nueva resenna
-					if (bought) {
-						document.getElementById("postReview").classList.remove("d-none");
-					}
-				}
-
+			if (isComment || isNewReview) {
+				// Mostrar resennas
+				document.getElementById('reviewsUser').classList.remove('d-none');
 			}
 		};
-		aCountReviews.style.textDecoration = 'none';
+
 		spanCount.append(aCountReviews);
 		ulRating.append(spanCount);
+	} else {
+		// Primera resenna
+		if (email && email.textContent && await verifyPostReview(email, product)) {
+			ulRating.classList.remove('d-none');
+			let aFirstReviews = document.createElement('a');
+			aFirstReviews.append('(Sé el primero en calificar el producto)');
+			aFirstReviews.href = '#';
+			aFirstReviews.style.textDecoration = 'none';
+			aFirstReviews.onclick = async () => {
+
+				// Mostrar resennas
+				document.getElementById('reviewsUser').classList.remove('d-none');
+				document.getElementById("postReview").classList.remove("d-none");
+			};
+			ulRating.append(aFirstReviews);
+		} else {
+			let pNotReviews = document.createElement('p');
+			pNotReviews.append('(Este producto aún no ha sido calificado)');
+			ulRating.append(pNotReviews);
+			ulRating.classList.remove('d-none');
+		}
+	}
+}
+
+// Verificar si el usuario puede comentar el producto
+async function verifyPostReview(email, product) {
+	if (email) {
+		let user = await searchByEmail(email.textContent);
+
+		document.getElementById('userId').value = user.userId;
+
+		// Obtener lista de pedidos del usuario
+		let orders = await listOrdersDesc(user.userId);
+
+		if (orders) {
+			for (let order of orders) {
+				for (let productSold of order.soldProductsDto) {
+					if (productSold.productId === product.productId && !verifyWrittenReview(user, product)) {
+						return true;
+					}
+				}
+			}
+		}
 	}
 
-	document.getElementById('productPrice').textContent = product.pvpPrice.toFixed(2) + "€";
-	document.getElementById('productSize').textContent = "Tamaño: " + product.productSize;
-	document.getElementById('productDescription').textContent = product.productDescription;
+	return false;
+}
 
-	if (product.productQuantity === 0) {
-		document.getElementById('messageProductQuantity').innerText = "Este producto está temporalmente agotado";
-		document.getElementById('messageProductQuantity').classList.remove('d-none');
-	} else if (product.productQuantity < 5) {
-		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
-		document.getElementById('messageProductQuantity').classList.remove('d-none');
+// Verificar si ya ha escrito resenna en este producto
+function verifyWrittenReview(user, product) {
+	if (product.reviewsDto && product.reviewsDto.length) {
+		for (let review of product.reviewsDto) {
+			if (review.user.userId === user.userId) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// Guardar resenna
+async function postReview() {
+	let stars = document.getElementsByName('star');
+	let email = document.getElementById("authenticatedUser").value;
+	let selectedStarValue = 0;
+	for (let star of stars) {
+		if (star.checked) {
+			selectedStarValue = parseInt(star.value, 10);
+			break;
+		}
+	}
+
+	if (selectedStarValue) {
+		let newReview = document.getElementById('newReview').value;
+		let user = {
+			userId: parseInt(document.getElementById('userId').value)
+		};
+		let productId = parseInt(document.getElementById('productId').value);
+
+		let productReviewDto = {
+			productId: productId,
+			user: user,
+			comment: newReview || "",
+			rating: selectedStarValue
+		};
+
+		// Guadar resenna y maquetar
+		productReviewDto = await saveProductReview(productReviewDto);
+
+		// Limpiar form
+		document.getElementById('formReview').reset();
+		document.getElementById('postReview').classList.add('d-none');
+
+		// Maquetar rating
+		let product = await searchProductById(productId);
+		layoutRating(product, email);
+
+		// Maquetar resenna
+		let reviews = [productReviewDto];
+		await layoutReviews(reviews);
+	} else {
+		showMessage(document.getElementById('messageReviewError'), 'Debe calificar el producto');
+	}
+}
+
+// Guadar resenna
+async function saveProductReview(productReviewDto) {
+	try {
+		let response = await fetch("/productReview/save", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(productReviewDto)
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.productReview;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
 	}
 }
 
@@ -440,56 +574,142 @@ async function layoutReviews(reviewsDto) {
 	let divContainer = document.getElementById('container-reviews');
 
 	for (let review of reviewsDto) {
-		// Card
-		let divCardContainer = document.createElement('div');
-		divCardContainer.classList.add('card', 'mt-3');
+		if (review.comment) {
+			// Card
+			let divCardContainer = document.createElement('div');
+			divCardContainer.classList.add('card', 'mt-3');
 
-		// Card body
-		let divCard = document.createElement('div');
-		divCard.classList.add('card-body');
+			// Card body
+			let divCard = document.createElement('div');
+			divCard.classList.add('card-body');
 
-		// Titutlo
-		let user = await searchById(review.userDto.userId);
-		let divTitle = document.createElement('h6');
-		divTitle.classList.add('card-title');
-		divTitle.append(`${user.name} ${user.surname} ${user.secondSurname}`);
-		divCard.append(divTitle);
+			// Titulo
+			let user = await searchById(review.user.userId);
+			let divTitle = document.createElement('h6');
+			divTitle.classList.add('card-title');
+			divTitle.append(`${user.name} ${user.surname}`);
+			divCard.append(divTitle);
 
-		// Rating
-		let ulRating = document.createElement('rating');
-		for (let i = 0; i < reviewsDto.rating; i++) {
-			let li = document.createElement('li');
-			li.classList.add('fas', 'fa-star');
-			li.style.color = '#FFD700';
-			ulRating.append(li);
+			// Rating
+			let ulRating = document.createElement('rating');
+			for (let i = 0; i < review.rating; i++) {
+				let li = document.createElement('li');
+				li.classList.add('fas', 'fa-star');
+				li.style.color = '#FFD700';
+				ulRating.append(li);
+			}
+			divCard.append(ulRating);
+
+			// Comentario
+			let pComment = document.createElement('p');
+			pComment.classList.add('card-text', 'mt-3', 'mb-4');
+			pComment.append(review.comment);
+			divCard.append(pComment);
+
+			// Button denuncia
+			// Comprobar si se ha logado el usuario
+			let email = document.getElementById("authenticatedUser");
+			if (email && email.textContent && !verifyReviewUser(review)) {
+				// Refrescar review
+				review = await searchReviewById(review.productReviewId);
+				
+				let buttonReport = document.createElement('button');
+				buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
+				if (review.reported) {
+					buttonReport.append('Comentario denunciado');
+					buttonReport.disabled = true;
+				} else {
+					buttonReport.append('Denunciar');
+					buttonReport.onclick = async () => {
+						if (review.reported) {
+							// Alert 
+							let divAlert = document.createElement('div');
+							divAlert.classList.add('alert', 'alert-success');
+							divAlert.role = 'alert';
+							divAlert.append('La reseña ya ha sido denunciada');
+							divCard.append(divAlert);
+
+							return;
+						}
+
+						// Almacenar resenna					
+						localStorage.setItem('reviewToReport', JSON.stringify(review));
+						let user = await searchByEmail(email.textContent);
+						localStorage.setItem('reporter', JSON.stringify(user));
+
+						// URL de la nueva ventana
+						let url = '/sendReport';
+
+						// Opciones de la nueva ventana
+						let options = 'width=700,height=400,top=100,left=100,resizable=yes ,scrollbars=yes';
+
+						// Abrir la nueva ventana
+						window.open(url, '_blank', options);
+					}
+				}
+
+
+				divCard.append(buttonReport);
+			}
+			divCardContainer.append(divCard);
+			divContainer.append(divCardContainer);
+
+			return true;
 		}
-		divCard.append(ulRating);
 
-		// Comentario
-		let pComment = document.createElement('p');
-		pComment.classList.add('card-text');
-		pComment.append(reviewsDto.comment);
-		divCard.append(pComment);
+		return false;
+	}
+}
 
-		// Button denuncia
-		// Comprobar si se ha logado el usuario
-		let email = document.getElementById("authenticatedUser");
-		if (email && email.textContent) {
-			let buttonReport = document.createElement('button');
-			buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
-			buttonReport.append(Denunciar);
-			buttonReport.onclick = () => {
-				let inputReviewId = document.createElement('input');
-				inputReviewId.type = 'hidden';
-				inputReviewId.textContent = reviewsDto.productReviewId;
+// Verificar si la resenna es del usuario
+function verifyReviewUser(review) {
+	let id = document.getElementById('userId').value;
+	return id && review.user.userId == id;
+}
 
-				$('#modalSendReport').modal('show');
-			};
-			divCard.append(buttonReport);
+// Buscar resenna por producto
+async function searchReviewById(id) {
+	try {
+		let response = await fetch("/productReview/searchById?id=" + id, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
 		}
 
-		divCardContainer.append(divCard);
-		divContainer.append(divCard);
+		return data.productReview;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Buscar resenna por producto
+async function searchReviewByProduct(productId) {
+	try {
+		let response = await fetch("/productReview/searchByProduct?productId=" + productId, {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data.productReviews;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
 	}
 }
 

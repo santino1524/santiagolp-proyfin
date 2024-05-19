@@ -18,4 +18,13 @@ public interface ProductReviewRepositoryI extends JpaRepository<ProductReview, L
 	 * @return List
 	 */
 	public List<ProductReview> findByProduct(Product product);
+
+	/**
+	 * Buscar resenna por producto y usuario
+	 * 
+	 * @param product
+	 * @param user
+	 * @return ProductReview
+	 */
+	public ProductReview findByProductAndUser(Product product, User user);
 }

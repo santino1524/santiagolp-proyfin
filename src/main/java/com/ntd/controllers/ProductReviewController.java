@@ -73,28 +73,33 @@ public class ProductReviewController {
 	 * Registrar ProductReview
 	 * 
 	 * @param productReviewDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public String saveProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto, final Model model)
+	@PostMapping(path = "/save")
+	public ResponseEntity<Object> saveProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar critica de producto");
 
-		String result = null;
+		return ResponseEntity.ok().body(Collections.singletonMap("productReview",
+				productReviewMgmtService.insertProductReview(productReviewDto)));
+	}
 
-		// Guardar ProductReview
-		if (productReviewMgmtService.insertProductReview(productReviewDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
-		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
-		}
+	/**
+	 * Buscar por id
+	 * 
+	 * @param id
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchById")
+	public ResponseEntity<Object> searchById(@RequestParam @NotNull final Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ProductReview por id");
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar CRITICA DE PRODUCTO";
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productReview", productReviewMgmtService.searchById(id)));
 	}
 
 	/**
@@ -179,23 +184,4 @@ public class ProductReviewController {
 		return "VISTA BUSCAR TODOS LOS ProductReview";
 	}
 
-	/**
-	 * Buscar por id
-	 * 
-	 * @param model
-	 * @param id
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchById")
-	public String searchByProductNumber(@RequestParam @NotNull final Long id, final Model model)
-			throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar ProductReview por id");
-
-		// Retornar ProductReview
-		model.addAttribute("productReviewDto", productReviewMgmtService.searchById(id));
-
-		return "VISTA BUSCAR PRODUCTOS POR id";
-	}
 }

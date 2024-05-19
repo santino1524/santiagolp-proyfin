@@ -11,6 +11,7 @@ import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductReview;
 import com.ntd.persistence.ProductReviewRepositoryI;
+import com.ntd.persistence.User;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -108,11 +109,27 @@ public class ProductReviewMgmtServiceImp implements ProductReviewMgmtServiceI {
 		// Validar parametro
 		ValidateParams.isNullObject(product);
 
-		// Buscar por id
+		// Buscar por producto
 		final List<ProductReview> productReviewsDto = productReviewRepository.findByProduct(product);
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.listProductReviewToDTO(productReviewsDto);
+	}
+
+	@Override
+	public ProductReviewDTO findByProductAndUser(Product product, User user) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ProductReview por producto y usuario");
+
+		// Validar parametro
+		ValidateParams.isNullObject(product);
+		ValidateParams.isNullObject(user);
+
+		// Buscar por producto y usuario
+		final ProductReview productReviewDto = productReviewRepository.findByProductAndUser(product, user);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapProductReviewToDTO(productReviewDto);
 	}
 
 }

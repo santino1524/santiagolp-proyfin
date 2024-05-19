@@ -357,7 +357,8 @@
 									class="d-flex flex-column justify-content-between h-100 text-center">
 									<div class="alert alert-danger d-none mb-4 text-center"
 										role="alert" id="messageProductQuantity"></div>
-									<input type="hidden" id="productId">
+									<input type="hidden" id="productId"> <input
+										type="hidden" id="userId">
 									<h4 id="productName"></h4>
 									<ul id="rating" class="rating d-none"></ul>
 									<h4 id="productPrice"></h4>
@@ -404,82 +405,83 @@
 								<div class="card mb-3" id="postReview">
 									<div class="card-body">
 										<h5 class="card-title">Añadir una nueva reseña</h5>
-										<div class="form-group">
-											<textarea class="form-control" id="newReview" rows="3"
-												placeholder="Escribe tu reseña aquí..."></textarea>
-										</div>
-										<button class="btn btn-primary">Publicar reseña</button>
+										<h6>¿Cómo lo calificarías?</h6>
+										<form id="formReview">
+											<div class="stars">
+												<div class="alert alert-danger d-none" role="alert"
+													id="messageReviewError"></div>
+												<input class="star star-5" id="star-5" type="radio"
+													name="star" value="5" /> <label class="star star-5"
+													for="star-5"></label> <input class="star star-4"
+													id="star-4" type="radio" name="star" value="4" /> <label
+													class="star star-4" for="star-4"></label> <input
+													class="star star-3" id="star-3" type="radio" name="star"
+													value="3" /> <label class="star star-3" for="star-3"></label>
+												<input class="star star-2" id="star-2" type="radio"
+													name="star" value="2" /> <label class="star star-2"
+													for="star-2"></label> <input class="star star-1"
+													id="star-1" type="radio" name="star" value="1" /> <label
+													class="star star-1" for="star-1"></label>
+											</div>
+											<div class="form-group">
+												<textarea class="form-control" id="newReview" rows="3"
+													placeholder="Escribe tu reseña aquí..."></textarea>
+											</div>
+										</form>
+										<button class="btn btn-primary" onclick="postReview()">Publicar
+											reseña</button>
 									</div>
 								</div>
 
 								<!-- Resennas -->
 								<div id="container-reviews"></div>
-
-								<!--								<div class="card mt-3">-->
-								<!-- 									<div class="card-body"> -->
-								<!-- 										<h6 class="card-title">Nombre del Usuario</h6> -->
-								<!-- 										<p class="card-text"> -->
-								<!-- 											<span class="fa fa-star checked"></span> <span -->
-								<!-- 												class="fa fa-star checked"></span> <span -->
-								<!-- 												class="fa fa-star checked"></span> <span class="fa fa-star"></span> -->
-								<!-- 											<span class="fa fa-star"></span> -->
-								<!-- 										</p> -->
-								<!-- 										<p class="card-text">Este es el comentario del usuario -->
-								<!-- 											sobre el producto.</p> -->
-								<!-- 										<button class="btn btn-danger btn-sm">Denunciar</button> -->
-								<!-- 									</div> -->
-								<!-- 								</div> -->
-
 							</div>
-
-
-
-
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-
-
-		<!-- Modal -->
-		<div class="modal fade" id="modalSendReport" tabindex="-1"
-			role="dialog" aria-labelledby="notificationModalLabel"
-			aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="notificationModalLabel">Enviar
-							Notificación</h5>
-						<button type="button" class="close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<p>Estas son algunas de las razones más habituales por las que
-							los clientes notifican sobre reseñas:</p>
-						<ul>
-							<li>Acoso, palabras malsonantes</li>
-							<li>Correo no deseado, anuncios, promociones</li>
-							<li>Entregados a cambio de dinero en efectivo, descuentos</li>
-						</ul>
-						<p>Cuando recibamos tu informe, comprobaremos si la reseña
-							cumple con las normas de la comunidad. Si no es así, la
-							eliminaremos.</p>
-						<form id="notificationForm">
-							<div class="form-group">
-								<label for="reportReason">Describe el problema:</label>
-								<textarea class="form-control" id="reportReason" rows="4"
-									placeholder="Describe el problema aquí..."></textarea>
-							</div>
-							<button type="submit" class="btn btn-primary">Enviar</button>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
+
+
+	<!-- Modal -->
+	<!--		<div class="modal fade" id="modalSendReport" tabindex="-1"-->
+	<!--			role="dialog" aria-labelledby="notificationModalLabel"-->
+	<!--			aria-hidden="true">-->
+	<!--			<div class="modal-dialog" role="document">-->
+	<!--				<div class="modal-content">-->
+	<!--					<div class="modal-header">-->
+	<!--						<h5 class="modal-title" id="notificationModalLabel">Enviar-->
+	<!--							Notificación</h5>-->
+	<!--						<button type="button" class="close" data-dismiss="modal"-->
+	<!--							aria-label="Close">-->
+	<!--							<span aria-hidden="true">&times;</span>-->
+	<!--						</button>-->
+	<!--					</div>-->
+	<!--					<div class="modal-body">-->
+	<!--						<p>Estas son algunas de las razones más habituales por las que-->
+	<!--							los clientes notifican sobre reseñas:</p>-->
+	<!--						<ul>-->
+	<!--							<li>Acoso, palabras malsonantes</li>-->
+	<!--							<li>Correo no deseado, anuncios, promociones</li>-->
+	<!--							<li>Entregados a cambio de dinero en efectivo, descuentos</li>-->
+	<!--						</ul>-->
+	<!--						<p>Cuando recibamos tu informe, comprobaremos si la reseña-->
+	<!--							cumple con las normas de la comunidad. Si no es así, la-->
+	<!--							eliminaremos.</p>-->
+	<!--						<form id="notificationForm">-->
+	<!--							<div class="form-group">-->
+	<!--								<label for="reportReason">Describe el problema:</label>-->
+	<!--								<textarea class="form-control" id="reportReason" rows="4"-->
+	<!--									placeholder="Describe el problema aquí..."></textarea>-->
+	<!--							</div>-->
+	<!--							<button type="submit" class="btn btn-primary">Enviar</button>-->
+	<!--						</form>-->
+	<!--					</div>-->
+	<!--				</div>-->
+	<!--			</div>-->
+	<!--		</div>-->
+	<!--	</div>-->
 
 	<!-- Modal Pay -->
 	<div th:fragment="modalPay">

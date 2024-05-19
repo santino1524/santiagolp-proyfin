@@ -52,6 +52,19 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	}
 
 	/**
+	 * Mostrar pagina de enviar reportes
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "sendReport")
+	public String showSendReport() {
+		if (log.isInfoEnabled())
+			log.info("Mostrar pagina de enviar reportes");
+
+		return "send-report";
+	}
+
+	/**
 	 * Mostrar pagina de pedidos
 	 * 
 	 * @return String

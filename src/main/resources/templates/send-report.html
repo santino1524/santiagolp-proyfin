@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enviar Notificación</title>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	crossorigin="anonymous">
+</head>
+<body>
+	<div class="container mt-5">
+		<h1>Enviar notificación</h1>
+		<p>Estas son algunas de las razones más habituales por las que los
+			clientes notifican sobre reseñas:</p>
+		<ul>
+			<li>Acoso, palabras malsonantes</li>
+			<li>Spam y publicidad</li>
+			<li>Falsas afirmaciones y engaños</li>
+			<li>Reseñas compradas o incentivadas</li>
+			<li>Información personal</li>
+			<li>Contenido irrelevante</li>
+		</ul>
+		<p>Cuando recibamos tu denuncia, comprobaremos si la reseña es
+			inadecuada. Si es así, la eliminaremos.</p>
+
+		<button class="btn btn-danger" onclick="reportReview()">Denunciar</button>
+	</div>
+
+	<script type="text/javascript" th:src="@{/js/sendReport.js}"></script>
+</body>
+</html>

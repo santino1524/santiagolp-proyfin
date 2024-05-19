@@ -160,42 +160,54 @@ async function layoutTableCar(cartLfd) {
 
 // Checkear disponibilidad de los productos a comprar
 async function checkProducts() {
-	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
+	let email = document.getElementById("authenticatedUser");
 
-	if (cartLfd.length === 0) {
-		showEmptyCar();
-
-		return;
-	}
-
-	let productsNotFound = await confirmAvailability(cartLfd);
-
-	// Iterar sobre las filas de la tabla
-	document.querySelectorAll('table tr.data-row').forEach(row => {
-		// Obtener el ID del producto de la fila actual
-		let productId = row.id.split('_')[1];
-
-		// Verificar si algun producto del carrito coincide con la lista
-		let product = productsNotFound.find(p => p.productSoldId == productId);
-
-		if (product) {
-			// Cambiar el estilo de la fila para que aparezca en rojo
-			row.style.backgroundColor = '#ffcccc';
-
-			// Obtener la celda del boton eliminar
-			let deleteCell = document.getElementById(`tdDelete_${product.productSoldId}`);
-
-			// Verificar si ya existe un mensaje en la celda
-			if (!deleteCell.querySelector('p')) {
-				// Crear un nuevo elemento de texto para el mensaje
-				let messageElement = document.createElement('p');
-				messageElement.textContent = `Solo quedan ${product.quantity} productos.`;
-
-				// Agregar el mensaje al final de la celda junto con el boton de eliminar
-				deleteCell.appendChild(messageElement);
-			}
+	if (email && email.textContent) {
+		let user = await searchByEmail(email.textContent);
+		if (user.userId === 1) {
+			showMessage(document.getElementById("messagePayError"), "El usuario predeterminado de la plataforma no puede realizar compras");
+			return;
 		}
-	});
+
+		let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
+
+		if (cartLfd.length === 0) {
+			showEmptyCar();
+
+			return;
+		}
+
+		let productsNotFound = await confirmAvailability(cartLfd);
+
+		// Iterar sobre las filas de la tabla
+		document.querySelectorAll('table tr.data-row').forEach(row => {
+			// Obtener el ID del producto de la fila actual
+			let productId = row.id.split('_')[1];
+
+			// Verificar si algun producto del carrito coincide con la lista
+			let product = productsNotFound.find(p => p.productSoldId == productId);
+
+			if (product) {
+				// Cambiar el estilo de la fila para que aparezca en rojo
+				row.style.backgroundColor = '#ffcccc';
+
+				// Obtener la celda del boton eliminar
+				let deleteCell = document.getElementById(`tdDelete_${product.productSoldId}`);
+
+				// Verificar si ya existe un mensaje en la celda
+				if (!deleteCell.querySelector('p')) {
+					// Crear un nuevo elemento de texto para el mensaje
+					let messageElement = document.createElement('p');
+					messageElement.textContent = `Solo quedan ${product.quantity} productos.`;
+
+					// Agregar el mensaje al final de la celda junto con el boton de eliminar
+					deleteCell.appendChild(messageElement);
+				}
+			}
+		});
+	} else {
+		window.location.href = '/login-page';
+	}
 }
 
 // Calcular total del carrito

@@ -5,6 +5,7 @@ import java.util.List;
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
+import com.ntd.persistence.User;
 
 /**
  * Servicio de gestion de Criticas de productos
@@ -54,5 +55,15 @@ public interface ProductReviewMgmtServiceI {
 	 * @throws InternalException
 	 */
 	public List<ProductReviewDTO> findByProduct(Product product) throws InternalException;
+
+	/**
+	 * Buscar resenna por producto y usuario
+	 * 
+	 * @param product
+	 * @param user
+	 * @return ProductReviewDTO
+	 * @throws InternalException
+	 */
+	public ProductReviewDTO findByProductAndUser(Product product, User user) throws InternalException;
 
 }
