@@ -36,16 +36,16 @@ public class Report implements Serializable {
 
 	/** Critica de producto */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PRODUCT_REVIEW_ID", nullable = false)
+	@JoinColumn(name = "C_PRODUCT_REVIEW_ID", nullable = false)
 	private ProductReview review;
 
 	/** Usuario que reporta */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "REPORTER_USER_ID", nullable = false)
+	@JoinColumn(name = "C_REPORTER_USER_ID", nullable = false)
 	private User reporter;
 
-	/** Razon de la denuncia */
-//	@Column(name = "C_REASON", nullable = false)
-//	private String reason;
+	/** Es procesada */
+	@Column(name = "C_PROCESSED", nullable = false)
+	private boolean processed;
 
 }

@@ -126,6 +126,27 @@ public interface DTOMapperI {
 	}
 
 	/**
+	 * Mapear lista de Report a DTO
+	 * 
+	 * @param reports
+	 * @return List
+	 */
+	default List<ReportDTO> listReportToDTO(List<Report> reports) {
+		List<ReportDTO> reportsDto = new ArrayList<>();
+
+		// Comprobar nulidad
+		if (reports != null) {
+
+			// Mapear datos
+			for (Report report : reports) {
+				reportsDto.add(mapReportToDTO(report));
+			}
+		}
+
+		return reportsDto;
+	}
+
+	/**
 	 * Mapear DTO a Order
 	 * 
 	 * @param orderDto

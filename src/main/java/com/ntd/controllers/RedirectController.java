@@ -149,15 +149,15 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
-//	@GetMapping(path = "adminComplaints")
-//	public String showComplaints(final Model model) {
-//		if (log.isInfoEnabled())
-//			log.info("Mostrar AdminComplaints");
-//
-//		model.addAttribute("showComplaints", true);
-//
-//		return ADMINISTRATION;
-//	}
+	@GetMapping(path = "adminComplaints")
+	public String showComplaints(final Model model) {
+		if (log.isInfoEnabled())
+			log.info("Mostrar AdminComplaints");
+
+		model.addAttribute("showComplaints", true);
+
+		return "admin-complaints";
+	}
 
 	/**
 	 * Mostrar AdminSendings

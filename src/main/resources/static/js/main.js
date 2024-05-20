@@ -994,16 +994,41 @@ async function searchPostalAddressById(addressId) {
 async function loadAlerts() {
 	// Retornar cantidad de pedidos creados
 	let newsOrders = await countByStatus();
+	// Retornar cantidad de reportes sin procesar
+	let newsReports = await countByStatusReport();
 
-	// Actualizar el contenido del número de pedidos
+	// Actualizar notificaciones
 	document.getElementById('newsOrders').innerText = newsOrders;
-
+	document.getElementById('newsComplaints').innerText = newsReports;
 }
 
 // Retornar cantidad de pedidos creados
 async function countByStatus() {
 	try {
 		let response = await fetch("/orders/countByStatus", {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Retornar cantidad de reportes sin procesar
+async function countByStatusReport() {
+	try {
+		let response = await fetch("/report/countByStatus", {
 			method: "GET"
 		});
 

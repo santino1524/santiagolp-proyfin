@@ -15,20 +15,27 @@
 	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
 	</div>
 
-	<div class="container text-center mt-5 mb-5 d-none" id="ordersFound">
-		<h2 class="mb-5 mt-5">Gestionar envío de pedidos</h2>
+	<div class="container text-center mt-5 mb-5 d-none"
+		id="complaintsFound">
+		<h2 class="mb-5 mt-5">Gestionar denuncias</h2>
 		<div class="table-responsive">
-			<table class="table" id="ordersTable">
+			<table class="table" id="complaintsTable">
 				<thead>
 					<tr>
-						<th>Pedido</th>
-						<th>Fecha</th>
-						<th>Total</th>
-						<th>Procesar</th>
-						<th>Cancelar</th>
+						<th colspan="3">Usuario denunciante</th>
+						<th colspan="3">Usuario denunciado</th>
+					</tr>
+					<tr>
+						<th>Nombre/Usuario</th>
+						<th>Denuncias</th>
+						<th>Bloquear/Eliminar denuncia</th>
+
+						<th>Nombre/Usuario</th>
+						<th>Comentario</th>
+						<th>Bloquear/Eliminar comentario</th>
 					</tr>
 				</thead>
-				<tbody id="tbodyOrders"></tbody>
+				<tbody id="tbodyComplaints"></tbody>
 			</table>
 		</div>
 	</div>
@@ -36,7 +43,7 @@
 	<div class="d-none" id="msgNotFound">
 		<div class="text-center mt-5">
 			<p class="font-weight-bold" style="font-size: 24px;">No hay
-				pedidos pendientes a procesar.</p>
+				denuncias pendientes a revisar.</p>
 		</div>
 
 		<div class="col text-center">
@@ -47,16 +54,16 @@
 
 	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
 
-	<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
+	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+
+	<script type="text/javascript" th:src="@{/js/adminComplaints.js}"></script>
 	<script>
 		// Cargar nuevos pedidos a enviar
 		window.onload = async function() {
 			await loadAlerts();
-			await loadNewOrders();
+			await loadComplaints();
 		}
 	</script>
-
-	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
