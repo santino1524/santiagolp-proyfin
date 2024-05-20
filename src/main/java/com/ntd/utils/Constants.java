@@ -213,7 +213,7 @@ public class Constants {
 
 	/** Endpoints protegidos */
 	private static final String[] AUTHENTICATED_ENDPOINTS = { "/pay", "/user-profile", "/userProfile", "/myOrders",
-			"/my-orders" };
+			"/checkAuth", "/my-orders" };
 
 	/** Endpoints ADMIN */
 	private static final String[] ADMIN_ENDPOINTS = { "/admin", "/adminUsers", "/adminSendings", "/adminComplaints",

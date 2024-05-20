@@ -5,7 +5,6 @@ package com.ntd.dto;
  * 
  * @author SLP
  */
-public record ProductReviewDTO(Long productReviewId, ProductDTO productDto, UserDTO userDto, int rating, String comment,
+public record ProductReviewDTO(Long productReviewId, Long productId, UserDTO user, int rating, String comment,
 		boolean reported) {
-
 }

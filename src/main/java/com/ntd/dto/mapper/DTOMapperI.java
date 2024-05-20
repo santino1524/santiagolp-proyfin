@@ -80,8 +80,7 @@ public interface DTOMapperI {
 	 * @param productReview
 	 * @return ProductReviewDTO
 	 */
-	@Mapping(target = "userDto", ignore = true)
-	@Mapping(target = "productDto", ignore = true)
+	@Mapping(target = "productId", source = "product.productId")
 	public ProductReviewDTO mapProductReviewToDTO(ProductReview productReview);
 
 	/**
@@ -90,8 +89,7 @@ public interface DTOMapperI {
 	 * @param productReviewDto
 	 * @return ProductReview
 	 */
-	@Mapping(target = "user", source = "userDto")
-	@Mapping(target = "product", source = "productDto")
+	@Mapping(target = "product.productId", source = "productId")
 	@Mapping(target = "reports", ignore = true)
 	public ProductReview mapDTOToProductReview(ProductReviewDTO productReviewDto);
 

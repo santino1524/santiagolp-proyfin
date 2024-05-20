@@ -1,5 +1,8 @@
 package com.ntd.controllers;
 
+import java.util.Collections;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.Product;
 import com.ntd.services.ProductReviewMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
@@ -44,31 +48,58 @@ public class ProductReviewController {
 	}
 
 	/**
+	 * Buscar resenna por producto
+	 * 
+	 * @param productId
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByProduct")
+	public ResponseEntity<Object> searchByProduct(@RequestParam @NotNull final Long productId)
+			throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar resenna por producto");
+
+		ValidateParams.isNullObject(productId);
+
+		Product product = new Product(productId, null, null, null, null, null, 0, null, null, null, null, null, null);
+
+		// Retornar lista de resennas
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productReviews", productReviewMgmtService.findByProduct(product)));
+	}
+
+	/**
 	 * Registrar ProductReview
 	 * 
 	 * @param productReviewDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public String saveProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto, final Model model)
+	@PostMapping(path = "/save")
+	public ResponseEntity<Object> saveProductReview(@RequestBody @Valid final ProductReviewDTO productReviewDto)
 			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar critica de producto");
 
-		String result = null;
+		return ResponseEntity.ok().body(Collections.singletonMap("productReview",
+				productReviewMgmtService.insertProductReview(productReviewDto)));
+	}
 
-		// Guardar ProductReview
-		if (productReviewMgmtService.insertProductReview(productReviewDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
-		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
-		}
+	/**
+	 * Buscar por id
+	 * 
+	 * @param id
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchById")
+	public ResponseEntity<Object> searchById(@RequestParam @NotNull final Long id) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ProductReview por id");
 
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar CRITICA DE PRODUCTO";
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("productReview", productReviewMgmtService.searchById(id)));
 	}
 
 	/**
@@ -153,23 +184,4 @@ public class ProductReviewController {
 		return "VISTA BUSCAR TODOS LOS ProductReview";
 	}
 
-	/**
-	 * Buscar por id
-	 * 
-	 * @param model
-	 * @param id
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchById")
-	public String searchByProductNumber(@RequestParam @NotNull final Long id, final Model model)
-			throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar ProductReview por id");
-
-		// Retornar ProductReview
-		model.addAttribute("productReviewDto", productReviewMgmtService.searchById(id));
-
-		return "VISTA BUSCAR PRODUCTOS POR id";
-	}
 }

@@ -275,29 +275,6 @@ async function savePasswd() {
 	$('#changePasswd').modal('hide');
 }
 
-// Obtener usuario por email 
-async function searchById(userId) {
-	try {
-		let response = await fetch("/users/searchById?userId=" + userId, {
-			method: "GET"
-		});
-
-		let data;
-
-		if (response.status === 200) {
-			data = await response.json();
-		} else {
-			window.location.href = urlError;
-		}
-
-		return data.user;
-
-	} catch (error) {
-		console.error(error);
-		window.location.href = urlError;
-	}
-}
-
 // Peticion para actualizar usuario
 async function updateUser(user) {
 	let data;

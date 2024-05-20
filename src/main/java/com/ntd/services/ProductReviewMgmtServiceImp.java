@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import com.ntd.dto.ProductReviewDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductReview;
 import com.ntd.persistence.ProductReviewRepositoryI;
+import com.ntd.persistence.User;
 import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
@@ -97,6 +99,37 @@ public class ProductReviewMgmtServiceImp implements ProductReviewMgmtServiceI {
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapProductReviewToDTO(productReview);
+	}
+
+	@Override
+	public List<ProductReviewDTO> findByProduct(Product product) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ProductReview por producto");
+
+		// Validar parametro
+		ValidateParams.isNullObject(product);
+
+		// Buscar por producto
+		final List<ProductReview> productReviewsDto = productReviewRepository.findByProduct(product);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.listProductReviewToDTO(productReviewsDto);
+	}
+
+	@Override
+	public ProductReviewDTO findByProductAndUser(Product product, User user) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar ProductReview por producto y usuario");
+
+		// Validar parametro
+		ValidateParams.isNullObject(product);
+		ValidateParams.isNullObject(user);
+
+		// Buscar por producto y usuario
+		final ProductReview productReviewDto = productReviewRepository.findByProductAndUser(product, user);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.mapProductReviewToDTO(productReviewDto);
 	}
 
 }

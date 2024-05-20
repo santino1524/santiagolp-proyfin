@@ -45,7 +45,7 @@ public class Report implements Serializable {
 	private User reporter;
 
 	/** Razon de la denuncia */
-	@Column(name = "C_REASON", nullable = false)
-	private String reason;
+//	@Column(name = "C_REASON", nullable = false)
+//	private String reason;
 
 }

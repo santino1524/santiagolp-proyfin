@@ -2,7 +2,7 @@
 async function layoutCategoriesProducts(categories) {
 	let divContainer = document.getElementById('containerIndex');
 
-	for (const category of categories) {
+	for (let category of categories) {
 		// Insertar Nombre de categoria
 		let aCategory = document.createElement('a');
 		aCategory.classList.add('text-center', 'mb-3', 'mt-3', 'category-name');
@@ -20,7 +20,7 @@ async function layoutCategoriesProducts(categories) {
 		// Buscar productos de esa categoria     
 		let products = await searchProductsByCategory(category.categoryId);
 		let productCounter = 0;
-		for (const product of products) {
+		for (let product of products) {
 
 			// Salir del bucle si ya se han mostrado cuatro productos
 			if (productCounter >= 4) {
@@ -69,10 +69,18 @@ async function layoutCategoriesProducts(categories) {
 			divProductsRating.classList.add('product-rating');
 			let ul = document.createElement('ul');
 			ul.classList.add('rating');
-			let li = document.createElement('li');
-			li.classList.add('fas', 'fa-star');
 			if (product.reviewsDto) {
-				for (let i = 0; i < product.reviewsDto.rating; i++) {
+				// Calcular promedio rating
+				let sum = 0;
+				let reviews = product.reviewsDto.length;
+				for (let i = 0; i < reviews; i++) {
+					sum += product.reviewsDto[i].rating;
+				}
+				ave = parseInt(sum / reviews);
+
+				for (let i = 0; i < ave; i++) {
+					let li = document.createElement('li');
+					li.classList.add('fas', 'fa-star');
 					ul.append(li);
 				}
 			}
@@ -119,6 +127,8 @@ async function layoutCategoriesProducts(categories) {
 
 		// Conformar categoria con productos
 		divContainer.append(divContainerProducts);
+
+		loaderDeactivate();
 	}
 }
 

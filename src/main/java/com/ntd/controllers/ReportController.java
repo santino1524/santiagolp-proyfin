@@ -1,5 +1,8 @@
 package com.ntd.controllers;
 
+import java.util.Collections;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,28 +49,15 @@ public class ReportController {
 	 * Registrar Reporte
 	 * 
 	 * @param reportDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@PostMapping
-	public String saveReport(@RequestBody @Valid final ReportDTO reportDto, final Model model)
-			throws InternalException {
+	@PostMapping(path = "/save")
+	public ResponseEntity<Object> saveReport(@RequestBody @Valid final ReportDTO reportDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Registrar Report");
 
-		String result = null;
-
-		// Guardar Report
-		if (reportMgmtService.insertReport(reportDto) != null) {
-			result = Constants.MSG_SUCCESSFUL_OPERATION;
-		} else {
-			result = Constants.MSG_UNEXPECTED_ERROR;
-		}
-
-		model.addAttribute(Constants.MESSAGE_GROWL, result);
-
-		return "VISTA MOSTRAR RESPUESTA DE guardar Report";
+		return ResponseEntity.ok().body(Collections.singletonMap("report", reportMgmtService.insertReport(reportDto)));
 	}
 
 	/**
