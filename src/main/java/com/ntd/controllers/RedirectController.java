@@ -52,6 +52,19 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	}
 
 	/**
+	 * Checkear autenticacion
+	 * 
+	 * @return String
+	 */
+	@GetMapping(path = "/checkAuth")
+	public String checkAuth() {
+		if (log.isInfoEnabled())
+			log.info(" Checkear autenticacion");
+
+		return "shopping-cart";
+	}
+
+	/**
 	 * Mostrar pagina de enviar reportes
 	 * 
 	 * @return String

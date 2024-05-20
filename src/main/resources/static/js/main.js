@@ -394,7 +394,7 @@ async function layoutRating(product, email) {
 		aCountReviews.style.textDecoration = 'none';
 		aCountReviews.onclick = async () => {
 			document.getElementById('container-reviews').innerText = "";
-			
+
 			// Maquetar resennas
 			let isComment = await layoutReviews(product.reviewsDto);
 
@@ -423,9 +423,13 @@ async function layoutRating(product, email) {
 			aFirstReviews.style.textDecoration = 'none';
 			aFirstReviews.onclick = async () => {
 
-				// Mostrar resennas
-				document.getElementById('reviewsUser').classList.remove('d-none');
-				document.getElementById("postReview").classList.remove("d-none");
+				// Mostrar resennas si el usuario no esta bloqueado
+				let user = await searchByEmail(email.textContent);
+				if (!user.blocked) {
+					document.getElementById('reviewsUser').classList.remove('d-none');
+					document.getElementById("postReview").classList.remove("d-none");
+				}
+
 			};
 			ulRating.append(aFirstReviews);
 		} else {
@@ -610,9 +614,7 @@ async function layoutReviews(reviewsDto) {
 			// Comprobar si se ha logado el usuario
 			let email = document.getElementById("authenticatedUser");
 			if (email && email.textContent && !verifyReviewUser(review)) {
-				// Refrescar review
-				review = await searchReviewById(review.productReviewId);
-				
+
 				let buttonReport = document.createElement('button');
 				buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
 				if (review.reported) {
@@ -621,10 +623,14 @@ async function layoutReviews(reviewsDto) {
 				} else {
 					buttonReport.append('Denunciar');
 					buttonReport.onclick = async () => {
-						if (review.reported) {
+						// Refrescar review
+						let updatedReview = await searchReviewById(review.productReviewId);
+
+
+						if (updatedReview.reported) {
 							// Alert 
 							let divAlert = document.createElement('div');
-							divAlert.classList.add('alert', 'alert-success');
+							divAlert.classList.add('alert', 'alert-success', 'mt-3');
 							divAlert.role = 'alert';
 							divAlert.append('La reseña ya ha sido denunciada');
 							divCard.append(divAlert);
