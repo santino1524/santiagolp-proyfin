@@ -48,6 +48,19 @@ public class ProductReviewController {
 	}
 
 	/**
+	 * Contar cantidad de resennas denunciadas
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/countReviewReporter")
+	public ResponseEntity<Integer> countByReporter() throws InternalException {
+		log.info("Contar cantidad de resennas denunciadas");
+
+		return ResponseEntity.ok(productReviewMgmtService.countByReportedEquals(true));
+	}
+
+	/**
 	 * Buscar resenna por producto
 	 * 
 	 * @param productId

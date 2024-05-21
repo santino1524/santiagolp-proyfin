@@ -27,4 +27,12 @@ public interface ProductReviewRepositoryI extends JpaRepository<ProductReview, L
 	 * @return ProductReview
 	 */
 	public ProductReview findByProductAndUser(Product product, User user);
+
+	/**
+	 * Contar los resenna denunciadas
+	 * 
+	 * @param status
+	 * @return int
+	 */
+	public int countByReportedEquals(boolean status);
 }

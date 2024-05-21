@@ -66,4 +66,13 @@ public interface ProductReviewMgmtServiceI {
 	 */
 	public ProductReviewDTO findByProductAndUser(Product product, User user) throws InternalException;
 
+	/**
+	 * Contar las resenna denunciadas
+	 * 
+	 * @param status
+	 * @return int
+	 * @throws InternalException
+	 */
+	public int countByReportedEquals(boolean status) throws InternalException;
+
 }

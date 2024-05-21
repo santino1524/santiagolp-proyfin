@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ntd.dto.ReportDTO;
+import com.ntd.dto.UserDTO;
 import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Report;
@@ -97,6 +98,39 @@ public class ReportMgmtServiceImp implements ReportMgmtServiceI {
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapReportToDTO(report);
+	}
+
+	@Override
+	public int countByProcessedEquals(boolean status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Contar cantidad de reportes sin procesar");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return reportRepository.countByProcessedEquals(status);
+	}
+
+	@Override
+	public List<ReportDTO> findByProcessedEquals(boolean status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar los reportes sin procesar");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return DTOMapperI.MAPPER.listReportToDTO(reportRepository.findByProcessedEquals(status));
+	}
+
+	@Override
+	public int countByReporter(UserDTO userDto) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("COntar cantidad de reportes por usuario");
+
+		// Validar parametro
+		ValidateParams.isNullObject(userDto);
+
+		return reportRepository.countByReporter(DTOMapperI.MAPPER.mapDTOToUser(userDto));
 	}
 
 }

@@ -132,4 +132,15 @@ public class ProductReviewMgmtServiceImp implements ProductReviewMgmtServiceI {
 		return DTOMapperI.MAPPER.mapProductReviewToDTO(productReviewDto);
 	}
 
+	@Override
+	public int countByReportedEquals(boolean status) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Contar cantidad de resennas denunciadas");
+
+		// Validar parametro
+		ValidateParams.isNullObject(status);
+
+		return productReviewRepository.countByReportedEquals(status);
+	}
+
 }

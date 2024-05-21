@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.ReportDTO;
+import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ReportMgmtServiceI;
-import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
@@ -61,29 +61,67 @@ public class ReportController {
 	}
 
 	/**
+	 * Contar cantidad de reportes sin procesar
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/countByStatus")
+	public ResponseEntity<Integer> countByStatusCreado() throws InternalException {
+		log.info("Retornar cantidad de reportes sin procesar");
+
+		return ResponseEntity.ok(reportMgmtService.countByProcessedEquals(false));
+	}
+
+	/**
+	 * Contar cantidad de reportes por usuario
+	 * 
+	 * @param userDto
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping(path = "/countByReporter")
+	public ResponseEntity<Integer> countByReporter(@RequestBody @Valid final UserDTO userDto) throws InternalException {
+		log.info("Contar cantidad de reportes por usuario");
+
+		return ResponseEntity.ok(reportMgmtService.countByReporter(userDto));
+	}
+
+	/**
+	 * Obtener reportes sin procesar
+	 * 
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/searchByWithoutProcessing")
+	public ResponseEntity<Object> searchByWithoutProcessing() throws InternalException {
+		log.info("Buscar los reportes sin procesar");
+
+		return ResponseEntity.ok()
+				.body(Collections.singletonMap("reports", reportMgmtService.findByProcessedEquals(false)));
+
+	}
+
+	/**
 	 * Eliminar Reporte
 	 * 
 	 * @param reportDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
-	public String deleteReport(@RequestBody @NotNull final ReportDTO reportDto, final Model model)
-			throws InternalException {
+	@DeleteMapping(path = "/delete")
+	public ResponseEntity<Void> deleteReport(@RequestBody @NotNull final ReportDTO reportDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar Report");
 
 		// Validar id
-		ValidateParams.isNullObject(reportDto.reportId());
+		ValidateParams.isNullObject(reportDto);
 
 		// Eliminar Report
 		reportMgmtService.deleteReport(reportDto.reportId());
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE  Report ELIMINADO";
+		return ResponseEntity.ok().build();
 	}
 
 	/**

@@ -361,59 +361,96 @@ async function showModalProduct(product) {
 	}
 }
 
+// Retornar cantidad resennas denunciadas
+async function countReviewReporter() {
+	try {
+		let response = await fetch("/productReview/countReviewReporter", {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+
 // Maquetar rating
 async function layoutRating(product, email) {
 	let ulRating = document.getElementById('rating');
 	document.getElementById('rating').innerHTML = '';
 	let spanRatio = document.createElement('span');
+	let sum = 0;
 
 	if (product.reviewsDto && product.reviewsDto.length > 0) {
-		ulRating.classList.remove('d-none');
 
 		// Calcular promedio rating
-		let sum = 0;
 		let reviews = product.reviewsDto.length;
 		for (let i = 0; i < reviews; i++) {
-			sum += product.reviewsDto[i].rating;
-		}
-		ave = sum / reviews;
-		spanRatio.append(`${ave.toFixed(1)}/5  `);
-		ulRating.append(spanRatio);
-
-		for (let i = 0; i < parseInt(ave); i++) {
-			let li = document.createElement('li');
-			li.classList.add('fas', 'fa-star');
-			li.style.color = '#FFD700';
-			ulRating.append(li);
-		}
-		let spanCount = document.createElement('span');
-		let aCountReviews = document.createElement('a');
-		let reviewText = reviews === 1 ? 'valoración' : 'valoraciones';
-		aCountReviews.append(`  (${reviews} ${reviewText})`);
-		aCountReviews.href = '#';
-		aCountReviews.style.textDecoration = 'none';
-		aCountReviews.onclick = async () => {
-			document.getElementById('container-reviews').innerText = "";
-
-			// Maquetar resennas
-			let isComment = await layoutReviews(product.reviewsDto);
-
-			// Mostar textarea para nueva resenna
-			let isNewReview = await verifyPostReview(email, product);
-
-			if (isNewReview) {
-				document.getElementById("postReview").classList.remove("d-none");
+			let review = product.reviewsDto[i];
+			if (review.rating > 0 && !review.reported) {
+				sum += product.reviewsDto[i].rating;
 			}
+		}
 
-			if (isComment || isNewReview) {
-				// Mostrar resennas
-				document.getElementById('reviewsUser').classList.remove('d-none');
+		// Si hay resennas
+		if (sum) {
+			ave = sum / reviews;
+			spanRatio.append(`${ave.toFixed(1)}/5  `);
+			ulRating.append(spanRatio);
+
+			for (let i = 0; i < parseInt(ave); i++) {
+				let li = document.createElement('li');
+				li.classList.add('fas', 'fa-star');
+				li.style.color = '#FFD700';
+				ulRating.append(li);
 			}
-		};
+			let spanCount = document.createElement('span');
+			let aCountReviews = document.createElement('a');
+			let reviewText = reviews === 1 ? 'valoración' : 'valoraciones';
+			aCountReviews.append(`  (${reviews} ${reviewText})`);
+			aCountReviews.href = '#';
+			aCountReviews.style.textDecoration = 'none';
+			aCountReviews.onclick = async () => {
+				document.getElementById('container-reviews').innerText = "";
 
-		spanCount.append(aCountReviews);
-		ulRating.append(spanCount);
-	} else {
+				// Maquetar resennas
+				let isComment = await layoutReviews(product.reviewsDto);
+
+				// Mostar textarea para nueva resenna
+				let isNewReview = await verifyPostReview(email, product);
+
+				if (isNewReview) {
+					document.getElementById("postReview").classList.remove("d-none");
+				}
+
+				if (isComment || isNewReview) {
+					// Mostrar resennas
+					document.getElementById('reviewsUser').classList.remove('d-none');
+				}
+			};
+
+			spanCount.append(aCountReviews);
+			ulRating.append(spanCount);
+
+			// Mostrar estrellas
+			ulRating.classList.remove('d-none');
+		}
+
+	}
+
+	// Si no hay resennas
+	if (!sum) {
 		// Primera resenna
 		if (email && email.textContent && await verifyPostReview(email, product)) {
 			ulRating.classList.remove('d-none');
@@ -467,6 +504,10 @@ async function verifyPostReview(email, product) {
 
 // Verificar si ya ha escrito resenna en este producto
 function verifyWrittenReview(user, product) {
+	if (user.blocked) {
+		return true;
+	}
+
 	if (product.reviewsDto && product.reviewsDto.length) {
 		for (let review of product.reviewsDto) {
 			if (review.user.userId === user.userId) {
@@ -523,7 +564,7 @@ async function postReview() {
 	}
 }
 
-// Guadar resenna
+// Actualizar resenna
 async function saveProductReview(productReviewDto) {
 	try {
 		let response = await fetch("/productReview/save", {
@@ -578,7 +619,7 @@ async function layoutReviews(reviewsDto) {
 	let divContainer = document.getElementById('container-reviews');
 
 	for (let review of reviewsDto) {
-		if (review.comment) {
+		if (review.comment && review.rating > 0) {
 			// Card
 			let divCardContainer = document.createElement('div');
 			divCardContainer.classList.add('card', 'mt-3');
@@ -994,16 +1035,41 @@ async function searchPostalAddressById(addressId) {
 async function loadAlerts() {
 	// Retornar cantidad de pedidos creados
 	let newsOrders = await countByStatus();
+	// Retornar cantidad de reportes sin procesar
+	let newsReports = await countByStatusReport();
 
-	// Actualizar el contenido del número de pedidos
+	// Actualizar notificaciones
 	document.getElementById('newsOrders').innerText = newsOrders;
-
+	document.getElementById('newsComplaints').innerText = newsReports;
 }
 
 // Retornar cantidad de pedidos creados
 async function countByStatus() {
 	try {
 		let response = await fetch("/orders/countByStatus", {
+			method: "GET"
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = urlError;
+		}
+
+		return data;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
+// Retornar cantidad de reportes sin procesar
+async function countByStatusReport() {
+	try {
+		let response = await fetch("/report/countByStatus", {
 			method: "GET"
 		});
 

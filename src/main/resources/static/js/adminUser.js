@@ -128,11 +128,13 @@ function layoutUser(user) {
 		let surnames = document.getElementById("surnames");
 		let phone = document.getElementById("phone");
 		let userDni = document.getElementById("userDni");
+		let blocked = document.getElementById("blocked");
 
 		userName.textContent = '';
 		surnames.textContent = '';
 		phone.textContent = '';
 		userDni.textContent = '';
+		blocked.textContent = '';
 
 		let strongUserName = document.createElement('strong');
 		let strongSurname = document.createElement('strong');
@@ -153,6 +155,9 @@ function layoutUser(user) {
 		userDni.append(user.dni);
 		surnames.append(user.surname + ' ' + user.secondSurname);
 		phone.append(user.phoneNumber);
+		if (user.blocked) {
+			blocked.append(`${user.name} ${user.surname} no tiene permitido calificar productos comprados, escribir reseñas y/o denunciar comentarios.`);
+		}
 
 		// Maquetar role
 		let hRole = document.getElementById("role");
