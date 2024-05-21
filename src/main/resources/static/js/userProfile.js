@@ -16,11 +16,13 @@ function layoutPersonalInformation(user) {
 	let surnames = document.getElementById("surnames");
 	let phone = document.getElementById("phone");
 	let userDni = document.getElementById("userDni");
+	let blocked = document.getElementById("blocked");
 
 	userName.textContent = '';
 	surnames.textContent = '';
 	phone.textContent = '';
 	userDni.textContent = '';
+	blocked.textContent = '';
 
 	let strongUserName = document.createElement('strong');
 	let strongSurname = document.createElement('strong');
@@ -36,6 +38,9 @@ function layoutPersonalInformation(user) {
 	surnames.append(strongSurname);
 	phone.append(strongPhone);
 	userDni.append(strongDni);
+	if(user.blocked){
+		blocked.append(`${user.name} ${user.surname} no tiene permitido calificar productos comprados, escribir reseñas y/o denunciar comentarios.`);
+	}
 
 	userName.append(user.name);
 	userDni.append(user.dni);

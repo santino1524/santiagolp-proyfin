@@ -452,7 +452,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 			}
 
 			StringBuilder storeAddress = new StringBuilder();
-			storeAddress.append("Dirección de envío: ");
+			storeAddress.append("Dirección: ");
 			if (storePostalAddress != null && storePostalAddress.getAddressId() != null) {
 				storeAddress.append(storePostalAddress.getDirectionLine());
 				storeAddress.append(", ");

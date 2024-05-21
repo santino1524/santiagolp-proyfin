@@ -35,22 +35,21 @@ async function layoutTableOrders(orders) {
 		// Columna procesar envio
 		let tdPrint = document.createElement('td');
 		tdPrint.classList.add('align-middle');
-		tdPrint.id = `tdPrint_${order.orderId}`;
 		let buttonPrint = document.createElement('button');
 		buttonPrint.classList.add('btn', 'btn-secondary');
 		let iPrint = document.createElement('i');
 		iPrint.classList.add('fa-solid', 'fa-print');
 		buttonPrint.append(iPrint);
-		buttonPrint.onclick = async (event) => {
+		buttonPrint.onclick = async () => {
 
 			//Actualizar pedido
-			let orderId = event.target.parentNode.id.split('_')[1];
-			let order = await updateStatusById(orderId, 'ENVIADO');
+			let orderUpdated = await updateStatusById(order.orderId, 'ENVIADO');
 
 			// Eliminar la fila de la tabla
 			tr.remove();
+			
 			//Generar PDF
-			await generateShippingLabel(order);
+			await generateShippingLabel(orderUpdated);
 
 			await refresh();
 
@@ -70,11 +69,10 @@ async function layoutTableOrders(orders) {
 		let iDelete = document.createElement('i');
 		iDelete.classList.add('fa-solid', 'fa-ban');
 		button.append(iDelete);
-		button.onclick = (event) => {
-			let orderId = event.target.parentNode.id.split('_')[1];
+		button.onclick = () => {
 			//Mensaje de confirmacion
 			document.getElementById("adminModalBody").innerHTML = "¿Estás seguro que quieres cancelar el pedido?";
-			document.getElementById("modalAdminBtnOk").onclick = async () => confirmCancelOrder(tr, orderId);
+			document.getElementById("modalAdminBtnOk").onclick = async () => confirmCancelOrder(tr, order.orderId);
 			$('#adminModal').modal('show');
 		};
 

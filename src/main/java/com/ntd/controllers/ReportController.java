@@ -16,7 +16,6 @@ import com.ntd.dto.ReportDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.services.ReportMgmtServiceI;
-import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
 
 import jakarta.transaction.Transactional;
@@ -81,7 +80,7 @@ public class ReportController {
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
-	@GetMapping(path = "/countByReporter")
+	@PostMapping(path = "/countByReporter")
 	public ResponseEntity<Integer> countByReporter(@RequestBody @Valid final UserDTO userDto) throws InternalException {
 		log.info("Contar cantidad de reportes por usuario");
 
@@ -107,26 +106,22 @@ public class ReportController {
 	 * Eliminar Reporte
 	 * 
 	 * @param reportDto
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
-	@DeleteMapping
-	public String deleteReport(@RequestBody @NotNull final ReportDTO reportDto, final Model model)
-			throws InternalException {
+	@DeleteMapping(path = "/delete")
+	public ResponseEntity<Void> deleteReport(@RequestBody @NotNull final ReportDTO reportDto) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar Report");
 
 		// Validar id
-		ValidateParams.isNullObject(reportDto.reportId());
+		ValidateParams.isNullObject(reportDto);
 
 		// Eliminar Report
 		reportMgmtService.deleteReport(reportDto.reportId());
 
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE  Report ELIMINADO";
+		return ResponseEntity.ok().build();
 	}
 
 	/**

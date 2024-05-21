@@ -28,11 +28,11 @@
 					<tr>
 						<th>Nombre/Usuario</th>
 						<th>Denuncias</th>
-						<th>Bloquear/Eliminar denuncia</th>
+						<th>Bloquear denunciante/</br>Eliminar denuncia</th>
 
 						<th>Nombre/Usuario</th>
 						<th>Comentario</th>
-						<th>Bloquear/Eliminar comentario</th>
+						<th>Bloquear denunciadosaveProductReview/</br>Eliminar comentario</th>
 					</tr>
 				</thead>
 				<tbody id="tbodyComplaints"></tbody>
@@ -55,6 +55,8 @@
 	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
 
 	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+
+	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
 
 	<script type="text/javascript" th:src="@{/js/adminComplaints.js}"></script>
 	<script>

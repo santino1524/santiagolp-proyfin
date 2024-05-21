@@ -26,7 +26,7 @@ async function reportReview() {
 	}
 }
 
-// Guadar denuncia
+// Guardar denuncia
 async function saveReport(reportDto) {
 	try {
 		let response = await fetch("/report/save", {

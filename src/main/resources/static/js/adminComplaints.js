@@ -32,7 +32,7 @@ async function layoutTableReports(reports) {
 		// Columna usuario denunciante
 		let tdComplainant = document.createElement('td');
 		tdComplainant.classList.add('align-middle');
-		tdComplainant.innerHTML = Number(`${report.reporterDto.name} ${report.reporterDto.surname}<br>${report.reporterDto.email}`);
+		tdComplainant.innerHTML = `${report.reporterDto.name} ${report.reporterDto.surname}<br>${report.reporterDto.email}`;
 		// Annadir a la fila
 		tr.append(tdComplainant);
 
@@ -58,62 +58,190 @@ async function layoutTableReports(reports) {
 			document.getElementById("modalAdminBtnOk").onclick = async () => confirmDeleteReport(tr, report);
 			$('#adminModal').modal('show');
 
-arreglar el metodo refrescar
 			await refresh();
-
 		};
-		tdPrint.append(buttonPrint);
+		tdDeleteReport.append(buttonDeleteReport);
 		// Annadir a la fila
-		tr.append(tdPrint);
+		tr.append(tdDeleteReport);
 
-		tbody.append(tr);
-
-
-
-		// Columna Precio total
-		let tdTotalPrice = document.createElement('td');
-		tdTotalPrice.classList.add('align-middle');
-		tdTotalPrice.textContent = order.total.toFixed(2) + '€';
+		// Columna usuario denunciado
+		let tdReportedUser = document.createElement('td');
+		tdReportedUser.classList.add('align-middle');
+		tdReportedUser.innerHTML = `${report.reviewDto.user.name} ${report.reviewDto.user.surname}<br>${report.reviewDto.user.email}`;
 		// Annadir a la fila
-		tr.append(tdTotalPrice);
+		tr.append(tdReportedUser);
 
+		// Columna Comentario denunciado
+		let tdComment = document.createElement('td');
+		tdComment.classList.add('align-middle');
+		let aComment = document.createElement('a');
+		aComment.href = '#';
+		aComment.style.textDecoration = 'none';
+		aComment.textContent = 'Ver comentario';
+		aComment.onclick = () => {
+			// Mostrar Modal con Product
+			document.getElementById("bodyModalPay").innerHTML = report.reviewDto.comment;
+			document.getElementById("titlePay").innerHTML = 'Comentario del producto';
+			$('#modalPay').modal('show');
+		};
+		tdComment.append(aComment);
+		// Annadir a la fila
+		tr.append(tdComment);
 
+		// Columna Bloquear/Eliminar comentario
+		let tdDeleteComment = document.createElement('td');
+		tdDeleteComment.classList.add('align-middle');
+		let buttonDeleteComment = document.createElement('button');
+		buttonDeleteComment.classList.add('btn', 'btn-danger');
+		let iDeleteComment = document.createElement('i');
+		iDeleteComment.classList.add('fa-solid', 'fa-ban');
+		buttonDeleteComment.append(iDeleteComment);
+		buttonDeleteComment.onclick = async () => {
 
-		// Columna eliminar
-		let tdDelete = document.createElement('td');
-		tdDelete.classList.add('align-middle');
-		tdDelete.id = `tdDelete_${order.orderId}`;
-		let button = document.createElement('button');
-		button.classList.add('btn', 'btn-danger');
-		let iDelete = document.createElement('i');
-		iDelete.classList.add('fa-solid', 'fa-ban');
-		button.append(iDelete);
-		button.onclick = (event) => {
-			let orderId = event.target.parentNode.id.split('_')[1];
 			//Mensaje de confirmacion
-			document.getElementById("adminModalBody").innerHTML = "¿Estás seguro que quieres cancelar el pedido?";
-			document.getElementById("modalAdminBtnOk").onclick = async () => confirmCancelOrder(tr, orderId);
+			document.getElementById("adminModalBody").innerHTML = "¿Estás seguro que desea eliminar el comentario y bloquear al usuario denunciado?";
+			document.getElementById("modalAdminBtnOk").onclick = async () => confirmDeleteComment(tr, report);
 			$('#adminModal').modal('show');
-		};
 
-		tdDelete.append(button);
+			await refresh();
+		};
+		tdDeleteComment.append(buttonDeleteComment);
 		// Annadir a la fila
-		tr.append(tdDelete);
+		tr.append(tdDeleteComment);
 
 		tbody.append(tr);
 	}
 }
 
 // Eliminar reporte y bloquear denunciante
-async function confirmCancelOrder(tr, report) {
-	//Actualizar pedido
-	actualizar reporte a procesado y bloquear denunciante
-	await updateStatusById(orderId, 'CANCELAR');
+async function confirmDeleteReport(tr, report) {
+	report.reporterDto.blocked = true;
+
+	// Bloquear denunciante
+	await updateUser(report.reporterDto);
+
+	//Eliminar reporte
+	report.processed = true;
+	await saveReport(report);
+
+	// Desmarcar resenna como denunciada
+	report.reviewDto.reported = false;
+	await saveProductReview(report.reviewDto);
 
 	// Eliminar la fila de la tabla
 	tr.remove();
 
 	await refresh();
+}
+
+// Guardar denuncia
+async function saveReport(reportDto) {
+	try {
+		let response = await fetch("/report/save", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(reportDto)
+		});
+
+		let data;
+
+		if (response.status === 200) {
+			data = await response.json();
+		} else {
+			window.location.href = "/internalError";
+		}
+
+		return data.report;
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = "/internalError";
+	}
+}
+
+// Eliminar comentario y bloquear denunciado
+async function confirmDeleteComment(tr, report) {
+	report.reviewDto.user.blocked = true;
+
+	// Bloquear denunciado
+	await updateUser(report.reviewDto.user);
+
+	// Eliminar comentario
+	report.reviewDto.rating = 0;
+	await saveProductReview(report.reviewDto);
+
+	// Eliminar reporte
+	report.processed = true;
+	await saveReport(report);
+
+	// Eliminar la fila de la tabla
+	tr.remove();
+
+	await refresh();
+}
+
+// Actualizar elementos vista
+async function refresh() {
+	await loadAlerts();
+	verifyEmptyTable();
+}
+
+// Comprobar filas de la tabla
+function verifyEmptyTable() {
+	let ordersTable = document.getElementById('complaintsTable');
+	let tbody = ordersTable.querySelector('tbody');
+	let tr = tbody.querySelectorAll('tr');
+
+	if (tr.length === 0) {
+		document.getElementById("complaintsFound").classList.add('d-none');
+		document.getElementById("msgNotFound").classList.remove('d-none');
+	}
+}
+
+// Eliminar reporte por ID
+async function deleteReport(reportDto) {
+	try {
+		let response = await fetch("/report/delete", {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(reportDto)
+		});
+
+		if (response.status !== 200) {
+			window.location.href = "/internalError";
+			return;
+		}
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = "/internalError";
+	}
+}
+
+// Bloquear usuario
+async function updateUser(user) {
+
+	try {
+		let response = await fetch("/users/update", {
+			method: "POST",
+			headers: {
+				"Content-type": "application/json; charset=utf-8"
+			},
+			body: JSON.stringify(user)
+		});
+
+		if (response.status !== 200) {
+			window.location.href = urlError;
+		}
+
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
 }
 
 // Contar cantidad de reportes por usuario
@@ -142,7 +270,6 @@ async function countByReporter(userDto) {
 		window.location.href = "/internalError";
 	}
 }
-
 
 // Obtener reportes sin procesar
 async function searchByWithoutProcessing() {
