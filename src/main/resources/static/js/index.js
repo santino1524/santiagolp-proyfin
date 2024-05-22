@@ -69,7 +69,7 @@ async function layoutCategoriesProducts(categories) {
 			divProductsRating.classList.add('product-rating');
 			let ul = document.createElement('ul');
 			ul.classList.add('rating');
-			if (product.reviewsDto) {
+			if (product.reviewsDto && product.reviewsDto.length > 0) {
 				// Calcular promedio rating
 				let sum = 0;
 				let reviews = product.reviewsDto.length;

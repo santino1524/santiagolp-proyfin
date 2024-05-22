@@ -183,6 +183,12 @@ async function saveRole() {
 	let userId = document.getElementById("userId").value;
 
 	if (rol && userId) {
+		if (userId == 1) {
+			showMessage(divMessageRoleError, "Al usuario del sistema no se le puede cambiar el rol");
+
+			return;
+		}
+
 		let user = await Promise.resolve(searchById(BigInt(userId)));
 
 		user.role = rol;

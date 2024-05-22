@@ -293,3 +293,9 @@ label.star:before {
   content: '\f006';
   font-family: FontAwesome;
 }
+
+
+/* Desplazamiento de anclaje */
+html {
+	scroll-behavior: smooth;
+}
