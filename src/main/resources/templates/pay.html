@@ -7,6 +7,11 @@
 </head>
 
 <body>
+	<script
+		src="https://www.paypal.com/sdk/js?client-id=AVjPbUXEqSsbBbRzgJnIIEbUC3wzKx0mdApkailsUgO1vLgKceUabHYzHCjgJAvP0Iboru-WfAQcW7ix&buyer- 
+      country=US&currency=USD&components=buttons&enable-funding=venmo"
+		data-sdk-integration-source="developer-studio"></script>
+
 	<!-- CONTENIDO DE CABECERA DE LA APP -->
 	<div th:replace="~{fragments/general-fragments :: headerContent}">
 	</div>
@@ -39,6 +44,8 @@
 					id="moneyToPay">0€</span>
 			</button>
 		</div>
+		<div id="paypal-button-container"></div>
+		<p id="result-message"></p>
 	</div>
 
 
