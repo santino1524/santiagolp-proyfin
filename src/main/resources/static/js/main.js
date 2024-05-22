@@ -395,10 +395,11 @@ async function layoutRating(product, email) {
 	if (product.reviewsDto && product.reviewsDto.length > 0) {
 
 		// Calcular promedio rating
-		let reviews = product.reviewsDto.length;
-		for (let i = 0; i < reviews; i++) {
+		let reviews = 0;
+		for (let i = 0; i < product.reviewsDto.length; i++) {
 			let review = product.reviewsDto[i];
 			if (review.rating > 0 && !review.reported) {
+				reviews++;
 				sum += product.reviewsDto[i].rating;
 			}
 		}
@@ -419,10 +420,12 @@ async function layoutRating(product, email) {
 			let aCountReviews = document.createElement('a');
 			let reviewText = reviews === 1 ? 'valoración' : 'valoraciones';
 			aCountReviews.append(`  (${reviews} ${reviewText})`);
-			aCountReviews.href = '#';
+			aCountReviews.href = '#container-reviews';
+			aCountReviews.classList.add('smooth-scroll');
 			aCountReviews.style.textDecoration = 'none';
-			aCountReviews.onclick = async () => {
+			aCountReviews.onclick = async function(e) {
 				document.getElementById('container-reviews').innerText = "";
+				let href = this.getAttribute('href');
 
 				// Maquetar resennas
 				let isComment = await layoutReviews(product.reviewsDto);
@@ -437,6 +440,12 @@ async function layoutRating(product, email) {
 				if (isComment || isNewReview) {
 					// Mostrar resennas
 					document.getElementById('reviewsUser').classList.remove('d-none');
+
+
+					e.preventDefault();
+					document.querySelector(href).scrollIntoView({
+						behavior: 'smooth'
+					});
 				}
 			};
 
@@ -456,15 +465,23 @@ async function layoutRating(product, email) {
 			ulRating.classList.remove('d-none');
 			let aFirstReviews = document.createElement('a');
 			aFirstReviews.append('(Sé el primero en calificar el producto)');
-			aFirstReviews.href = '#';
+			aFirstReviews.href = '#container-reviews';
+			aFirstReviews.classList.add('smooth-scroll');
 			aFirstReviews.style.textDecoration = 'none';
-			aFirstReviews.onclick = async () => {
+			aFirstReviews.onclick = async function(e) {
 
 				// Mostrar resennas si el usuario no esta bloqueado
 				let user = await searchByEmail(email.textContent);
 				if (!user.blocked) {
+					let href = this.getAttribute('href');
+
 					document.getElementById('reviewsUser').classList.remove('d-none');
 					document.getElementById("postReview").classList.remove("d-none");
+
+					e.preventDefault();
+					document.querySelector(href).scrollIntoView({
+						behavior: 'smooth'
+					});
 				}
 
 			};
@@ -617,9 +634,14 @@ async function searchById(userId) {
 // Maquetar resennas
 async function layoutReviews(reviewsDto) {
 	let divContainer = document.getElementById('container-reviews');
+	let isComment = false;
 
 	for (let review of reviewsDto) {
 		if (review.comment && review.rating > 0) {
+			if (!isComment) {
+				isComment = true;
+			}
+
 			// Card
 			let divCardContainer = document.createElement('div');
 			divCardContainer.classList.add('card', 'mt-3');
@@ -628,7 +650,7 @@ async function layoutReviews(reviewsDto) {
 			let divCard = document.createElement('div');
 			divCard.classList.add('card-body');
 
-			// Titulo
+			// Usuario
 			let user = await searchById(review.user.userId);
 			let divTitle = document.createElement('h6');
 			divTitle.classList.add('card-title');
@@ -654,7 +676,7 @@ async function layoutReviews(reviewsDto) {
 			// Button denuncia
 			// Comprobar si se ha logado el usuario
 			let email = document.getElementById("authenticatedUser");
-			if (email && email.textContent && !verifyReviewUser(review)) {
+			if (email && email.textContent && !verifyReviewUser(review) && !verifyBlockedUser(email.textContent)) {
 
 				let buttonReport = document.createElement('button');
 				buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
@@ -688,7 +710,7 @@ async function layoutReviews(reviewsDto) {
 						let url = '/sendReport';
 
 						// Opciones de la nueva ventana
-						let options = 'width=700,height=400,top=100,left=100,resizable=yes ,scrollbars=yes';
+						let options = 'width=700,height=500,top=100,left=100,resizable=yes ,scrollbars=yes';
 
 						// Abrir la nueva ventana
 						window.open(url, '_blank', options);
@@ -700,12 +722,17 @@ async function layoutReviews(reviewsDto) {
 			}
 			divCardContainer.append(divCard);
 			divContainer.append(divCardContainer);
-
-			return true;
 		}
-
-		return false;
 	}
+
+	return isComment;
+}
+
+// Verificar si la resenna es del usuario
+async function verifyBlockedUser(email) {
+	let user = await searchByEmail(email.textContent);
+	
+	return user.blocked;
 }
 
 // Verificar si la resenna es del usuario

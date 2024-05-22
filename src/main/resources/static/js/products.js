@@ -73,7 +73,7 @@ async function layoutProducts(products) {
 		ul.classList.add('rating');
 		let li = document.createElement('li');
 		li.classList.add('fas', 'fa-star');
-		if (product.reviewsDto) {
+		if (product.reviewsDto && product.reviewsDto.length > 0) {
 			for (let i = 0; i < product.reviewsDto.rating; i++) {
 				ul.append(li);
 			}
