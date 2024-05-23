@@ -104,8 +104,8 @@ async function saveOrder(orderDto) {
 	}
 }
 
-// Crear Orden pendiente de pago y guardar direccion
-async function newOrderPendingPayment(addressId) {
+// Crear Orden y guardar direccion
+async function newOrder(addressId) {
 	// Obtener id de usuario autenticado
 	let email = document.getElementById("authenticatedUser").textContent;
 	let user = await searchByEmail(email);
@@ -126,8 +126,6 @@ async function newOrderPendingPayment(addressId) {
 		soldProductsDto: soldProductsDto,
 		addressId: addressId,
 	};
-
-	localStorage.setItem('pendingOrder', JSON.stringify(orderDto));
 
 	return orderDto;
 }
@@ -153,7 +151,7 @@ function getDate() {
 async function loadPayPage() {
 	// Obtener el total a pagar del localStorage
 	let moneyToPay = JSON.parse(localStorage.getItem('moneyToPay')) || '0€';
-	document.getElementById("moneyToPay").textContent = moneyToPay;
+	document.getElementById("moneyToPay").textContent = `Total a pagar: ${moneyToPay}`;
 
 	// Obtener id de usuario autenticado
 	let email = document.getElementById("authenticatedUser").textContent;
@@ -180,7 +178,7 @@ function layoutAddresses(addresses) {
 	//Obtener direccion de la ultima compra
 	let lastAddress = JSON.parse(localStorage.getItem('lastAddress'));
 
-	for (const address of addresses) {
+	for (let address of addresses) {
 
 		let aAddress = document.createElement('a');
 		aAddress.classList.add('list-group-item', 'list-group-item-action', 'item-address');
@@ -200,6 +198,9 @@ function layoutAddresses(addresses) {
 
 			// Activar el elemento en el que se hizo clic
 			clickedItem.classList.add('active');
+
+			// Mostrar metodos de pago
+			document.getElementById("paymentMethods").classList.remove('d-none');
 		};
 		aAddress.append(address.directionLine + ', ' + address.city + ', ' + address.province + ', C.P: ' + address.cp + ', ' + address.country);
 
@@ -207,111 +208,80 @@ function layoutAddresses(addresses) {
 	}
 }
 
-// API PayPal
+// Integracion con Paypal
 window.paypal
 	.Buttons({
 		style: {
 			shape: "rect",
-			layout: "vertical",
+			layout: "horizontal",
 			color: "gold",
-			label: "paypal",
+			label: "pay",
 		},
-		async createOrder() {
-			try {
-				const response = await fetch("/api/orders", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					// use the "body" param to optionally pass additional order information
-					// like product ids and quantities
-					body: JSON.stringify({
-						cart: [
-							{
-								id: "YOUR_PRODUCT_ID",
-								quantity: "YOUR_PRODUCT_QUANTITY",
-							},
-						],
-					}),
-				});
+		onClick: (data, actions) => {
+			comprobar que el dinero a pagar corresponde con el valor real de los productos a comprar
+			// Realizar la comprobación antes de enviar la petición
+			let isValid = false; // Esta función debe realizar las comprobaciones necesarias y devolver true o false
 
-				const orderData = await response.json();
-
-				if (orderData.id) {
-					return orderData.id;
-				}
-				const errorDetail = orderData?.details?.[0];
-				const errorMessage = errorDetail
-					? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-					: JSON.stringify(orderData);
-
-				throw new Error(errorMessage);
-			} catch (error) {
-				console.error(error);
-				// resultMessage(`Could not initiate PayPal Checkout...<br><br>${error}`);
+			if (!isValid) {
+				// Mostrar un mensaje de error o realizar alguna acción si la validación falla
+				alert("Condición no cumplida. No se puede proceder con el pago.");
+				return actions.reject(); // Rechazar la transacción
 			}
+
+			// Si la validación es exitosa, continuar con el flujo normal
+			return actions.resolve();
 		},
-		async onApprove(data, actions) {
-			try {
-				const response = await fetch(`/api/orders/${data.orderID}/capture`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
+		createOrder: (data, actions) => {
+			let moneyToPay = JSON.parse(localStorage.getItem('moneyToPay'));
 
-				const orderData = await response.json();
-				// Three cases to handle:
-				//   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-				//   (2) Other non-recoverable errors -> Show a failure message
-				//   (3) Successful transaction -> Show confirmation or thank you message
-
-				const errorDetail = orderData?.details?.[0];
-
-				if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-					// (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-					// recoverable state, per
-					// https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
-					return actions.restart();
-				} else if (errorDetail) {
-					// (2) Other non-recoverable errors -> Show a failure message
-					throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
-				} else if (!orderData.purchase_units) {
-					throw new Error(JSON.stringify(orderData));
-				} else {
-					// (3) Successful transaction -> Show confirmation or thank you message
-					// Or go to another URL:  actions.redirect('thank_you.html');
-					const transaction =
-						orderData?.purchase_units?.[0]?.payments?.captures?.[0] ||
-						orderData?.purchase_units?.[0]?.payments?.authorizations?.[0];
-					resultMessage(
-						`Transaction ${transaction.status}: ${transaction.id}<br>
-          <br>See console for all available details`
-					);
-					console.log(
-						"Capture result",
-						orderData,
-						JSON.stringify(orderData, null, 2)
-					);
-				}
-			} catch (error) {
-				console.error(error);
-				resultMessage(
-					`Sorry, your transaction could not be processed...<br><br>${error}`
-				);
+			if (!moneyToPay) {
+				window.location.href = urlError;
+				return;
 			}
+
+			// Eliminar el simbolo "€"
+			let units = parseFloat(moneyToPay.replace("€", ""));
+
+			return actions.order.create({
+				purchase_units: [{
+					amount: {
+						value: units
+					}
+				}]
+			});
 		},
-	})
-	.render("#paypal-button-container");
+		onApprove: (data, actions) => {
+			return actions.order.capture().then(async function(orderData) {
+				// Obtener la lista de direcciones
+				let addressesList = document.getElementById('addresses');
 
+				// Obtener todos los elementos dentro de la lista
+				let addressItems = addressesList.querySelectorAll('.list-group-item');
 
+				if (addressItems) {
+					// Iterar sobre los elementos para encontrar el elemento activo
+					for (const item of addressItems) {
+						if (item.classList.contains('active')) {
 
+							// Crear Orden pendiente de pago y guardar dirección
+							let orderDto = await newOrder(item.id);
 
+							// Guardar orden
+							await saveOrder(orderDto);
 
+							// Limpiar carrito
+							localStorage.removeItem('cartLfd');
+							localStorage.removeItem('moneyToPay');
 
+							document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente! El ID de la transacción es " + orderData.purchase_units[0].payments.captures[0].id;
+							document.getElementById("hrefModalPay").onclick = function() {
+								window.location.href = "/";
+							};
 
-
-
-
-
-
+							$('#modalPay').modal('show');
+						}
+					}
+				}
+			});
+		}
+	}).render("#paypal-button-container");
