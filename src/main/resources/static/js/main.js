@@ -298,6 +298,9 @@ async function searchByCategoryPageProducts(categoryId) {
 async function showModalProduct(product) {
 	let divUserId = document.getElementById('userId');
 	let email = document.getElementById("authenticatedUser");
+	document.getElementById('addToCartButton').disabled = false;
+	document.getElementById('quantity').disabled = false;
+
 	if (email) {
 		let user = await searchByEmail(email.textContent);
 		divUserId.value = user.userId;
