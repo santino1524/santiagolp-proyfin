@@ -20,8 +20,8 @@
 	</div>
 
 	<div class="container text-center mt-3 mb-4 d-none" id="showAllOrders">
-		<button class="btn btn-primary" onclick="showAllOrdersByUser()">Ver
-			todos los pedidos</a>
+		<button class="btn btn-primary" onclick="showAllOrdersByUser()">
+			Ver todos los pedidos</a>
 	</div>
 
 	<div class="col text-center d-none" id="not-found">
@@ -34,10 +34,18 @@
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
 	</div>
 
+	<!-- Loader -->
+	<div class="loader-wrapper" id="loader-wrapper">
+		<div class="loader"></div>
+	</div>
+
 	<script type="text/javascript" th:src="@{/js/myOrders.js}"></script>
 	<script>
 		// Obtener productos de la cesta 
 		window.onload = async function() {
+			// Activar loader
+			loaderActive();	
+			
 			await loadOrdersPage();
 		}
 	</script>

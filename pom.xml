@@ -13,7 +13,7 @@
 	<!-- INFORMACION DEL PROYECTO -->
 	<groupId>com.ntd</groupId>
 	<artifactId>santiagolp-proyfin</artifactId>
-	<version>6.1.0-SNAPSHOT</version>
+	<version>7.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>santiagolp-proyfin</name>
 	<description>Tienda online - Luz Fuego y Destruccion</description>

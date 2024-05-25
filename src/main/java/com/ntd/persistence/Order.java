@@ -55,6 +55,10 @@ public class Order implements Serializable {
 	@Column(name = "C_STATUS", nullable = false)
 	private String status;
 
+	/** Id de la transaccion */
+	@Column(name = "C_TRANSACTION", nullable = false)
+	private String transactionId;
+
 	/** Usuario */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "C_USER_ID", nullable = false)

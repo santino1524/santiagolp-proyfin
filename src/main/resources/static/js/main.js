@@ -36,9 +36,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Limitar entrada en input cantidad de productos
 function limitInput(element) {
-	if (element.value.length > 2) {
-		element.value = element.value.slice(0, 2);
+	// Obtener el valor ingresado y eliminar caracteres no válidos
+	let value = element.value.replace(/[^0-9]/g, '');
+
+	// Asegurarse de que el valor sea mayor que cero
+	if (value === '0' || value === '') {
+		value = '';
 	}
+
+	// Limitar la longitud del valor a 2 caracteres
+	if (value.length > 2) {
+		value = value.slice(0, 2);
+	}
+
+	// Establecer el valor final del elemento
+	element.value = value;
 }
 
 // Comprobacion de contrasennas
@@ -314,6 +326,8 @@ async function showModalProduct(product) {
 	let imgActive = document.createElement('img');
 	imgActive.classList.add('d-block', 'w-100');
 	imgActive.src = 'data:image/jpeg;base64,' + product.images[0];
+	imgActive.alt = `Producto ${product.productNumber}`;
+	imgActive.title = `Producto ${product.productNumber}`;
 	divCarouselItemActive.append(imgActive);
 	document.getElementById('carouselInner').append(divCarouselItemActive);
 
@@ -331,6 +345,8 @@ async function showModalProduct(product) {
 		let img = document.createElement('img');
 		img.classList.add('d-block', 'w-100');
 		img.src = 'data:image/jpeg;base64,' + product.images[i];
+		img.alt = `Producto ${product.productNumber}`;
+		img.title = `Producto ${product.productNumber}`;
 		divCarouselItem.append(img);
 		document.getElementById('carouselInner').append(divCarouselItem);
 
@@ -355,6 +371,8 @@ async function showModalProduct(product) {
 	if (product.productQuantity === 0) {
 		document.getElementById('messageProductQuantity').innerText = "Este producto está temporalmente agotado";
 		document.getElementById('messageProductQuantity').classList.remove('d-none');
+		document.getElementById('addToCartButton').disabled = true;
+		document.getElementById('quantity').disabled = true;
 	} else if (product.productQuantity < 5) {
 		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
 		document.getElementById('messageProductQuantity').classList.remove('d-none');
@@ -654,11 +672,11 @@ async function layoutReviews(reviewsDto) {
 			let user = await searchById(review.user.userId);
 			let divTitle = document.createElement('h6');
 			divTitle.classList.add('card-title');
-			divTitle.append(`${user.name} ${user.surname}`);
+			divTitle.append(`${user.name} ${user.surname || ''}`);
 			divCard.append(divTitle);
 
 			// Rating
-			let ulRating = document.createElement('rating');
+			let ulRating = document.createElement('div');
 			for (let i = 0; i < review.rating; i++) {
 				let li = document.createElement('li');
 				li.classList.add('fas', 'fa-star');
@@ -731,7 +749,7 @@ async function layoutReviews(reviewsDto) {
 // Verificar si la resenna es del usuario
 async function verifyBlockedUser(email) {
 	let user = await searchByEmail(email.textContent);
-	
+
 	return user.blocked;
 }
 
@@ -1212,6 +1230,9 @@ async function loadNewOrders() {
 	} else if (msgNotFound) {
 		msgNotFound.classList.remove('d-none');
 	}
+
+	// Desactivar loader
+	loaderDeactivate();
 }
 
 // Obtener pedidos en estado CREADO

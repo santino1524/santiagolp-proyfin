@@ -1,4 +1,4 @@
-// Pagar
+// Pagar BORRAR DEV
 function pay() {
 	let active = false;
 
@@ -105,7 +105,7 @@ async function saveOrder(orderDto) {
 }
 
 // Crear Orden y guardar direccion
-async function newOrder(addressId) {
+async function newOrder(addressId, transactionId) {
 	// Obtener id de usuario autenticado
 	let email = document.getElementById("authenticatedUser").textContent;
 	let user = await searchByEmail(email);
@@ -125,6 +125,7 @@ async function newOrder(addressId) {
 		userId: user.userId,
 		soldProductsDto: soldProductsDto,
 		addressId: addressId,
+		transactionId: transactionId,
 	};
 
 	return orderDto;
@@ -169,6 +170,9 @@ async function loadPayPage() {
 		// Maquetar direcciones
 		layoutAddresses(addresses);
 	}
+
+	// Desactivar loader
+	loaderDeactivate();
 }
 
 // Maquetar direcciones
@@ -178,13 +182,18 @@ function layoutAddresses(addresses) {
 	//Obtener direccion de la ultima compra
 	let lastAddress = JSON.parse(localStorage.getItem('lastAddress'));
 
+	let total = 0;
+	let isActive = false;
 	for (let address of addresses) {
+		total++;
 
 		let aAddress = document.createElement('a');
 		aAddress.classList.add('list-group-item', 'list-group-item-action', 'item-address');
 		aAddress.id = address.addressId;
 		if (lastAddress == address.addressId) {
 			aAddress.classList.add('active');
+
+			isActive = true;
 
 			// Mostrar metodos de pago
 			document.getElementById("paymentMethods").classList.remove('d-none');
@@ -208,6 +217,17 @@ function layoutAddresses(addresses) {
 		aAddress.append(address.directionLine + ', ' + address.city + ', ' + address.province + ', C.P: ' + address.cp + ', ' + address.country);
 
 		addressesList.append(aAddress);
+	}
+
+	if (!isActive && total === 1) {
+		let listItems = document.querySelectorAll('.list-group-item.item-address');
+
+		if (listItems && listItems.length === 1) {
+			listItems[0].classList.add('active');
+
+			// Mostrar metodos de pago
+			document.getElementById("paymentMethods").classList.remove('d-none');
+		}
 	}
 }
 
@@ -263,57 +283,46 @@ window.paypal
 			color: "gold",
 			label: "pay",
 		},
-		//		onClick: async (data, actions) => {
-		//
-		//			// Obtener la lista de direcciones
-		//			let addressesList = document.getElementById('addresses');
-		//
-		//			// Obtener todos los elementos dentro de la lista
-		//			let addressItems = addressesList.querySelectorAll('.list-group-item');
-		//
-		//			let isValid = false;
-		//
-		//			if (addressItems) {
-		//				// Iterar sobre los elementos para encontrar el elemento activo
-		//				for (let item of addressItems) {
-		//					if (item.classList.contains('active')) {
-		//
-		//						// Crear Orden pendiente de pago y guardar direccion
-		//						let orderDto = await newOrder(item.id);
-		//
-		//						// Validar orden
-		//						isValid = await validateOrder(orderDto);
-		//
-		//						break;
-		//					}
-		//				}
-		//
-		//				if (isValid === false) {
-		//					// Ha ocurrido una violacion de seguridad
-		//					document.getElementById('bodyModalPay').textContent = "Ha ocurrido un intento de violaciónn de integridad en los datos";
-		//					document.getElementById("hrefModalPay").onclick = function() {
-		//						window.location.href = "/";
-		//					};
-		//
-		//					$('#modalPay').modal('show');
-		//
-		//					// Limpiar carrito
-		//					localStorage.removeItem('cartLfd');
-		//					localStorage.removeItem('moneyToPay');
-		//
-		//					// Rechazar la transaccion
-		//					return actions.reject();
-		//				}
-		//			}
-		//
-		//			// return actions.resolve();
-		//		},
-		createOrder: (data, actions) => {
+		createOrder: async (data, actions) => {
+
+			// Obtener la lista de direcciones
+			let addressesList = document.getElementById('addresses');
+
+			// Obtener todos los elementos dentro de la lista
+			let addressItems = addressesList.querySelectorAll('.list-group-item');
+
+			let isValid = false;
+
+			if (addressItems) {
+				// Iterar sobre los elementos para encontrar el elemento activo
+				for (let item of addressItems) {
+					if (item.classList.contains('active')) {
+
+						// Crear Orden pendiente de pago y guardar direccion
+						let orderDto = await newOrder(item.id);
+
+						// Validar orden
+						isValid = await validateOrder(orderDto);
+
+						break;
+					}
+				}
+
+				if (isValid === false) {
+					integrityViolation();
+
+					// Rechazar la transaccion
+					return actions.reject();
+				}
+			}
+
 			let moneyToPay = JSON.parse(localStorage.getItem('moneyToPay'));
 
 			if (!moneyToPay) {
-				window.location.href = urlError;
-				return;
+				integrityViolation();
+
+				// Rechazar la transaccion
+				return actions.reject();
 			}
 
 			// Eliminar el simbolo "€"
@@ -340,8 +349,11 @@ window.paypal
 					for (let item of addressItems) {
 						if (item.classList.contains('active')) {
 
+							// ID de transaccion
+							let transactionId = orderData.purchase_units[0].payments.captures[0].id;
+
 							// Crear Orden pendiente de pago y guardar dirección
-							let orderDto = await newOrder(item.id);
+							let orderDto = await newOrder(item.id, transactionId);
 
 							// Guardar orden
 							let confirmOrder = await saveOrder(orderDto);
@@ -351,7 +363,7 @@ window.paypal
 								localStorage.removeItem('cartLfd');
 								localStorage.removeItem('moneyToPay');
 
-								document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente! El ID de la transacción es " + orderData.purchase_units[0].payments.captures[0].id;
+								document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente! El ID de la transacción es " + transactionId;
 								document.getElementById("hrefModalPay").onclick = function() {
 									window.location.href = "/";
 								};
@@ -366,3 +378,18 @@ window.paypal
 			});
 		}
 	}).render("#paypal-button-container");
+
+// Accion para violacion de integridad de los datos de la orden
+function integrityViolation() {
+	// Ha ocurrido una violacion de seguridad
+	document.getElementById('bodyModalPay').textContent = "Ha ocurrido un intento de violación de integridad en los datos";
+	document.getElementById("hrefModalPay").onclick = function() {
+		window.location.href = "/";
+	};
+
+	$('#modalPay').modal('show');
+
+	// Limpiar carrito
+	localStorage.removeItem('cartLfd');
+	localStorage.removeItem('moneyToPay');
+}

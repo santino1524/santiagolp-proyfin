@@ -34,6 +34,8 @@ public record OrderDTO(Long orderId,
 		// Validar usuario
 		@NotNull(message = Constants.MSG_USER_NOT_VALID) Long userId,
 
+		String transactionId,
+
 		// Validar productos vendidos
 		@NotNull(message = Constants.MSG_PRODUCT_LIST_NOT_VALID) List<ProductSoldDTO> soldProductsDto,
 

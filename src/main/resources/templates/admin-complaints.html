@@ -28,11 +28,13 @@
 					<tr>
 						<th>Nombre/Usuario</th>
 						<th>Denuncias</th>
-						<th>Bloquear denunciante/</br>Eliminar denuncia</th>
+						<th>Bloquear denunciante/</br>Eliminar denuncia
+						</th>
 
 						<th>Nombre/Usuario</th>
 						<th>Comentario</th>
-						<th>Bloquear denunciado/</br>Eliminar comentario</th>
+						<th>Bloquear denunciado/</br>Eliminar comentario
+						</th>
 					</tr>
 				</thead>
 				<tbody id="tbodyComplaints"></tbody>
@@ -52,6 +54,11 @@
 		</div>
 	</div>
 
+	<!-- Loader -->
+	<div class="loader-wrapper" id="loader-wrapper">
+		<div class="loader"></div>
+	</div>
+
 	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
 
 	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
@@ -62,6 +69,9 @@
 	<script>
 		// Cargar nuevos pedidos a enviar
 		window.onload = async function() {
+			// Activar loader
+			loaderActive();	
+			
 			await loadAlerts();
 			await loadComplaints();
 		}

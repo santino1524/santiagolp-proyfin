@@ -46,8 +46,12 @@ async function layoutCategoriesProducts(categories) {
 			};
 			let img1 = document.createElement('img');
 			img1.classList.add('pic-1');
+			img1.alt = `Producto ${product.productNumber}`;
+			img1.title = `Producto ${product.productNumber}`;
 			let img2 = document.createElement('img');
 			img2.classList.add('pic-2');
+			img2.alt = `Producto ${product.productNumber}`;
+			img2.title = `Producto ${product.productNumber}`;
 			// Crea una URL de datos (data URL) 
 			let dataUrl = 'data:image/jpeg;base64,' + product.images[0];
 			let dataUrl2;
@@ -69,21 +73,31 @@ async function layoutCategoriesProducts(categories) {
 			divProductsRating.classList.add('product-rating');
 			let ul = document.createElement('ul');
 			ul.classList.add('rating');
+
+			let sum = 0;
 			if (product.reviewsDto && product.reviewsDto.length > 0) {
 				// Calcular promedio rating
-				let sum = 0;
-				let reviews = product.reviewsDto.length;
-				for (let i = 0; i < reviews; i++) {
-					sum += product.reviewsDto[i].rating;
+				let reviews = 0;
+				for (let i = 0; i < product.reviewsDto.length; i++) {
+					let review = product.reviewsDto[i];
+					if (review.rating > 0 && !review.reported) {
+						reviews++;
+						sum += product.reviewsDto[i].rating;
+					}
 				}
-				ave = parseInt(sum / reviews);
 
-				for (let i = 0; i < ave; i++) {
-					let li = document.createElement('li');
-					li.classList.add('fas', 'fa-star');
-					ul.append(li);
+				// Si hay resennas
+				if (sum) {
+					ave = sum / reviews;
+
+					for (let i = 0; i < parseInt(ave); i++) {
+						let li = document.createElement('li');
+						li.classList.add('fas', 'fa-star');
+						ul.append(li);
+					}
 				}
 			}
+
 			let aCart = document.createElement('a');
 			aCart.classList.add('add-to-cart');
 			aCart.href = '#';

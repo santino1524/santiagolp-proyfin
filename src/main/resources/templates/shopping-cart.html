@@ -18,7 +18,7 @@
 				style="max-height: 250px;" alt="Carrito de compras"
 				title="Carrito de compras">
 		</div>
-		<h2 class="mb-3">Carrito de compras</h2>
+		<h2 class="mb-4">Carrito de compras</h2>
 		<div class="alert alert-danger d-none" role="alert"
 			id="messagePayError"></div>
 		<div class="table-responsive">
@@ -37,7 +37,7 @@
 			</table>
 		</div>
 		<div class="text-right">
-			<h4 class="mb-3" id="carTotal"></h4>
+			<h4 class="mb-5" id="carTotal"></h4>
 			<button onclick="checkProducts()" class="btn btn-success"
 				id="buyButton">
 				<i class="fa-solid fa-wallet mr-sm-2"></i>Realizar compra</a>
@@ -50,7 +50,7 @@
 				Parece que el carrito está vacío.</p>
 		</div>
 
-		<div class="col text-center">
+		<div class="col text-center mt-5">
 			<img src="/images/not-found.png" class="img-fluid"
 				style="max-height: 400px;">
 		</div>
@@ -58,6 +58,11 @@
 
 	<!-- CONTENIDO DE PIE DE PAGINA -->
 	<div th:replace="~{fragments/general-fragments :: footerContent}">
+	</div>
+
+	<!-- Loader -->
+	<div class="loader-wrapper" id="loader-wrapper">
+		<div class="loader"></div>
 	</div>
 
 	<!-- MODAL PRODUCT -->
@@ -71,6 +76,9 @@
 	<script>
 		// Obtener productos de la cesta 
 		window.onload = async function() {
+			// Activar loader
+			loaderActive();	
+			
 			await loadShoppingCart();
 		}
 	</script>
