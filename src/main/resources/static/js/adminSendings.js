@@ -18,6 +18,13 @@ async function layoutTableOrders(orders) {
 		// Annadir a la fila
 		tr.append(tdOrder);
 
+		// Columna id de transaccion
+		let tdTransaction = document.createElement('td');
+		tdTransaction.classList.add('align-middle');
+		tdTransaction.textContent = order.transactionId;
+		// Annadir a la fila
+		tr.append(tdTransaction);
+
 		// Columna fecha de pedido
 		let tdDate = document.createElement('td');
 		tdDate.classList.add('align-middle');
@@ -47,7 +54,7 @@ async function layoutTableOrders(orders) {
 
 			// Eliminar la fila de la tabla
 			tr.remove();
-			
+
 			//Generar PDF
 			await generateShippingLabel(orderUpdated);
 

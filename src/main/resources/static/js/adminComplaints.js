@@ -14,6 +14,9 @@ async function loadComplaints() {
 	} else if (msgNotFound) {
 		msgNotFound.classList.remove('d-none');
 	}
+
+	// Desactivar loader
+	loaderDeactivate();
 }
 
 // Maquetar tabla de reportes

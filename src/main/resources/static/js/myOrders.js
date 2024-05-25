@@ -9,13 +9,16 @@ async function loadOrdersPage() {
 
 	//Maquetar
 	layoutOrders(orders, user);
+
+	// Desactivar loader
+	loaderDeactivate();
 }
 
 // Maquetar pedidos
 async function layoutOrders(orders, user) {
 	let divOrdersContainer = document.getElementById('ordersContainer');
 
-	if (!orders || orders.length ===0 || orders[0] === null) {
+	if (!orders || orders.length === 0 || orders[0] === null) {
 		document.getElementById('not-found').classList.remove('d-none');
 
 		return;
@@ -137,7 +140,7 @@ async function layoutOrders(orders, user) {
 		divOrdersContainer.append(divCard);
 	}
 
-	
+
 
 	// Mostrar boton si se mostraron pedidos
 	if (orders) {

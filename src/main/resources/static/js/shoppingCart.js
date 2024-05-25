@@ -10,6 +10,9 @@ function loadShoppingCart() {
 		// Maquetar tabla con productos
 		layoutTableCar(cartLfd);
 	}
+
+	// Desactivar loader
+	loaderDeactivate();
 }
 
 // Carro vacio

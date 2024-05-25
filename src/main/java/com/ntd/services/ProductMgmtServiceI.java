@@ -236,4 +236,13 @@ public interface ProductMgmtServiceI {
 	 */
 	public ProductDTO searchById(final Long id) throws InternalException;
 
+	/**
+	 * Buscar productos por ids
+	 * 
+	 * @param ids
+	 * @return ProductDTO
+	 * @throws InternalException
+	 */
+	public List<ProductDTO> searchByIds(final List<Long> ids) throws InternalException;
+
 }

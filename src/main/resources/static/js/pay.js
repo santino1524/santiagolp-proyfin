@@ -1,4 +1,4 @@
-// Pagar
+// Pagar BORRAR DEV
 function pay() {
 	let active = false;
 
@@ -104,8 +104,8 @@ async function saveOrder(orderDto) {
 	}
 }
 
-// Crear Orden pendiente de pago y guardar direccion
-async function newOrderPendingPayment(addressId) {
+// Crear Orden y guardar direccion
+async function newOrder(addressId, transactionId) {
 	// Obtener id de usuario autenticado
 	let email = document.getElementById("authenticatedUser").textContent;
 	let user = await searchByEmail(email);
@@ -125,9 +125,8 @@ async function newOrderPendingPayment(addressId) {
 		userId: user.userId,
 		soldProductsDto: soldProductsDto,
 		addressId: addressId,
+		transactionId: transactionId,
 	};
-
-	localStorage.setItem('pendingOrder', JSON.stringify(orderDto));
 
 	return orderDto;
 }
@@ -153,7 +152,7 @@ function getDate() {
 async function loadPayPage() {
 	// Obtener el total a pagar del localStorage
 	let moneyToPay = JSON.parse(localStorage.getItem('moneyToPay')) || '0€';
-	document.getElementById("moneyToPay").textContent = moneyToPay;
+	document.getElementById("moneyToPay").textContent = `Total a pagar: ${moneyToPay}`;
 
 	// Obtener id de usuario autenticado
 	let email = document.getElementById("authenticatedUser").textContent;
@@ -171,6 +170,9 @@ async function loadPayPage() {
 		// Maquetar direcciones
 		layoutAddresses(addresses);
 	}
+
+	// Desactivar loader
+	loaderDeactivate();
 }
 
 // Maquetar direcciones
@@ -180,13 +182,21 @@ function layoutAddresses(addresses) {
 	//Obtener direccion de la ultima compra
 	let lastAddress = JSON.parse(localStorage.getItem('lastAddress'));
 
-	for (const address of addresses) {
+	let total = 0;
+	let isActive = false;
+	for (let address of addresses) {
+		total++;
 
 		let aAddress = document.createElement('a');
 		aAddress.classList.add('list-group-item', 'list-group-item-action', 'item-address');
 		aAddress.id = address.addressId;
 		if (lastAddress == address.addressId) {
 			aAddress.classList.add('active');
+
+			isActive = true;
+
+			// Mostrar metodos de pago
+			document.getElementById("paymentMethods").classList.remove('d-none');
 		}
 		aAddress.href = '#';
 		aAddress.onclick = (event) => {
@@ -200,23 +210,186 @@ function layoutAddresses(addresses) {
 
 			// Activar el elemento en el que se hizo clic
 			clickedItem.classList.add('active');
+
+			// Mostrar metodos de pago
+			document.getElementById("paymentMethods").classList.remove('d-none');
 		};
 		aAddress.append(address.directionLine + ', ' + address.city + ', ' + address.province + ', C.P: ' + address.cp + ', ' + address.country);
 
 		addressesList.append(aAddress);
 	}
+
+	if (!isActive && total === 1) {
+		let listItems = document.querySelectorAll('.list-group-item.item-address');
+
+		if (listItems && listItems.length === 1) {
+			listItems[0].classList.add('active');
+
+			// Mostrar metodos de pago
+			document.getElementById("paymentMethods").classList.remove('d-none');
+		}
+	}
 }
 
+// Validar orden
+async function validateOrder(orderDto) {
+	let data;
+
+	try {
+		let response = await fetch("/orders/validateOrder", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(orderDto)
+		});
 
 
+		if (response.status === 200) {
+			return true;
+		} else if (response.status === 400) {
+			return false;
+		} else if (response.status === 422) {
+			data = await response.json();
 
+			let message = 'Se han modificado las existencias de los productos: ';
+			for (let product of data.products) {
+				message += product.productName + ': ' + product.productQuantity + ' unidades, ';
+			}
+			message += 'ajusta las cantidades a comprar. Lo sentimos.';
 
+			document.getElementById('bodyModalPay').textContent = message;
+			document.getElementById("hrefModalPay").onclick = function() {
+				window.location.href = "/shoppingCart";
+			};
+			$('#modalPay').modal('show');
 
+			return;
+		} else {
+			window.location.href = urlError;
+		}
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
 
+// Integracion con Paypal
+window.paypal
+	.Buttons({
+		style: {
+			shape: "rect",
+			layout: "horizontal",
+			color: "gold",
+			label: "pay",
+		},
+		createOrder: async (data, actions) => {
 
+			// Obtener la lista de direcciones
+			let addressesList = document.getElementById('addresses');
 
+			// Obtener todos los elementos dentro de la lista
+			let addressItems = addressesList.querySelectorAll('.list-group-item');
 
+			let isValid = false;
 
+			if (addressItems) {
+				// Iterar sobre los elementos para encontrar el elemento activo
+				for (let item of addressItems) {
+					if (item.classList.contains('active')) {
 
+						// Crear Orden pendiente de pago y guardar direccion
+						let orderDto = await newOrder(item.id);
 
+						// Validar orden
+						isValid = await validateOrder(orderDto);
 
+						break;
+					}
+				}
+
+				if (isValid === false) {
+					integrityViolation();
+
+					// Rechazar la transaccion
+					return actions.reject();
+				}
+			}
+
+			let moneyToPay = JSON.parse(localStorage.getItem('moneyToPay'));
+
+			if (!moneyToPay) {
+				integrityViolation();
+
+				// Rechazar la transaccion
+				return actions.reject();
+			}
+
+			// Eliminar el simbolo "€"
+			let units = parseFloat(moneyToPay.replace("€", ""));
+
+			return actions.order.create({
+				purchase_units: [{
+					amount: {
+						value: units
+					}
+				}]
+			});
+		},
+		onApprove: (data, actions) => {
+			return actions.order.capture().then(async function(orderData) {
+				// Obtener la lista de direcciones
+				let addressesList = document.getElementById('addresses');
+
+				// Obtener todos los elementos dentro de la lista
+				let addressItems = addressesList.querySelectorAll('.list-group-item');
+
+				if (addressItems) {
+					// Iterar sobre los elementos para encontrar el elemento activo
+					for (let item of addressItems) {
+						if (item.classList.contains('active')) {
+
+							// ID de transaccion
+							let transactionId = orderData.purchase_units[0].payments.captures[0].id;
+
+							// Crear Orden pendiente de pago y guardar dirección
+							let orderDto = await newOrder(item.id, transactionId);
+
+							// Guardar orden
+							let confirmOrder = await saveOrder(orderDto);
+
+							if (confirmOrder) {
+								// Limpiar carrito
+								localStorage.removeItem('cartLfd');
+								localStorage.removeItem('moneyToPay');
+
+								document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente! El ID de la transacción es " + transactionId;
+								document.getElementById("hrefModalPay").onclick = function() {
+									window.location.href = "/";
+								};
+
+								$('#modalPay').modal('show');
+
+								break;
+							}
+						}
+					}
+				}
+			});
+		}
+	}).render("#paypal-button-container");
+
+// Accion para violacion de integridad de los datos de la orden
+function integrityViolation() {
+	// Ha ocurrido una violacion de seguridad
+	document.getElementById('bodyModalPay').textContent = "Ha ocurrido un intento de violación de integridad en los datos";
+	document.getElementById("hrefModalPay").onclick = function() {
+		window.location.href = "/";
+	};
+
+	$('#modalPay').modal('show');
+
+	// Limpiar carrito
+	localStorage.removeItem('cartLfd');
+	localStorage.removeItem('moneyToPay');
+}

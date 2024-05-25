@@ -1,6 +1,8 @@
 package com.ntd.controllers;
 
 import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
+
+	private static final String PRODUCTS = "products";
 
 	/** Constante String orders */
 	private static final String ORDERS = "orders";
@@ -202,7 +206,66 @@ public class OrderController {
 
 				// Retornar 422 para productos faltantes
 				result = ResponseEntity.unprocessableEntity()
-						.body(Collections.singletonMap("products", productsDtoNotFound));
+						.body(Collections.singletonMap(PRODUCTS, productsDtoNotFound));
+			}
+		}
+
+		// Retornar respuesta
+		return result;
+	}
+
+	/**
+	 * Validar pedido
+	 * 
+	 * @param orderDto
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping(path = "/validateOrder")
+	public ResponseEntity<Object> validateOrder(@RequestBody final OrderDTO orderDto) throws InternalException {
+		log.info("Validar pedido");
+
+		// Validar datos de productos a comprar
+		ValidateParams.validateProductsToBuy(orderDto.soldProductsDto());
+
+		ResponseEntity<Object> result = null;
+
+		// Obtener Ids de productos
+		List<Long> productsId = new ArrayList<>();
+		for (ProductSoldDTO productSold : orderDto.soldProductsDto()) {
+			productsId.add(productSold.productId());
+		}
+
+		List<ProductDTO> productsDto = productMgmtService.searchByIds(productsId);
+
+		// Calcular total
+		BigDecimal totalReal = BigDecimal.ZERO;
+		for (ProductDTO productDto : productsDto) {
+			totalReal = totalReal.add(productDto.pvpPrice());
+		}
+
+		// Redondear y formatear el total a dos decimales
+		totalReal = totalReal.setScale(2, RoundingMode.HALF_UP);
+		BigDecimal totalOrder = orderDto.total().setScale(2, RoundingMode.HALF_UP);
+
+		// Comprobar monto a pagar
+		List<ProductDTO> productsDtoNotFound;
+		if (!totalReal.equals(totalOrder)) {
+			// Retornar 400 si las cantidades no coinciden
+			result = ResponseEntity.badRequest().build();
+		} else {
+			// Confirmar productos a comprar
+			productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto(), true);
+
+			if (productsDtoNotFound.isEmpty()) {
+				// Guardar pedido
+				result = ResponseEntity.ok().build();
+			} else {
+				log.info("Retorno de productos con stock insuficiente");
+
+				// Retornar 422 para productos faltantes
+				result = ResponseEntity.unprocessableEntity()
+						.body(Collections.singletonMap(PRODUCTS, productsDtoNotFound));
 			}
 		}
 
@@ -254,7 +317,7 @@ public class OrderController {
 			}
 
 			// Devolver una respuesta con codigo de estado 422
-			result = ResponseEntity.unprocessableEntity().body(Collections.singletonMap("products", returnProducts));
+			result = ResponseEntity.unprocessableEntity().body(Collections.singletonMap(PRODUCTS, returnProducts));
 		}
 
 		return result;

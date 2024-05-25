@@ -126,6 +126,27 @@ public interface DTOMapperI {
 	}
 
 	/**
+	 * Mapear lista de Product a DTO
+	 * 
+	 * @param products
+	 * @return List
+	 */
+	default List<ProductDTO> listProductToDTO(List<Product> products) {
+		List<ProductDTO> productsDto = new ArrayList<>();
+
+		// Comprobar nulidad
+		if (products != null) {
+
+			// Mapear datos
+			for (Product product : products) {
+				productsDto.add(mapProductToDTO(product));
+			}
+		}
+
+		return productsDto;
+	}
+
+	/**
 	 * Mapear lista de Report a DTO
 	 * 
 	 * @param reports

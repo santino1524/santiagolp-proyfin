@@ -608,4 +608,19 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		}
 	}
 
+	@Override
+	public List<ProductDTO> searchByIds(List<Long> ids) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Buscar productos por ids");
+
+		// Validar parametro
+		ValidateParams.isNullObject(ids);
+
+		// Buscar por id
+		final List<Product> products = productRepository.findAllById(ids);
+
+		// Retornar DTO
+		return DTOMapperI.MAPPER.listProductToDTO(products);
+	}
+
 }
