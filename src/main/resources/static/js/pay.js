@@ -185,6 +185,9 @@ function layoutAddresses(addresses) {
 		aAddress.id = address.addressId;
 		if (lastAddress == address.addressId) {
 			aAddress.classList.add('active');
+
+			// Mostrar metodos de pago
+			document.getElementById("paymentMethods").classList.remove('d-none');
 		}
 		aAddress.href = '#';
 		aAddress.onclick = (event) => {
@@ -208,6 +211,49 @@ function layoutAddresses(addresses) {
 	}
 }
 
+// Validar orden
+async function validateOrder(orderDto) {
+	let data;
+
+	try {
+		let response = await fetch("/orders/validateOrder", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(orderDto)
+		});
+
+
+		if (response.status === 200) {
+			return true;
+		} else if (response.status === 400) {
+			return false;
+		} else if (response.status === 422) {
+			data = await response.json();
+
+			let message = 'Se han modificado las existencias de los productos: ';
+			for (let product of data.products) {
+				message += product.productName + ': ' + product.productQuantity + ' unidades, ';
+			}
+			message += 'ajusta las cantidades a comprar. Lo sentimos.';
+
+			document.getElementById('bodyModalPay').textContent = message;
+			document.getElementById("hrefModalPay").onclick = function() {
+				window.location.href = "/shoppingCart";
+			};
+			$('#modalPay').modal('show');
+
+			return;
+		} else {
+			window.location.href = urlError;
+		}
+	} catch (error) {
+		console.error(error);
+		window.location.href = urlError;
+	}
+}
+
 // Integracion con Paypal
 window.paypal
 	.Buttons({
@@ -217,20 +263,51 @@ window.paypal
 			color: "gold",
 			label: "pay",
 		},
-		onClick: (data, actions) => {
-			comprobar que el dinero a pagar corresponde con el valor real de los productos a comprar
-			// Realizar la comprobación antes de enviar la petición
-			let isValid = false; // Esta función debe realizar las comprobaciones necesarias y devolver true o false
-
-			if (!isValid) {
-				// Mostrar un mensaje de error o realizar alguna acción si la validación falla
-				alert("Condición no cumplida. No se puede proceder con el pago.");
-				return actions.reject(); // Rechazar la transacción
-			}
-
-			// Si la validación es exitosa, continuar con el flujo normal
-			return actions.resolve();
-		},
+		//		onClick: async (data, actions) => {
+		//
+		//			// Obtener la lista de direcciones
+		//			let addressesList = document.getElementById('addresses');
+		//
+		//			// Obtener todos los elementos dentro de la lista
+		//			let addressItems = addressesList.querySelectorAll('.list-group-item');
+		//
+		//			let isValid = false;
+		//
+		//			if (addressItems) {
+		//				// Iterar sobre los elementos para encontrar el elemento activo
+		//				for (let item of addressItems) {
+		//					if (item.classList.contains('active')) {
+		//
+		//						// Crear Orden pendiente de pago y guardar direccion
+		//						let orderDto = await newOrder(item.id);
+		//
+		//						// Validar orden
+		//						isValid = await validateOrder(orderDto);
+		//
+		//						break;
+		//					}
+		//				}
+		//
+		//				if (isValid === false) {
+		//					// Ha ocurrido una violacion de seguridad
+		//					document.getElementById('bodyModalPay').textContent = "Ha ocurrido un intento de violaciónn de integridad en los datos";
+		//					document.getElementById("hrefModalPay").onclick = function() {
+		//						window.location.href = "/";
+		//					};
+		//
+		//					$('#modalPay').modal('show');
+		//
+		//					// Limpiar carrito
+		//					localStorage.removeItem('cartLfd');
+		//					localStorage.removeItem('moneyToPay');
+		//
+		//					// Rechazar la transaccion
+		//					return actions.reject();
+		//				}
+		//			}
+		//
+		//			// return actions.resolve();
+		//		},
 		createOrder: (data, actions) => {
 			let moneyToPay = JSON.parse(localStorage.getItem('moneyToPay'));
 
@@ -260,25 +337,29 @@ window.paypal
 
 				if (addressItems) {
 					// Iterar sobre los elementos para encontrar el elemento activo
-					for (const item of addressItems) {
+					for (let item of addressItems) {
 						if (item.classList.contains('active')) {
 
 							// Crear Orden pendiente de pago y guardar dirección
 							let orderDto = await newOrder(item.id);
 
 							// Guardar orden
-							await saveOrder(orderDto);
+							let confirmOrder = await saveOrder(orderDto);
 
-							// Limpiar carrito
-							localStorage.removeItem('cartLfd');
-							localStorage.removeItem('moneyToPay');
+							if (confirmOrder) {
+								// Limpiar carrito
+								localStorage.removeItem('cartLfd');
+								localStorage.removeItem('moneyToPay');
 
-							document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente! El ID de la transacción es " + orderData.purchase_units[0].payments.captures[0].id;
-							document.getElementById("hrefModalPay").onclick = function() {
-								window.location.href = "/";
-							};
+								document.getElementById('bodyModalPay').textContent = "¡La compra se ha realizado correctamente! El ID de la transacción es " + orderData.purchase_units[0].payments.captures[0].id;
+								document.getElementById("hrefModalPay").onclick = function() {
+									window.location.href = "/";
+								};
 
-							$('#modalPay').modal('show');
+								$('#modalPay').modal('show');
+
+								break;
+							}
 						}
 					}
 				}

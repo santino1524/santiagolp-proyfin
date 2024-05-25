@@ -1,6 +1,7 @@
 package com.ntd.controllers;
 
 import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -197,6 +198,61 @@ public class OrderController {
 			if (productsDtoNotFound.isEmpty()) {
 				// Guardar pedido
 				result = orderMgmtService.insertOrder(orderDto);
+			} else {
+				log.info("Retorno de productos con stock insuficiente");
+
+				// Retornar 422 para productos faltantes
+				result = ResponseEntity.unprocessableEntity()
+						.body(Collections.singletonMap("products", productsDtoNotFound));
+			}
+		}
+
+		// Retornar respuesta
+		return result;
+	}
+
+	/**
+	 * Validar pedido
+	 * 
+	 * @param orderDto
+	 * @return ResponseEntity
+	 * @throws InternalException
+	 */
+	@PostMapping(path = "/validateOrder")
+	public ResponseEntity<Object> validateOrder(@RequestBody final OrderDTO orderDto) throws InternalException {
+		log.info("Validar pedido");
+
+		// Validar datos de productos a comprar
+		ValidateParams.validateProductsToBuy(orderDto.soldProductsDto());
+
+		ResponseEntity<Object> result = null;
+
+		// Obtener Ids de productos
+		List<Long> productsId = new ArrayList<>();
+		for (ProductSoldDTO productSold : orderDto.soldProductsDto()) {
+			productsId.add(productSold.productId());
+		}
+
+		List<ProductDTO> productsDto = productMgmtService.searchByIds(productsId);
+
+		// Calcular total
+		BigDecimal total = BigDecimal.ZERO;
+		for (ProductDTO productDto : productsDto) {
+			total = total.add(productDto.pvpPrice());
+		}
+
+		// Comprobar monto a pagar
+		List<ProductDTO> productsDtoNotFound;
+		if (!total.equals(orderDto.total())) {
+			// Retornar 400 si las cantidades no coinciden
+			result = ResponseEntity.badRequest().build();
+		} else {
+			// Confirmar productos a comprar
+			productsDtoNotFound = productMgmtService.confirmOrder(orderDto.soldProductsDto(), true);
+
+			if (productsDtoNotFound.isEmpty()) {
+				// Guardar pedido
+				result = ResponseEntity.ok().build();
 			} else {
 				log.info("Retorno de productos con stock insuficiente");
 
