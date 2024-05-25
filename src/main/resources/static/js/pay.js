@@ -165,6 +165,9 @@ async function loadPayPage() {
 		let message = "No hay registrada ninguna dirección de envío.";
 		showMessage(document.getElementById("messageNotFoundAddresses"), message)
 
+		// Desactivar loader
+		loaderDeactivate();
+		
 		return;
 	} else {
 		// Maquetar direcciones
