@@ -26,6 +26,8 @@ import com.ntd.dto.AnswersDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
 import com.ntd.security.EncryptionUtils;
+import com.ntd.services.EmailMgmtServiceI;
+import com.ntd.services.TokenMgmtServiceI;
 import com.ntd.services.UserMgmtServiceI;
 import com.ntd.utils.Constants;
 import com.ntd.utils.ValidateParams;
@@ -57,6 +59,12 @@ public class UserController {
 	/** Dependencia EncryptionUtils */
 	private final EncryptionUtils encryptionUtils;
 
+	/** Depenencia EmailService */
+	private EmailMgmtServiceI emailService;
+
+	/** Depenencia TokenService */
+	private TokenMgmtServiceI tokenService;
+
 	/**
 	 * Constructor
 	 * 
@@ -64,13 +72,18 @@ public class UserController {
 	 * @param sessionRegistry
 	 * @param authenticationManager
 	 * @param encryptionUtils
+	 * @param emailService
+	 * @param tokenService
 	 */
 	public UserController(UserMgmtServiceI userMgmtService, SessionRegistry sessionRegistry,
-			AuthenticationManager authenticationManager, EncryptionUtils encryptionUtils) {
+			AuthenticationManager authenticationManager, EncryptionUtils encryptionUtils,
+			EmailMgmtServiceI emailService, TokenMgmtServiceI tokenService) {
 		this.userMgmtService = userMgmtService;
 		this.sessionRegistry = sessionRegistry;
 		this.authenticationManager = authenticationManager;
 		this.encryptionUtils = encryptionUtils;
+		this.emailService = emailService;
+		this.tokenService = tokenService;
 	}
 
 	/**
@@ -102,6 +115,14 @@ public class UserController {
 		response.put("sessionUser", userObject);
 
 		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping
+	public String registerUser(@RequestBody User user) {
+		// Guardar el usuario en la base de datos
+		// userRepository.save(user);
+
+		return "Registration successful. Please check your email for confirmation.";
 	}
 
 	/**
@@ -157,7 +178,17 @@ public class UserController {
 		} else if (userMgmtService.existsPhoneNumber(userDto.phoneNumber())) {
 			result = Constants.MSG_PHONE_EXISTS;
 		} else {
-			// Guardar usuario
+			// Generar token de confirmación
+			String token = tokenService.generateToken();
+
+			// Guardar el token en la base de datos junto con el usuario
+			tokenRepository.save(new ConfirmationToken(user, token));
+
+			// Enviar correo de confirmación
+			String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
+			emailService.sendEmail(user.getEmail(), "Confirm your email",
+					"Click the following link to confirm your email: " + confirmationUrl);
+
 			if (userMgmtService.insertUser(userDto) != null) {
 				result = Constants.MSG_REGISTER_USER;
 			} else {
