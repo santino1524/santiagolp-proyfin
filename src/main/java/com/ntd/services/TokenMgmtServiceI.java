@@ -1,6 +1,9 @@
 
 package com.ntd.services;
 
+import com.ntd.dto.UserDTO;
+import com.ntd.persistence.ConfirmationToken;
+
 /**
  * Servicio token
  * 
@@ -14,4 +17,19 @@ public interface TokenMgmtServiceI {
 	 * @return String
 	 */
 	public String generateToken();
+
+	/**
+	 * Guardar token y usuario
+	 * 
+	 * @param user
+	 */
+	public String save(final UserDTO userDto);
+
+	/**
+	 * Buscar token por ID
+	 * 
+	 * @param token
+	 * @return ConfirmationToken
+	 */
+	public ConfirmationToken findByToken(final String token);
 }

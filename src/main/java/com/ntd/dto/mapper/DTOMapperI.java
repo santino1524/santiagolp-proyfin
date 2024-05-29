@@ -355,6 +355,7 @@ public interface DTOMapperI {
 	 * @return User
 	 */
 	@Mapping(target = "reportedReviews", ignore = true)
+	@Mapping(target = "enabled", ignore = true)
 	@Mapping(target = "addresses", expression = "java(dtoToListPostalAddress(userDto.addressesDto()))")
 	@Mapping(target = "orders", expression = "java(dtoToListOrder(userDto.ordersDto()))")
 	@Mapping(target = "role", expression = "java(userDto.role()==2 ? UserRole.BUYER : UserRole.SELLER)")

@@ -285,8 +285,8 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		ValidateParams.isNullObject(userId);
 
 		// Buscar por usuario
-		final List<Order> orders = orderRepository.findByUser(
-				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
+		final List<Order> orders = orderRepository.findByUser(new User(userId, null, null, null, null, null, null, null,
+				null, false, true, null, null, null, null, null));
 
 		// Mapear DTO
 		final List<OrderDTO> ordersDto = new ArrayList<>();
@@ -335,8 +335,8 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		ValidateParams.isNullObject(userId);
 
 		// Buscar por usuario
-		final List<Order> orders = orderRepository.findByUserOrderByOrderDateDesc(
-				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
+		final List<Order> orders = orderRepository.findByUserOrderByOrderDateDesc(new User(userId, null, null, null,
+				null, null, null, null, null, false, true, null, null, null, null, null));
 
 		// Mapear DTO
 		final List<OrderDTO> ordersDto = new ArrayList<>();
@@ -360,8 +360,8 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		ValidateParams.isNullObject(userId);
 
 		// Buscar por usuario
-		final Order order = orderRepository.findTopByUserOrderByOrderDateDesc(
-				new User(userId, null, null, null, null, null, null, null, null, false, null, null, null, null, null));
+		final Order order = orderRepository.findTopByUserOrderByOrderDateDesc(new User(userId, null, null, null, null,
+				null, null, null, null, false, true, null, null, null, null, null));
 
 		// Retornar DTO
 		return DTOMapperI.MAPPER.mapOrderToDTO(order);
@@ -441,7 +441,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 
 			// Direccion del remitente
 			List<PostalAddress> addresses = addressRepository.findByUser(new User(Long.valueOf(1), null, null, null,
-					null, null, null, null, null, false, null, null, null, null, null));
+					null, null, null, null, null, false, true, null, null, null, null, null));
 
 			PostalAddress storePostalAddress = null;
 			for (PostalAddress address : addresses) {

@@ -57,9 +57,8 @@ public class SantiagolpProyfinApplication {
 		return args -> {
 			if (userRepository.count() == 0) {
 				User userInit = User.builder().email(Constants.DEFAULT_USER)
-						.passwd(passwordEncoder.encode(Constants.DEFAULT_PASSWD)).name("Goku").surname("Goku")
-						.secondSurname("Goku").dni("11111111P").phoneNumber("666666666")
-						.role(UserRole.valueOf(UserRole.SELLER.name())).build();
+						.passwd(passwordEncoder.encode(Constants.DEFAULT_PASSWD)).name("Goku").dni("11111111P")
+						.phoneNumber("666666666").role(UserRole.valueOf(UserRole.SELLER.name())).build();
 
 				userRepository.save(userInit);
 			}

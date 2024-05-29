@@ -74,7 +74,7 @@ public class Constants {
 	public static final String MSG_SUCCESSFUL_OPERATION = "La operación se ha completado con éxito";
 
 	/** Msg de usuario registrado */
-	public static final String MSG_REGISTER_USER = "Se ha registrado el usuario satisfactoriamente";
+	public static final String MSG_REGISTER_USER = "Registro exitoso. Por favor revise su correo electrónico para confirmar";
 
 	/** Msg de error inesperado */
 	public static final String MSG_UNEXPECTED_ERROR = "Ha ocurrido un error inesperado";

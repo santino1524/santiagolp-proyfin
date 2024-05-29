@@ -54,11 +54,11 @@ public class User implements Serializable {
 	private String name;
 
 	/** Primer apellido */
-	@Column(name = "C_SURNAME", nullable = false)
+	@Column(name = "C_SURNAME")
 	private String surname;
 
 	/** Segundo apellido */
-	@Column(name = "C_SECOND_SURNAME", nullable = false)
+	@Column(name = "C_SECOND_SURNAME")
 	private String secondSurname;
 
 	/** DNI */
@@ -85,6 +85,10 @@ public class User implements Serializable {
 	/** Indica si el usuario esta bloqueado */
 	@Column(name = "C_BLOCKED", nullable = false)
 	private boolean blocked;
+
+	/** Indica si el usuario ha confirmado el email */
+	@Column(name = "C_ENABLED", nullable = false)
+	private boolean enabled;
 
 	/** Direcciones */
 	@OneToMany(mappedBy = "user")

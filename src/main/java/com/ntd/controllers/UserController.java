@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ntd.dto.AnswersDTO;
 import com.ntd.dto.UserDTO;
 import com.ntd.exceptions.InternalException;
+import com.ntd.persistence.ConfirmationToken;
 import com.ntd.security.EncryptionUtils;
 import com.ntd.services.EmailMgmtServiceI;
 import com.ntd.services.TokenMgmtServiceI;
@@ -117,14 +118,6 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping
-	public String registerUser(@RequestBody User user) {
-		// Guardar el usuario en la base de datos
-		// userRepository.save(user);
-
-		return "Registration successful. Please check your email for confirmation.";
-	}
-
 	/**
 	 * Comprobar contrasenna vieja
 	 * 
@@ -178,18 +171,16 @@ public class UserController {
 		} else if (userMgmtService.existsPhoneNumber(userDto.phoneNumber())) {
 			result = Constants.MSG_PHONE_EXISTS;
 		} else {
-			// Generar token de confirmación
-			String token = tokenService.generateToken();
+			UserDTO savedUser = userMgmtService.insertUser(userDto);
+			if (savedUser != null) {
+				// Guardar el token en la base de datos junto con el usuario
+				String token = tokenService.save(savedUser);
 
-			// Guardar el token en la base de datos junto con el usuario
-			tokenRepository.save(new ConfirmationToken(user, token));
+				// Enviar correo de confirmacion
+				String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
+				emailService.sendEmail(userDto.email(), "Confirma su Email",
+						"Haga clic en el siguiente enlace para confirmar su correo electrónico: " + confirmationUrl);
 
-			// Enviar correo de confirmación
-			String confirmationUrl = "http://localhost:8080/confirm?token=" + token;
-			emailService.sendEmail(user.getEmail(), "Confirm your email",
-					"Click the following link to confirm your email: " + confirmationUrl);
-
-			if (userMgmtService.insertUser(userDto) != null) {
 				result = Constants.MSG_REGISTER_USER;
 			} else {
 				result = Constants.MSG_UNEXPECTED_ERROR;
@@ -200,6 +191,25 @@ public class UserController {
 		model.addAttribute("message", result);
 
 		return result.equals(Constants.MSG_REGISTER_USER) ? "login-page" : "register";
+	}
+
+	@GetMapping
+	public String confirmEmail(@RequestParam("token") String token) {
+		if (log.isInfoEnabled())
+			log.info("Guardar nuevo usuario");
+
+		ConfirmationToken confirmationToken = tokenService.findByToken(token);
+
+		if (confirmationToken == null) {
+			return "Confirmación fallada";
+		}
+
+		com.ntd.persistence.User user = confirmationToken.getUser();
+		user.setEnabled(true);
+
+		userMgmtService.enableUser(user);
+
+		return "Confirmación de Email completada";
 	}
 
 	/**

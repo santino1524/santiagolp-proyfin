@@ -62,8 +62,8 @@ public class PostalAddressController {
 		// Comprobar si el usuario contiene esa direccion
 		PostalAddressDTO addressDto = postalAddressMgmtService.findByCityDirectionLineProvinceUser(
 				postalAddressDto.directionLine(), postalAddressDto.city(), postalAddressDto.province(),
-				new User(postalAddressDto.userId(), null, null, null, null, null, null, null, null, false, null, null,
-						null, null, null));
+				new User(postalAddressDto.userId(), null, null, null, null, null, null, null, null, false, true, null,
+						null, null, null, null));
 
 		if (addressDto != null && addressDto.addressId() != null) {
 			// Si existe para el usuario devolver codigo 422
@@ -93,7 +93,8 @@ public class PostalAddressController {
 	 */
 	@Transactional
 	@DeleteMapping("/delete")
-	public ResponseEntity<Void> deleteRelationPostalAddress(@RequestParam @NotNull final Long addressId) throws InternalException {
+	public ResponseEntity<Void> deleteRelationPostalAddress(@RequestParam @NotNull final Long addressId)
+			throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar direccion");
 
@@ -117,7 +118,7 @@ public class PostalAddressController {
 		// Retornar lista de direcciones
 		return ResponseEntity.ok()
 				.body(Collections.singletonMap("addresses", postalAddressMgmtService.searchByUser(new User(userId, null,
-						null, null, null, null, null, null, null, false, null, null, null, null, null))));
+						null, null, null, null, null, null, null, false, true, null, null, null, null, null))));
 	}
 
 	/**
