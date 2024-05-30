@@ -22,6 +22,8 @@ public record UserDTO(Long userId,
 
 		boolean blocked,
 
+		boolean enabled,
+
 		// Validar DNI
 		@NotBlank(message = Constants.MSG_DNI_NOT_VALID) @Pattern(regexp = Constants.REGEXP_DNI, message = Constants.MSG_DNI_NOT_VALID) String dni,
 
