@@ -76,10 +76,10 @@ public class SecurityConfig {
 		jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
 
 		// Configurar la seguridad de los endpoints HTTP
-		httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-				// .requestMatchers(Constants.getEndpoints()).authenticated().anyRequest().permitAll())
-				.requestMatchers(Constants.getEndpointsAdmin()).hasRole("SELLER")
-				.requestMatchers(Constants.getEndpointsAuth()).authenticated().anyRequest().permitAll())
+		httpSecurity
+				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+						.requestMatchers(Constants.getEndpointsAdmin()).hasRole("SELLER")
+						.requestMatchers(Constants.getEndpointsAuth()).authenticated().anyRequest().permitAll())
 				.csrf(AbstractHttpConfigurer::disable)
 				.formLogin(formLogin -> formLogin.loginPage(Constants.LOGIN_PAGE).loginProcessingUrl("/authentication")
 						.permitAll())

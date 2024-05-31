@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +16,6 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +31,8 @@ import com.ntd.services.EmailMgmtServiceI;
 import com.ntd.services.TokenMgmtServiceI;
 import com.ntd.services.UserMgmtServiceI;
 import com.ntd.utils.Constants;
-import com.ntd.utils.ValidateParams;
 
-import jakarta.transaction.Transactional;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +46,12 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/users")
 public class UserController {
+
+	/** String login-page */
+	private static final String LOGIN_PAGE = "login-page";
+
+	/** String message */
+	private static final String MESSAGE_STRING = "message";
 
 	/** Dependencia del servicio de gestion de usuarios */
 	private final UserMgmtServiceI userMgmtService;
@@ -65,6 +70,9 @@ public class UserController {
 
 	/** Depenencia TokenService */
 	private TokenMgmtServiceI tokenService;
+
+	@Value("${app.domain}")
+	private String domain;
 
 	/**
 	 * Constructor
@@ -155,9 +163,11 @@ public class UserController {
 	 * @param model
 	 * @return String
 	 * @throws InternalException
+	 * @throws MessagingException
 	 */
 	@PostMapping
-	public String saveUser(@Valid final UserDTO userDto, final Model model) throws InternalException {
+	public String saveUser(@Valid final UserDTO userDto, final Model model)
+			throws InternalException, MessagingException {
 		if (log.isInfoEnabled())
 			log.info("Guardar nuevo usuario");
 
@@ -172,14 +182,20 @@ public class UserController {
 			result = Constants.MSG_PHONE_EXISTS;
 		} else {
 			UserDTO savedUser = userMgmtService.insertUser(userDto);
+
 			if (savedUser != null) {
 				// Guardar el token en la base de datos junto con el usuario
 				String token = tokenService.save(savedUser);
 
+				StringBuilder builder = new StringBuilder();
+				builder.append(
+						"Haga clic en el siguiente enlace para confirmar su cuenta de usuario en la Tienda Luz Fuego Destrucción: ");
+				builder.append(domain);
+				builder.append("/users/confirm?token=");
+				builder.append(token);
+
 				// Enviar correo de confirmacion
-				String confirmationUrl = "http://localhost:8080/users/confirm?token=" + token;
-				emailService.sendEmail(userDto.email(), "Confirma su Email",
-						"Haga clic en el siguiente enlace para confirmar su correo electrónico: " + confirmationUrl);
+				emailService.sendEmail(userDto.email(), "Confirmación de cuenta de usuario", builder.toString());
 
 				result = Constants.MSG_REGISTER_USER;
 			} else {
@@ -188,9 +204,9 @@ public class UserController {
 		}
 
 		// Retornar respuesta
-		model.addAttribute("message", result);
+		model.addAttribute(MESSAGE_STRING, result);
 
-		return result.equals(Constants.MSG_REGISTER_USER) ? "login-page" : "register";
+		return result.equals(Constants.MSG_REGISTER_USER) ? LOGIN_PAGE : "register";
 	}
 
 	/**
@@ -208,7 +224,7 @@ public class UserController {
 		ConfirmationToken confirmationToken = tokenService.findByToken(token);
 
 		if (confirmationToken == null) {
-			model.addAttribute("message", "Confirmación fallada");
+			model.addAttribute(MESSAGE_STRING, "Confirmación fallada");
 			return "error";
 		}
 
@@ -216,9 +232,9 @@ public class UserController {
 		user.setEnabled(true);
 
 		userMgmtService.enableUser(user);
-		model.addAttribute("message", "La confirmación de su cuenta de usuario se ha completado");
+		model.addAttribute(MESSAGE_STRING, "La confirmación de su cuenta de usuario se ha completado");
 
-		return "login-page";
+		return LOGIN_PAGE;
 	}
 
 	/**
@@ -251,9 +267,9 @@ public class UserController {
 		}
 
 		// Retornar respuesta
-		model.addAttribute("message", result);
+		model.addAttribute(MESSAGE_STRING, result);
 
-		return user == null ? "recover-password" : "login-page";
+		return user == null ? "recover-password" : LOGIN_PAGE;
 	}
 
 	/**
@@ -292,32 +308,6 @@ public class UserController {
 	}
 
 	/**
-	 * Eliminar usuario
-	 * 
-	 * @param model
-	 * @param userDto
-	 * @return String
-	 * @throws InternalException
-	 */
-	@Transactional
-	@DeleteMapping
-	public String deleteUser(@RequestBody @NotNull final UserDTO userDto, final Model model) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Eliminar usuario");
-
-		// Validar id
-		ValidateParams.isNullObject(userDto.userId());
-
-		// Eliminar usuario
-		userMgmtService.deleteUser(userDto.userId());
-
-		// Retornar respuesta
-		model.addAttribute(Constants.MESSAGE_GROWL, Constants.MSG_SUCCESSFUL_OPERATION);
-
-		return "VISTA MOSTRAR RESPUESTA DE eliminar usuario";
-	}
-
-	/**
 	 * Retornar preguntas de usuario en pagina de recuperacion de contrasenna
 	 * 
 	 * @param model
@@ -343,24 +333,6 @@ public class UserController {
 	}
 
 	/**
-	 * Buscar todos los usuarios
-	 * 
-	 * @param model
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchAll")
-	public String showUsers(final Model model) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Mostrar todos los usuarios");
-
-		// Retornar lista de usuarios
-		model.addAttribute("users", userMgmtService.searchAll());
-
-		return "VISTA MOSTRAR lista usuario";
-	}
-
-	/**
 	 * Metodo para devolucion de los empleados buscados.
 	 * 
 	 * @param criterio
@@ -373,25 +345,6 @@ public class UserController {
 
 		return ResponseEntity.ok()
 				.body(Collections.singletonMap("user", userMgmtService.searchUserByCriterio(criterio, value)));
-	}
-
-	/**
-	 * Buscar usuario por DNI
-	 * 
-	 * @param model
-	 * @param dni
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchByDni")
-	public String searchByDNI(@RequestParam @NotNull final String dni, final Model model) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar usuario por dni");
-
-		// Retornar usuario
-		model.addAttribute("user", userMgmtService.searchByDni(dni));
-
-		return "VISTA MOSTRAR usuario por dni";
 	}
 
 	/**
@@ -422,47 +375,5 @@ public class UserController {
 			log.info("Buscar usuario por id");
 
 		return ResponseEntity.ok().body(Collections.singletonMap("user", userMgmtService.searchById(userId)));
-	}
-
-	/**
-	 * Buscar usuario por numero de telefono
-	 * 
-	 * @param phoneNumber
-	 * @param model
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchByPhone")
-	public String searchByPhoneNumber(@RequestParam @NotNull final String phoneNumber, final Model model)
-			throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar usuario por numero de telefono");
-
-		// Retornar usuario
-		model.addAttribute("user", userMgmtService.searchByPhoneNumber(phoneNumber));
-
-		return "VISTA MOSTRAR usuario por email";
-	}
-
-	/**
-	 * Buscar usuario por nombre y apellidos
-	 * 
-	 * @param name
-	 * @param surname
-	 * @param secondSurname
-	 * @param model
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchByName")
-	public String searchByName(@RequestParam @NotNull final String name, @NotNull final String surname,
-			final Model model, @NotNull final String secondSurname) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar usuario por nombre y apellidos");
-
-		// Retornar lista de usuarios
-		model.addAttribute("users", userMgmtService.searchByNameOrSurnameOrSecondSurname(name, surname, secondSurname));
-
-		return "VISTA MOSTRAR usuario por email";
 	}
 }

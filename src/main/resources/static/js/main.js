@@ -124,26 +124,82 @@ function showMessage(div, message) {
 	}, 10000);
 }
 
+// Validar email
+function validateEmail(email) {
+	return !emailRegExp.test(email);
+}
+
+
+// Comprobacion de cuenta antes de logarse
+function verifyUserToConfirm(user) {
+	return user && user.userId && user.enabled === false;
+}
+
 // Autenticacion de usuarios en el login pagina
-function submitLoginPage(event) {
+async function submitLoginPage(event) {
+	event.preventDefault();
+	
 	let user = document.getElementById('inputEmail').value;
 	let password = document.getElementById('inputPassword').value;
+	let alertDiv = document.getElementById('messageEmailErrorPage');
+
+	// Validar email
+	if (validateEmail(user)) {
+
+		showMessage(alertDiv, 'Debe introducir una dirección de correo válida');
+		return;
+	}
+
+	// Obtener datos de usuario
+	let userData = await searchByEmail(user);
+
+	// Comprobacion de cuenta antes de logarse
+	if (verifyUserToConfirm(userData)) {
+
+		showMessage(alertDiv, 'La cuenta de usuario aún no ha sido confirmada');
+		return;
+	}
 
 	if (verifyUserPass(user, password)) {
-		event.preventDefault();
+		
 		$('#loginPageModal').modal('show');
+		return;
 	}
+	
+	document.getElementById('formLoginPage').submit();
 }
 
 // Autenticacion de usuarios en el login nav
-function submitLoginNav(event) {
+async function submitLoginNav(event) {
+	event.preventDefault();
+	
 	let user = document.getElementById('inputEmail2').value;
 	let password = document.getElementById('inputPassword2').value;
+	let alertDiv = document.getElementById('messageEmailErrorNav');
+
+	// Validar email
+	if (validateEmail(user)) {
+
+		showMessage(alertDiv, 'Debe introducir una dirección de correo válida');
+		return;
+	}
+
+	// Obtener datos de usuario
+	let userData = await searchByEmail(user);
+
+	// Comprobacion de cuenta antes de logarse
+	if (verifyUserToConfirm(userData)) {
+
+		showMessage(alertDiv, 'La cuenta de usuario aún no ha sido confirmada');
+		return;
+	}
 
 	if (verifyUserPass(user, password)) {
-		event.preventDefault();
 		$('#loginModal').modal('show');
+		return;
 	}
+	
+	document.getElementById('login-nav').submit();
 }
 
 // Verificar usuario y passwd
@@ -1016,16 +1072,16 @@ async function searchByEmail(email) {
 		let response = await fetch("/users/searchByEmail?email=" + encodeURIComponent(email), {
 			method: "GET"
 		});
-
+console.log("Received response:", response);
 		let data;
 
 		if (response.status === 200) {
 			data = await response.json();
+			return data.user;
 		} else {
 			window.location.href = urlError;
+			return;
 		}
-
-		return data.user;
 
 	} catch (error) {
 		console.error(error);

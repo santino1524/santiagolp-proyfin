@@ -1,6 +1,8 @@
 
 package com.ntd.services;
 
+import jakarta.mail.MessagingException;
+
 /**
  * Servicio de correos
  * 
@@ -14,6 +16,7 @@ public interface EmailMgmtServiceI {
 	 * @param to
 	 * @param subject
 	 * @param text
+	 * @throws MessagingException
 	 */
-	public void sendEmail(String to, String subject, String text);
+	public void sendEmail(String to, String subject, String text) throws MessagingException;
 }

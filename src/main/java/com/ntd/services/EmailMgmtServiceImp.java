@@ -24,9 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailMgmtServiceImp implements EmailMgmtServiceI {
 
-	/** Dependecia JavaMailSender */
-	// private JavaMailSender mailSender;
-
 	@Value("${mail.smtp.host}")
 	private String host;
 
@@ -46,31 +43,42 @@ public class EmailMgmtServiceImp implements EmailMgmtServiceI {
 	private String password;
 
 	/**
-	 * Constructor
+	 * Crear sesion para envio de email
 	 * 
-	 * @param mailSender
+	 * @return Session
 	 */
-//	public EmailMgmtServiceImp(JavaMailSender mailSender) {
-//		this.mailSender = mailSender;
-//	}
-
 	private Session createSession() {
+		if (log.isInfoEnabled())
+			log.info("Crear sesion para envio de email");
+
 		Properties props = new Properties();
 		props.put("mail.smtp.host", host);
 		props.put("mail.smtp.port", port);
 		props.put("mail.smtp.ssl.enable", sslEnable);
 		props.put("mail.smtp.auth", auth);
 
-		Authenticator auth = new Authenticator() {
+		Authenticator authenticator = new Authenticator() {
+			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(username, password);
 			}
 		};
 
-		return Session.getInstance(props, auth);
+		return Session.getInstance(props, authenticator);
 	}
 
-	public void sendEmail(String to, String subject, String text) {
+	/**
+	 * Enviar email
+	 * 
+	 * @param to
+	 * @param subject
+	 * @param text
+	 * @throws MessagingException
+	 */
+	public void sendEmail(String to, String subject, String text) throws MessagingException {
+		if (log.isInfoEnabled())
+			log.info("Enviar email");
+
 		try {
 			Session session = createSession();
 
@@ -82,21 +90,11 @@ public class EmailMgmtServiceImp implements EmailMgmtServiceI {
 
 			Transport.send(message);
 		} catch (MessagingException e) {
-			e.printStackTrace();
-			// Manejar la excepción según sea necesario
+			if (log.isErrorEnabled())
+				log.error("Enviar email");
+
+			throw new MessagingException(e.getMessage());
 		}
 	}
-
-//	@Override
-//	public void sendEmail(String to, String subject, String text) {
-//		if (log.isInfoEnabled())
-//			log.info("Enviar mensaje de confirmacion");
-//
-//		SimpleMailMessage message = new SimpleMailMessage();
-//		message.setTo(to);
-//		message.setSubject(subject);
-//		message.setText(text);
-//		mailSender.send(message);
-//	}
 
 }
