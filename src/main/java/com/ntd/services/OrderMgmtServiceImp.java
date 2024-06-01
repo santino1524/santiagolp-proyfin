@@ -26,10 +26,13 @@ import com.ntd.persistence.PostalAddressRepositoryI;
 import com.ntd.persistence.ProductSold;
 import com.ntd.persistence.ProductSoldRepositoryI;
 import com.ntd.persistence.User;
+import com.ntd.persistence.UserRepositoryI;
 import com.ntd.utils.Constants;
+import com.ntd.utils.DateUtil;
 import com.ntd.utils.QRCode;
 import com.ntd.utils.ValidateParams;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,6 +44,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 
+	/** String Hola */
+	private static final String HOLA = "Hola ";
+
 	/** Dependencia de OrderRepository */
 	private final OrderRepositoryI orderRepository;
 
@@ -50,22 +56,33 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 	/** Dependencia de ProductSoldRepository */
 	private final ProductSoldRepositoryI productSoldRepository;
 
+	/** Depenencia EmailService */
+	private EmailMgmtServiceI emailService;
+
+	/** Depenencia UserRepository */
+	private UserRepositoryI userRepository;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param orderRepository
 	 * @param addressRepository
 	 * @param productSoldRepository
+	 * @param emailService
+	 * @param userRepository
 	 */
 	public OrderMgmtServiceImp(OrderRepositoryI orderRepository, PostalAddressRepositoryI addressRepository,
-			ProductSoldRepositoryI productSoldRepository) {
+			ProductSoldRepositoryI productSoldRepository, EmailMgmtServiceI emailService,
+			UserRepositoryI userRepository) {
 		this.orderRepository = orderRepository;
 		this.addressRepository = addressRepository;
 		this.productSoldRepository = productSoldRepository;
+		this.emailService = emailService;
+		this.userRepository = userRepository;
 	}
 
 	@Override
-	public ResponseEntity<Object> insertOrder(OrderDTO orderDto) throws InternalException {
+	public ResponseEntity<Object> insertOrder(OrderDTO orderDto) throws InternalException, MessagingException {
 		if (log.isInfoEnabled())
 			log.info("Insertar pedido");
 
@@ -94,6 +111,25 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		if (order != null && soldProductsRegistered.size() == soldProducts.size()) {
 			// Retornar 200 para operacion exitosa
 			result = ResponseEntity.ok().build();
+
+			// Mandar correo de nuevo pedido
+			User user = userRepository.findById(orderDto.userId()).orElseThrow(InternalException::new);
+
+			// Preparar cuerpo del correo
+			StringBuilder body = new StringBuilder();
+			body.append(HOLA);
+			body.append(user.getName());
+			body.append(", ¡Gracias por tu reciente compra en la ");
+			body.append(Constants.STORE_NAME);
+			body.append("! Nos complace informarte que tu pedido ha sido recibido y está siendo procesado.");
+
+			// Preparar asunto del correo
+			StringBuilder subject = new StringBuilder();
+			subject.append("¡Gracias por tu pedido! Detalles de tu compra en la ");
+			subject.append(Constants.STORE_NAME);
+
+			// Enviar correo
+			emailService.sendEmail(user.getEmail(), subject.toString(), body.toString());
 		} else {
 			// Retornar 500 para error
 			result = ResponseEntity.internalServerError().build();
@@ -105,7 +141,7 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 	}
 
 	@Override
-	public OrderDTO updateOrderStatus(Long orderId, String status) throws InternalException {
+	public OrderDTO updateOrderStatus(Long orderId, String status) throws InternalException, MessagingException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar estado de pedido");
 
@@ -119,6 +155,55 @@ public class OrderMgmtServiceImp implements OrderMgmtServiceI {
 		// Actualizar estado de pedido
 		final Order order = orderRepository.findById(orderId).orElseThrow(InternalException::new);
 		order.setStatus(status);
+
+		// Obtener datos del usuario
+		User user = userRepository.findById(order.getUser().getUserId()).orElseThrow(InternalException::new);
+
+		if (status.equals(Constants.getOrderStatuses().get(2))) {
+			// Mandar correo de cancelacion de pedido
+
+			// Preparar cuerpo del correo
+			StringBuilder body = new StringBuilder();
+			body.append(HOLA);
+			body.append(user.getName());
+			body.append(", lamentamos informarte que tu pedido número: ");
+			body.append(order.getOrderNumber());
+			body.append(", realizado el ");
+			body.append(DateUtil.formatDate(order.getOrderDate()));
+			body.append(
+					", ha sido cancelado. El monto total de tu pedido será reembolsado a través del mismo método de pago utilizado en la compra.");
+
+			// Preparar asunto del correo
+			StringBuilder subject = new StringBuilder();
+			subject.append("Actualización sobre tu pedido en la ");
+			subject.append(Constants.STORE_NAME);
+
+			// Enviar correo
+			emailService.sendEmail(user.getEmail(), subject.toString(), body.toString());
+
+		} else if (status.equals(Constants.getOrderStatuses().get(1))) {
+			// Mandar correo de pedido enviado
+
+			// Preparar cuerpo del correo
+			StringBuilder body = new StringBuilder();
+			body.append(HOLA);
+			body.append(user.getName());
+			body.append(", nos complace informarte que tu pedido número: ");
+			body.append(order.getOrderNumber());
+			body.append(", realizado el ");
+			body.append(DateUtil.formatDate(order.getOrderDate()));
+			body.append(
+					", ha sido enviado. Agradecemos tu confianza y esperamos que disfrutes de tu compra. No dudes en compartir tu experiencia con nosotros.");
+
+			// Preparar asunto del correo
+			StringBuilder subject = new StringBuilder();
+			subject.append("¡Tu pedido en la ");
+			subject.append(Constants.STORE_NAME);
+			subject.append(" ha sido enviado!");
+
+			// Enviar correo
+			emailService.sendEmail(user.getEmail(), subject.toString(), body.toString());
+		}
 
 		// Persistir Pedido y retornar DTO
 		return DTOMapperI.MAPPER.mapOrderToDTO(orderRepository.save(order));

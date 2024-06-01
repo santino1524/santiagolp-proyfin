@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import com.ntd.dto.OrderDTO;
 import com.ntd.exceptions.InternalException;
 
+import jakarta.mail.MessagingException;
+
 /**
  * Servicio de gestion de pedidos
  * 
@@ -21,8 +23,9 @@ public interface OrderMgmtServiceI {
 	 * @param orderDto
 	 * @return ResponseEntity
 	 * @throws InternalException
+	 * @throws MessagingException
 	 */
-	public ResponseEntity<Object> insertOrder(final OrderDTO orderDto) throws InternalException;
+	public ResponseEntity<Object> insertOrder(final OrderDTO orderDto) throws InternalException, MessagingException;
 
 	/**
 	 * Actualizar pedido
@@ -31,8 +34,10 @@ public interface OrderMgmtServiceI {
 	 * @param status
 	 * @return
 	 * @throws InternalException
+	 * @throws MessagingException
 	 */
-	public OrderDTO updateOrderStatus(final Long orderId, final String status) throws InternalException;
+	public OrderDTO updateOrderStatus(final Long orderId, final String status)
+			throws InternalException, MessagingException;
 
 	/**
 	 * Eliminar pedido

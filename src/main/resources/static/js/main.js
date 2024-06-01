@@ -22,17 +22,62 @@ const maxSizeInBytes = 500 * 1024;
 // Comprobacion de contrasennas al enviar formulario de registro
 document.addEventListener("DOMContentLoaded", function() {
 	let submitButton = document.getElementById("submitButtonRegister");
+	let inputDni = document.getElementById("dni");
+	
 	if (submitButton) {
 		submitButton.addEventListener("click", function(event) {
 			let password = document.getElementById("passwd").value;
 			let confirmPassword = document.getElementById("confirmPasswd").value;
-			if (!checkPasswords(password, confirmPassword, document.getElementById("passwordError"))) {
+			if (!(checkPasswords(password, confirmPassword, document.getElementById("passwordError")) && validateDNI(inputDni))) {
 				event.preventDefault();
 			}
 		});
 	}
 });
 
+// Convertir a mayuscula la letra del DNI
+function convertToUpperCase(input) {
+	input.value = input.value.toUpperCase();
+}
+
+// Validacion del DNI
+function validateDNI(input) {
+	let dni = input.value;
+	let message = "El DNI/NIE introducido no es válido";
+	let dniError = document.getElementById('dniError');
+
+	if (!/^[XYZ]?\d{7,8}[A-Z]$/.test(dni)) {
+		showMessage(dniError, message);
+		
+		return false;
+	}
+
+	let number, letter;
+	if (/^[XYZ]/.test(dni)) {
+		// NIE
+		number = dni.substr(1, dni.length - 2);
+		letter = dni.substr(dni.length - 1, 1);
+
+		if (dni[0] === 'X') number = '0' + number;
+		if (dni[0] === 'Y') number = '1' + number;
+		if (dni[0] === 'Z') number = '2' + number;
+	} else {
+		// DNI
+		number = dni.substr(0, dni.length - 1);
+		letter = dni.substr(dni.length - 1, 1);
+	}
+
+	const validLetters = 'TRWAGMYFPDXBNJZSQVHLCKE';
+	let calculatedLetter = validLetters[number % 23];
+
+	if (calculatedLetter !== letter) {
+		showMessage(dniError, message);
+		
+		return false;
+	}
+
+	return true;
+}
 
 // Limitar entrada en input cantidad de productos
 function limitInput(element) {
@@ -138,7 +183,7 @@ function verifyUserToConfirm(user) {
 // Autenticacion de usuarios en el login pagina
 async function submitLoginPage(event) {
 	event.preventDefault();
-	
+
 	let user = document.getElementById('inputEmail').value;
 	let password = document.getElementById('inputPassword').value;
 	let alertDiv = document.getElementById('messageEmailErrorPage');
@@ -161,18 +206,18 @@ async function submitLoginPage(event) {
 	}
 
 	if (verifyUserPass(user, password)) {
-		
+
 		$('#loginPageModal').modal('show');
 		return;
 	}
-	
+
 	document.getElementById('formLoginPage').submit();
 }
 
 // Autenticacion de usuarios en el login nav
 async function submitLoginNav(event) {
 	event.preventDefault();
-	
+
 	let user = document.getElementById('inputEmail2').value;
 	let password = document.getElementById('inputPassword2').value;
 	let alertDiv = document.getElementById('messageEmailErrorNav');
@@ -198,7 +243,7 @@ async function submitLoginNav(event) {
 		$('#loginModal').modal('show');
 		return;
 	}
-	
+
 	document.getElementById('login-nav').submit();
 }
 
@@ -1072,7 +1117,7 @@ async function searchByEmail(email) {
 		let response = await fetch("/users/searchByEmail?email=" + encodeURIComponent(email), {
 			method: "GET"
 		});
-console.log("Received response:", response);
+		console.log("Received response:", response);
 		let data;
 
 		if (response.status === 200) {

@@ -32,7 +32,7 @@ function layoutPersonalInformation(user) {
 	strongUserName.textContent = 'Nombre: ';
 	strongSurname.textContent = 'Apellidos: ';
 	strongPhone.textContent = 'Teléfono: ';
-	strongDni.textContent = 'DNI: ';
+	strongDni.textContent = 'DNI/NIE: ';
 
 	userName.append(strongUserName);
 	surnames.append(strongSurname);

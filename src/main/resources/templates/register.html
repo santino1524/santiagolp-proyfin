@@ -49,9 +49,12 @@
 			</div>
 			<div class="form-row">
 				<div class="form-group col-md-4">
-					<label for="dni">DNI *</label> <input type="text"
+					<div id="dniError" class="alert alert-danger d-none"
+						role="alert"></div>
+					<label for="dni">DNI/NIE *</label> <input type="text"
 						class="form-control" id="dni" name="dni" placeholder="DNI"
-						required pattern="^[a-zA-Z0-9]{9}$"
+						required pattern="(^\d{8}[A-Z]$)|(^[XYZ]\d{7}[A-Z]$)"
+						oninput="convertToUpperCase(this)" onchange="validateDNI(this)"
 						title="Por favor, introduce tu DNI. Debe contener 8 dígitos seguidos de una letra">
 				</div>
 				<div class="form-group col-md-4">
@@ -121,8 +124,8 @@
 					</div>
 				</div>
 			</div>
-			<input type="hidden" value=false name="enabled">
-			<input type="hidden" value=false name="blocked"> <input
+			<input type="hidden" value=false name="enabled"> <input
+				type="hidden" value=false name="blocked"> <input
 				type="hidden" value="2" name="role">
 			<button type="submit" id="submitButtonRegister"
 				class="btn btn-primary">Registrarse</button>
