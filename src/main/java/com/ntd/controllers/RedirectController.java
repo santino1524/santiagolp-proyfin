@@ -108,21 +108,6 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
-//	@GetMapping(path = "adminProducts")
-//	public String showProducts(final Model model) {
-//		if (log.isInfoEnabled())
-//			log.info("Mostrar AdminProducts");
-//
-//		model.addAttribute("showProducts", true);
-//
-//		return "admin-products";
-//	}
-
-	/**
-	 * Mostrar AdminProducts
-	 * 
-	 * @return String
-	 */
 	@GetMapping(path = "adminProducts")
 	public String showProducts() {
 		if (log.isInfoEnabled())

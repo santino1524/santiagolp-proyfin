@@ -1,4 +1,4 @@
-//Expresiones regulares
+	//Expresiones regulares
 const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
 const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
@@ -123,39 +123,6 @@ function loaderActive() {
 
 	loaderWrapper.style.display = 'flex';
 }
-
-// Activar enlaces navlink
-//document.addEventListener("DOMContentLoaded", function() {
-//	const navLinks = document.querySelectorAll(".nav-link");
-//	navLinks.forEach(function(navLink) {
-//		navLink.addEventListener("click", function() {
-//			navLinks.forEach(function(link) {
-//				link.parentNode.classList.remove("active");
-//			});
-//			this.parentNode.classList.add("active");
-//		});
-//	});
-//});
-//document.addEventListener("DOMContentLoaded", function() {
-//    const navLinks = document.querySelectorAll(".nav-link");
-//
-//    navLinks.forEach(function(navLink) {
-//        navLink.addEventListener("click", function(event) {
-//            // Evitar que se siga el enlace
-//            event.preventDefault();
-//
-//            // Quitar la clase "active" de todos los enlaces
-//            navLinks.forEach(function(link) {
-//                link.parentNode.classList.remove("active");
-//            });
-//
-//            // Agregar la clase "active" al enlace clickeado
-//            this.parentNode.classList.add("active");
-//            
-//            
-//        });
-//    });
-//});
 
 // Mostrar alert
 function showMessage(div, message) {
