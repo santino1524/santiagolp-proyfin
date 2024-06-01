@@ -35,23 +35,23 @@ public class PostalAddress implements Serializable {
 	private Long addressId;
 
 	/** Linea de direccion */
-	@Column(name = "C_DIRECTION_LINE", nullable = false)
+	@Column(name = "C_DIRECTION_LINE", nullable = false, length = 255)
 	private String directionLine;
 
 	/** Ciudad */
-	@Column(name = "C_CITY", nullable = false)
+	@Column(name = "C_CITY", nullable = false, length = 100)
 	private String city;
 
 	/** Provincia */
-	@Column(name = "C_PROVINCE", nullable = false)
+	@Column(name = "C_PROVINCE", nullable = false, length = 100)
 	private String province;
 
 	/** Codigo postal */
-	@Column(name = "C_CP", nullable = false)
+	@Column(name = "C_CP", nullable = false, length = 100)
 	private String cp;
 
 	/** Pais */
-	@Column(name = "C_COUNTRY", nullable = false)
+	@Column(name = "C_COUNTRY", nullable = false, length = 100)
 	private String country;
 
 	/** Usuarios FK */

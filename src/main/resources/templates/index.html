@@ -29,6 +29,15 @@
 	<div class="container text-center mt-3" id="containerIndex"></div>
 	</div>
 
+	<div class="d-none text-center mt-5" id="msgNotFound">
+		<p class="font-weight-bold" style="font-size: 24px;">La tienda aún no tiene productos a ofrecer.</p>
+	</div>
+
+	<div class="col text-center d-none mt-5 mb-5" id="not-found">
+		<img src="/images/not-found.png" class="img-fluid"
+			style="max-height: 400px;">
+	</div>
+
 	<!-- MODAL PRODUCT -->
 	<div th:replace="~{fragments/general-fragments :: modalProduct}">
 	</div>

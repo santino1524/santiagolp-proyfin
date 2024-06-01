@@ -21,6 +21,27 @@ function showEmptyCar() {
 	document.getElementById('carContainer').classList.add('d-none');
 }
 
+// Funcion para actualizar el valor del input
+function updateInputValue(input, productCar, cartLfd) {
+	limitInput(input);
+
+	// Actualizar la cantidad en el array cartLfd
+	productCar.quantity = parseInt(input.value) || 1;
+
+	// Actualizar valores en la fila
+	let tdUnityPrice = document.getElementById(`tdUnityPrice_${productCar.productId}`).textContent;
+	document.getElementById(`tdTotalPrice_${productCar.productId}`).textContent = Number(tdUnityPrice * productCar.quantity).toFixed(2);
+	localStorage.setItem('cartLfd', JSON.stringify(cartLfd));
+
+	// Calcular total del carrito
+	let total = carTotal(cartLfd);
+	// Establecer el total en el h4
+	document.getElementById("carTotal").textContent = total.toFixed(2) + '€';
+
+	// Actualizar cantidad en carrito
+	addCart();
+}
+
 // Maquetar tabla con productos
 async function layoutTableCar(cartLfd) {
 	let tbody = document.getElementById('tbodyProductsCar');
@@ -70,32 +91,49 @@ async function layoutTableCar(cartLfd) {
 		// Columna Cantidad de producto
 		let tdQuantity = document.createElement('td');
 		tdQuantity.classList.add('align-middle');
+
+		// Crear boton de decremento
+		let minusButton = document.createElement('button');
+		minusButton.setAttribute('data-mdb-button-init', '');
+		minusButton.setAttribute('data-mdb-ripple-init', '');
+		minusButton.className = 'btn btn-link px-2';
+		minusButton.addEventListener('click', function() {
+			this.parentNode.querySelector('input[type=number]').stepDown();
+			updateInputValue(this.parentNode.querySelector('input[type=number]'), productCar, cartLfd);
+		});
+		let minusIcon = document.createElement('i');
+		minusIcon.className = 'fas fa-minus';
+		minusButton.append(minusIcon);
+		tdQuantity.append(minusButton);
+
+		// Input
 		let input = document.createElement('input');
 		input.id = `inputQuantity_${productCar.productId}`;
 		input.value = productCar.quantity;
+		input.min = 1;
+		input.max = 99;
 		input.style.width = "50px";
 		input.type = "number";
 		input.placeholder = "1";
 		input.addEventListener('input', function() {
-			limitInput(this);
-
-			// Actualizar la cantidad en el array cartLfd
-			productCar.quantity = parseInt(this.value) || 1;
-
-			// Actualizar valores en la fila
-			let tdUnityPrice = document.getElementById(`tdUnityPrice_${productCar.productId}`).textContent;
-			document.getElementById(`tdTotalPrice_${productCar.productId}`).textContent = Number(tdUnityPrice * productCar.quantity).toFixed(2);
-			localStorage.setItem('cartLfd', JSON.stringify(cartLfd));
-
-			// Calcular total del carrito
-			let total = carTotal(cartLfd);
-			// Establecer el total en el h4
-			document.getElementById("carTotal").textContent = total.toFixed(2) + '€';
-
-			// Actualizar cantidad en carrito
-			addCart();
+			updateInputValue(this.parentNode.querySelector('input[type=number]'), productCar, cartLfd);
 		});
 		tdQuantity.append(input);
+
+		// Crear boton de incremento
+		let plusButton = document.createElement('button');
+		plusButton.setAttribute('data-mdb-button-init', '');
+		plusButton.setAttribute('data-mdb-ripple-init', '');
+		plusButton.className = 'btn btn-link px-2';
+		plusButton.addEventListener('click', function() {
+			this.parentNode.querySelector('input[type=number]').stepUp();
+			updateInputValue(this.parentNode.querySelector('input[type=number]'), productCar, cartLfd);
+		});
+		let plusIcon = document.createElement('i');
+		plusIcon.className = 'fas fa-plus';
+		plusButton.append(plusIcon);
+		tdQuantity.append(plusButton);
+
 		// Annadir a la fila
 		tr.append(tdQuantity);
 
@@ -209,7 +247,6 @@ async function checkProducts() {
 			}
 		});
 	} else {
-		//window.location.href = '/login-page';
 		window.location.href = '/checkAuth';
 	}
 }

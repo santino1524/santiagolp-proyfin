@@ -380,4 +380,12 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		return DTOMapperI.MAPPER.mapUserToDTO(user);
 	}
 
+	@Override
+	public void enableUser(User user) {
+		if (log.isInfoEnabled())
+			log.info("Habilitar usuario");
+
+		userRepository.save(user);
+	}
+
 }

@@ -1,11 +1,11 @@
-//Expresiones regulares
+	//Expresiones regulares
 const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
 const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const passwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
-const dniRegExp = /^\d{8}[a-zA-Z]$/;
+const dniRegExp = /(^\d{8}[A-Z]$)|(^[XYZ]\d{7}[A-Z]$)/;
 const ivaRegex = /^\d{1,2}$/;
 const phoneRegex = /^\d{9}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
@@ -22,17 +22,62 @@ const maxSizeInBytes = 500 * 1024;
 // Comprobacion de contrasennas al enviar formulario de registro
 document.addEventListener("DOMContentLoaded", function() {
 	let submitButton = document.getElementById("submitButtonRegister");
+	let inputDni = document.getElementById("dni");
+	
 	if (submitButton) {
 		submitButton.addEventListener("click", function(event) {
 			let password = document.getElementById("passwd").value;
 			let confirmPassword = document.getElementById("confirmPasswd").value;
-			if (!checkPasswords(password, confirmPassword, document.getElementById("passwordError"))) {
+			if (!(checkPasswords(password, confirmPassword, document.getElementById("passwordError")) && validateDNI(inputDni))) {
 				event.preventDefault();
 			}
 		});
 	}
 });
 
+// Convertir a mayuscula la letra del DNI
+function convertToUpperCase(input) {
+	input.value = input.value.toUpperCase();
+}
+
+// Validacion del DNI
+function validateDNI(input) {
+	let dni = input.value;
+	let message = "El DNI/NIE introducido no es válido";
+	let dniError = document.getElementById('dniError');
+
+	if (!/^[XYZ]?\d{7,8}[A-Z]$/.test(dni)) {
+		showMessage(dniError, message);
+		
+		return false;
+	}
+
+	let number, letter;
+	if (/^[XYZ]/.test(dni)) {
+		// NIE
+		number = dni.substr(1, dni.length - 2);
+		letter = dni.substr(dni.length - 1, 1);
+
+		if (dni[0] === 'X') number = '0' + number;
+		if (dni[0] === 'Y') number = '1' + number;
+		if (dni[0] === 'Z') number = '2' + number;
+	} else {
+		// DNI
+		number = dni.substr(0, dni.length - 1);
+		letter = dni.substr(dni.length - 1, 1);
+	}
+
+	const validLetters = 'TRWAGMYFPDXBNJZSQVHLCKE';
+	let calculatedLetter = validLetters[number % 23];
+
+	if (calculatedLetter !== letter) {
+		showMessage(dniError, message);
+		
+		return false;
+	}
+
+	return true;
+}
 
 // Limitar entrada en input cantidad de productos
 function limitInput(element) {
@@ -79,39 +124,6 @@ function loaderActive() {
 	loaderWrapper.style.display = 'flex';
 }
 
-// Activar enlaces navlink
-//document.addEventListener("DOMContentLoaded", function() {
-//	const navLinks = document.querySelectorAll(".nav-link");
-//	navLinks.forEach(function(navLink) {
-//		navLink.addEventListener("click", function() {
-//			navLinks.forEach(function(link) {
-//				link.parentNode.classList.remove("active");
-//			});
-//			this.parentNode.classList.add("active");
-//		});
-//	});
-//});
-//document.addEventListener("DOMContentLoaded", function() {
-//    const navLinks = document.querySelectorAll(".nav-link");
-//
-//    navLinks.forEach(function(navLink) {
-//        navLink.addEventListener("click", function(event) {
-//            // Evitar que se siga el enlace
-//            event.preventDefault();
-//
-//            // Quitar la clase "active" de todos los enlaces
-//            navLinks.forEach(function(link) {
-//                link.parentNode.classList.remove("active");
-//            });
-//
-//            // Agregar la clase "active" al enlace clickeado
-//            this.parentNode.classList.add("active");
-//            
-//            
-//        });
-//    });
-//});
-
 // Mostrar alert
 function showMessage(div, message) {
 	div.innerText = message;
@@ -124,26 +136,82 @@ function showMessage(div, message) {
 	}, 10000);
 }
 
+// Validar email
+function validateEmail(email) {
+	return !emailRegExp.test(email);
+}
+
+
+// Comprobacion de cuenta antes de logarse
+function verifyUserToConfirm(user) {
+	return user && user.userId && user.enabled === false;
+}
+
 // Autenticacion de usuarios en el login pagina
-function submitLoginPage(event) {
+async function submitLoginPage(event) {
+	event.preventDefault();
+
 	let user = document.getElementById('inputEmail').value;
 	let password = document.getElementById('inputPassword').value;
+	let alertDiv = document.getElementById('messageEmailErrorPage');
+
+	// Validar email
+	if (validateEmail(user)) {
+
+		showMessage(alertDiv, 'Debe introducir una dirección de correo válida');
+		return;
+	}
+
+	// Obtener datos de usuario
+	let userData = await searchByEmail(user);
+
+	// Comprobacion de cuenta antes de logarse
+	if (verifyUserToConfirm(userData)) {
+
+		showMessage(alertDiv, 'La cuenta de usuario aún no ha sido confirmada');
+		return;
+	}
 
 	if (verifyUserPass(user, password)) {
-		event.preventDefault();
+
 		$('#loginPageModal').modal('show');
+		return;
 	}
+
+	document.getElementById('formLoginPage').submit();
 }
 
 // Autenticacion de usuarios en el login nav
-function submitLoginNav(event) {
+async function submitLoginNav(event) {
+	event.preventDefault();
+
 	let user = document.getElementById('inputEmail2').value;
 	let password = document.getElementById('inputPassword2').value;
+	let alertDiv = document.getElementById('messageEmailErrorNav');
+
+	// Validar email
+	if (validateEmail(user)) {
+
+		showMessage(alertDiv, 'Debe introducir una dirección de correo válida');
+		return;
+	}
+
+	// Obtener datos de usuario
+	let userData = await searchByEmail(user);
+
+	// Comprobacion de cuenta antes de logarse
+	if (verifyUserToConfirm(userData)) {
+
+		showMessage(alertDiv, 'La cuenta de usuario aún no ha sido confirmada');
+		return;
+	}
 
 	if (verifyUserPass(user, password)) {
-		event.preventDefault();
 		$('#loginModal').modal('show');
+		return;
 	}
+
+	document.getElementById('login-nav').submit();
 }
 
 // Verificar usuario y passwd
@@ -876,19 +944,19 @@ async function saveAddressForm() {
 	if (addressLine && city && province && postalCode) {
 
 		// Validar los valores usando el patron
-		if (!onlyWordsNumbersSpaces.test(addressLine)) {
+		if (!onlyWordsNumbersSpaces.test(addressLine) || addressLine.length > 255) {
 			showMessage(divMessageAddressError, "Para la dirección solo se permiten palabras, números y espacios");
 
 			return;
 		}
 
-		if (!regexOnlyWordSpaces.test(city)) {
+		if (!regexOnlyWordSpaces.test(city) || addressLine.length > 100) {
 			showMessage(divMessageAddressError, "Para la ciudad solo se permiten palabras con espacios");
 
 			return;
 		}
 
-		if (!regexOnlyWordSpaces.test(province)) {
+		if (!regexOnlyWordSpaces.test(province) || addressLine.length > 100) {
 			showMessage(divMessageAddressError, "Para la provincia solo se permiten palabras con espacios");
 
 			return;
@@ -1016,16 +1084,16 @@ async function searchByEmail(email) {
 		let response = await fetch("/users/searchByEmail?email=" + encodeURIComponent(email), {
 			method: "GET"
 		});
-
+		console.log("Received response:", response);
 		let data;
 
 		if (response.status === 200) {
 			data = await response.json();
+			return data.user;
 		} else {
 			window.location.href = urlError;
+			return;
 		}
-
-		return data.user;
 
 	} catch (error) {
 		console.error(error);

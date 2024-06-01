@@ -53,9 +53,9 @@
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
 					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
-						th:href="@{/about}	">Acerca de</a></li>
+						href="/about#">Acerca de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
-						class="nav-link titleNav" th:href="@{/admin}" id="adminLink">Administración</a></li>
+						class="nav-link titleNav" href="/admin#" id="adminLink">Administración</a></li>
 				</ul>
 
 				<ul class="navbar-nav ml-auto">
@@ -114,8 +114,7 @@
 										</form>
 									</div>
 									<div class="bottom text-center">
-										¿Eres nuevo por aquí? <a id="linkRegister"
-											th:href="@{/register}"><b>Resgístrate</b></a>
+										¿Eres nuevo por aquí? <a id="linkRegister" href="/register#"><b>Resgístrate</b></a>
 									</div>
 								</div>
 							</li>
@@ -129,8 +128,8 @@
 						<div class="dropdown-menu dropdown-menu-right bg-dark"
 							aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white"
-								th:href="@{/userProfile}">Mis datos</a> <a
-								class="dropdown-item bg-dark text-white" th:href="@{/myOrders}">Mis
+								href="/userProfile#">Mis datos</a> <a
+								class="dropdown-item bg-dark text-white" href="/myOrders#}">Mis
 								compras</a> <a class="dropdown-item bg-dark text-white"
 								th:href="@{/logout}">Salir</a>
 						</div></li>
@@ -141,7 +140,7 @@
 			<div class="navbar-nav">
 				<div class="cart-container">
 					<a id="cartIcon" class="nav-link titleNav"
-						th:href="@{/shoppingCart}" title="Cesta de compras"> <i
+						href="/shoppingCart#" title="Cesta de compras"> <i
 						class="fas fa-shopping-cart fa-lg"></i>
 					</a> <span id="cartQuantity" class="badge badge-pill badge-danger"></span>
 				</div>
@@ -171,7 +170,7 @@
 		</div>
 	</div>
 
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
+	<!-- MENU DE ADMINISTRACION DE LA APP -->
 	<div th:fragment="headerAdmin">
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -187,19 +186,19 @@
 				<div class="collapse navbar-collapse"
 					id="navbarSupportedContentAdmin">
 					<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-						th:href="@{/adminProducts}"> <i class="fas fa-box-open fa-sm"></i>
+						href="/adminProducts#"> <i class="fas fa-box-open fa-sm"></i>
 							Productos
 					</a></li>
 					<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-						th:href="@{/adminComplaints}"> <i
+						href="/adminComplaints#"> <i
 							class="fas fa-exclamation-triangle fa-sm"></i> Denuncias
 					</a><span id="newsComplaints" class="badge badge-pill badge-danger"></li>
 					<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-						th:href="@{/adminSendings}"> <i class="fas fa-truck fa-sm"></i>
+						href="/adminSendings#"> <i class="fas fa-truck fa-sm"></i>
 							Envíos
 					</a><span id="newsOrders" class="badge badge-pill badge-danger"></li>
 					<li class="nav-item dropdown mr-sm-5"><a class="nav-link"
-						th:href="@{/adminUsers}"> <i class="fas fa-users fa-sm"></i>
+						href="/adminUsers#"> <i class="fas fa-users fa-sm"></i>
 							Usuarios
 					</a></li>
 				</div>
@@ -231,12 +230,13 @@
 									id="messageAddressError"></div>
 								<input type="hidden" id="addressId"> <label
 									for="addressLine">Línea de dirección</label> <input type="text"
-									class="form-control" id="addressLine"
+									class="form-control" id="addressLine" maxlength="255"
 									placeholder="Ingrese la dirección">
 							</div>
 							<div class="form-group">
 								<label for="city">Ciudad</label> <input type="text"
-									class="form-control" id="city" placeholder="Ingrese la ciudad">
+									maxlength="100" class="form-control" id="city"
+									placeholder="Ingrese la ciudad">
 							</div>
 							<div class="form-group">
 								<label for="province">Provincia</label> <select
@@ -363,11 +363,27 @@
 									</h5>
 									<h5 id="productSize">Tamaño:</h5>
 
-									<div class="form-row text-center mb-1">
-										<div class="col-md-2">
+									<div class="form-row text-center mb-2">
+										<div
+											class="mb-2 col-md-4 col-lg-4 col-xl-3 d-flex align-items-center">
+
+											<button data-mdb-button-init data-mdb-ripple-init
+												class="btn btn-link px-2"
+												onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+												<i class="fas fa-minus"></i>
+											</button>
+
 											<label class="sr-only" for="quantity">Cantidad</label> <input
-												type="number" class="form-control mb-2" id="quantity"
-												placeholder="1" oninput="limitInput(this)">
+												type="number" class="form-control" id="quantity"
+												style="max-width: 80px;" placeholder="1"
+												oninput="limitInput(this)" min="1" max="99">
+
+											<button data-mdb-button-init data-mdb-ripple-init
+												class="btn btn-link px-2"
+												onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+												<i class="fas fa-plus"></i>
+											</button>
+
 										</div>
 										<div class="col-md-4 mr-4">
 											<button type="button" class="btn btn-primary mb-2 btn-block"

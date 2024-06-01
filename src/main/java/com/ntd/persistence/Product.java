@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,14 +49,17 @@ public class Product implements Serializable {
 
 	/** Numero de producto */
 	@Column(name = "C_PRODUCT_NUMBER", nullable = false, unique = true)
+	@Size(max = 13)
 	private String productNumber;
 
 	/** Nombre del producto */
 	@Column(name = "C_PRODUCT_NAME", nullable = false)
+	@Size(max = 50)
 	private String productName;
 
 	/** Descripcion del producto */
 	@Column(name = "C_PRODUCT_DESCRIPTION")
+	@Size(max = 1000)
 	private String productDescription;
 
 	/** Categoria del producto */
@@ -64,7 +68,7 @@ public class Product implements Serializable {
 	private ProductCategory productCategory;
 
 	/** Talla del producto */
-	@Column(name = "C_PRODUCT_SIZE", nullable = false)
+	@Column(name = "C_PRODUCT_SIZE", nullable = false, length = 50)
 	private String productSize;
 
 	/** Cantidad de productos */
@@ -79,15 +83,15 @@ public class Product implements Serializable {
 	private List<String> images;
 
 	/** IVA */
-	@Column(name = "C_IVA", nullable = false)
+	@Column(name = "C_IVA", nullable = false, precision = 5, scale = 2)
 	private BigDecimal iva;
 
 	/** Precio Base */
-	@Column(name = "C_BASE_PRICE", nullable = false)
+	@Column(name = "C_BASE_PRICE", nullable = false, precision = 12, scale = 2)
 	private BigDecimal basePrice;
 
 	/** Precio PVP */
-	@Column(name = "C_PVP_PRICE", nullable = false)
+	@Column(name = "C_PVP_PRICE", nullable = false, precision = 12, scale = 2)
 	private BigDecimal pvpPrice;
 
 	/** Productos vendidos FK */

@@ -2,6 +2,9 @@
 async function layoutCategoriesProducts(categories) {
 	let divContainer = document.getElementById('containerIndex');
 
+	document.getElementById('msgNotFound').classList.add('d-none');
+	document.getElementById('not-found').classList.add('d-none');
+
 	for (let category of categories) {
 		// Insertar Nombre de categoria
 		let aCategory = document.createElement('a');
@@ -142,8 +145,9 @@ async function layoutCategoriesProducts(categories) {
 		// Conformar categoria con productos
 		divContainer.append(divContainerProducts);
 
-		loaderDeactivate();
 	}
+
+	loaderDeactivate();
 }
 
 // Cargar index
@@ -162,6 +166,11 @@ async function loadIndex() {
 		if (data && data.productCategoryDto.length > 0) {
 			// Maquetar categorias con productos
 			layoutCategoriesProducts(data.productCategoryDto);
+		} else {
+			loaderDeactivate();
+
+			document.getElementById('msgNotFound').classList.remove('d-none');
+			document.getElementById('not-found').classList.remove('d-none');
 		}
 
 	} catch (error) {

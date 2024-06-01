@@ -50,15 +50,15 @@ public class User implements Serializable {
 	private Long userId;
 
 	/** Nombre */
-	@Column(name = "C_NAME", nullable = false)
+	@Column(name = "C_NAME", nullable = false, length = 100)
 	private String name;
 
 	/** Primer apellido */
-	@Column(name = "C_SURNAME", nullable = false)
+	@Column(name = "C_SURNAME", length = 100)
 	private String surname;
 
 	/** Segundo apellido */
-	@Column(name = "C_SECOND_SURNAME", nullable = false)
+	@Column(name = "C_SECOND_SURNAME", length = 100)
 	private String secondSurname;
 
 	/** DNI */
@@ -66,15 +66,15 @@ public class User implements Serializable {
 	private String dni;
 
 	/** Correo electronico */
-	@Column(name = "C_EMAIL", nullable = false, unique = true)
+	@Column(name = "C_EMAIL", nullable = false, unique = true, length = 255)
 	private String email;
 
 	/** Contrasena */
-	@Column(name = "C_PASSWD", nullable = false)
+	@Column(name = "C_PASSWD", nullable = false, length = 255)
 	private String passwd;
 
 	/** Numero telefonico */
-	@Column(name = "C_PHONE_NUMBER", nullable = false, unique = true)
+	@Column(name = "C_PHONE_NUMBER", nullable = false, unique = true, length = 20)
 	private String phoneNumber;
 
 	/** Rol */
@@ -85,6 +85,10 @@ public class User implements Serializable {
 	/** Indica si el usuario esta bloqueado */
 	@Column(name = "C_BLOCKED", nullable = false)
 	private boolean blocked;
+
+	/** Indica si el usuario ha confirmado el email */
+	@Column(name = "C_ENABLED", nullable = false)
+	private boolean enabled;
 
 	/** Direcciones */
 	@OneToMany(mappedBy = "user")

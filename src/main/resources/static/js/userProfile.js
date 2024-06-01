@@ -32,19 +32,19 @@ function layoutPersonalInformation(user) {
 	strongUserName.textContent = 'Nombre: ';
 	strongSurname.textContent = 'Apellidos: ';
 	strongPhone.textContent = 'Teléfono: ';
-	strongDni.textContent = 'DNI: ';
+	strongDni.textContent = 'DNI/NIE: ';
 
 	userName.append(strongUserName);
 	surnames.append(strongSurname);
 	phone.append(strongPhone);
 	userDni.append(strongDni);
-	if(user.blocked){
+	if (user.blocked) {
 		blocked.append(`${user.name} ${user.surname} no tiene permitido calificar productos comprados, escribir reseñas y/o denunciar comentarios.`);
 	}
 
 	userName.append(user.name);
 	userDni.append(user.dni);
-	surnames.append(user.surname + ' ' + user.secondSurname);
+	surnames.append((user.surname ? user.surname : '') + ' ' + (user.secondSurname ? user.secondSurname : ''));
 	phone.append(user.phoneNumber);
 
 }

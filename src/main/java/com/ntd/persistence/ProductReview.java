@@ -50,7 +50,7 @@ public class ProductReview implements Serializable {
 	private int rating;
 
 	/** Comentario del usuario */
-	@Column(name = "C_COMMENT")
+	@Column(name = "C_COMMENT", length = 1000)
 	private String comment;
 
 	/** Lista de reportes */

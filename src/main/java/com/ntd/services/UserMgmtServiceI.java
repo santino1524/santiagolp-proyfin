@@ -24,6 +24,14 @@ public interface UserMgmtServiceI {
 	public UserDTO insertUser(final UserDTO userDto) throws InternalException;
 
 	/**
+	 * Actualizar usuario tras confirmacion de email
+	 * 
+	 * @param user
+	 * @throws InternalException
+	 */
+	public void enableUser(final User user);
+
+	/**
 	 * Actualizar nuevo usuario
 	 * 
 	 * @param userDto
