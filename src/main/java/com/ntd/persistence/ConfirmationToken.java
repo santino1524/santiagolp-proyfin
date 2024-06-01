@@ -38,7 +38,7 @@ public class ConfirmationToken implements Serializable {
 	private Long confirmId;
 
 	/** Token */
-	@Column(name = "C_TOKEN")
+	@Column(name = "C_TOKEN", length = 100)
 	private String token;
 
 	/** Usuario */

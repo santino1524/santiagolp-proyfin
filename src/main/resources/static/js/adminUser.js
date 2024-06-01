@@ -64,7 +64,7 @@ async function searchUser() {
 // Validar DNI
 function verifyDni(value) {
 	if (!dniRegExp.test(value)) {
-		showMessage(document.getElementById("messageError"), "Debe introducir un DNI válido");
+		showMessage(document.getElementById("messageError"), "Debe introducir un DNI/NIE válido");
 
 		return;
 	}

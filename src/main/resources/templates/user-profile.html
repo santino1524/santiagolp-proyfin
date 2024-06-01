@@ -99,19 +99,21 @@
 							<div class="alert alert-danger d-none"
 								id='messagePersonalInformationError' role="alert"></div>
 							<label for="userNameInput">Nombre:</label> <input type="text"
-								class="form-control" id="userNameInput">
+								class="form-control" id="userNameInput" maxlength="50">
 						</div>
 						<div class="form-group">
 							<label for="surNameInput">Primer apellido:</label> <input
-								type="text" class="form-control" id="surNameInput">
+								type="text" class="form-control" id="surNameInput"
+								maxlength="50">
 						</div>
 						<div class="form-group">
 							<label for="secondSurNameInput">Segundo apellido:</label> <input
-								type="text" class="form-control" id="secondSurNameInput">
+								maxlength="50" type="text" class="form-control"
+								id="secondSurNameInput">
 						</div>
 						<div class="form-group">
 							<label for="phoneInput">Teléfono:</label> <input type="tel"
-								class="form-control" id="phoneInput">
+								maxlength="9" class="form-control" id="phoneInput">
 						</div>
 					</form>
 				</div>
@@ -138,11 +140,11 @@
 								role="alert"></div>
 							<label for="newEmail">Nuevo correo electrónico:</label> <input
 								type="email" class="form-control" id="newEmail" name="newEmail"
-								required>
+								maxlength="100" required>
 						</div>
 						<div class="form-group">
 							<label for="confirmEmail">Confirmar correo electrónico:</label> <input
-								type="email" class="form-control" id="confirmEmail"
+								type="email" class="form-control" id="confirmEmail" maxlength="100"
 								name="confirmEmail" required>
 						</div>
 					</form>
@@ -188,17 +190,17 @@
 							<div class="form-group">
 								<label for="oldPassword">Contraseña anterior</label> <input
 									type="password" class="form-control" id="oldPassword"
-									placeholder="Contraseña anterior">
+									placeholder="Contraseña anterior" maxlength="255">
 							</div>
 							<div class="form-group">
 								<label for="newPassword">Nueva contraseña</label> <input
 									type="password" class="form-control" id="newPassword"
-									placeholder="Nueva contraseña">
+									placeholder="Nueva contraseña" maxlength="255">
 							</div>
 							<div class="form-group">
 								<label for="confirmPasswd">Confirmar contraseña</label> <input
 									type="password" class="form-control" id="confirmPasswd"
-									placeholder="Confirmar contraseña">
+									placeholder="Confirmar contraseña" maxlength="255">
 							</div>
 						</div>
 					</form>

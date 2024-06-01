@@ -40,7 +40,7 @@ public class Order implements Serializable {
 	private Long orderId;
 
 	/** Numero de Pedido */
-	@Column(name = "C_NUMBER_ORDER", nullable = false, unique = true)
+	@Column(name = "C_NUMBER_ORDER", length = 13, nullable = false, unique = true)
 	private String orderNumber;
 
 	/** Fecha del pedido */
@@ -48,15 +48,15 @@ public class Order implements Serializable {
 	private LocalDateTime orderDate;
 
 	/** Total del pedido */
-	@Column(name = "C_TOTAL", nullable = false)
+	@Column(name = "C_TOTAL", nullable = false, precision = 12, scale = 2)
 	private BigDecimal total;
 
 	/** Estado del pedido */
-	@Column(name = "C_STATUS", nullable = false)
+	@Column(name = "C_STATUS", nullable = false, length = 25)
 	private String status;
 
 	/** Id de la transaccion */
-	@Column(name = "C_TRANSACTION", nullable = false)
+	@Column(name = "C_TRANSACTION", nullable = false, length = 25)
 	private String transactionId;
 
 	/** Usuario */

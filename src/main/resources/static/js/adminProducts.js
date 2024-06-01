@@ -44,7 +44,7 @@ function saveCategory() {
 		return;
 	}
 
-	if (regexOnlyWord.test(categoryName)) {
+	if (regexOnlyWord.test(categoryName) && categoryName.length < 51) {
 		fetch("/category/save", {
 			method: "POST",
 			headers: {

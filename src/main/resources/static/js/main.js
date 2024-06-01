@@ -5,7 +5,7 @@ const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
 const passwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!*])(?=\S+$).{7,}$/;
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const regexOnlyWord = /^[a-zA-ZÀ-ÖØ-öø-ÿ]*$/;
-const dniRegExp = /^\d{8}[a-zA-Z]$/;
+const dniRegExp = /(^\d{8}[A-Z]$)|(^[XYZ]\d{7}[A-Z]$)/;
 const ivaRegex = /^\d{1,2}$/;
 const phoneRegex = /^\d{9}$/;
 const basePriceRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
@@ -977,19 +977,19 @@ async function saveAddressForm() {
 	if (addressLine && city && province && postalCode) {
 
 		// Validar los valores usando el patron
-		if (!onlyWordsNumbersSpaces.test(addressLine)) {
+		if (!onlyWordsNumbersSpaces.test(addressLine) || addressLine.length > 255) {
 			showMessage(divMessageAddressError, "Para la dirección solo se permiten palabras, números y espacios");
 
 			return;
 		}
 
-		if (!regexOnlyWordSpaces.test(city)) {
+		if (!regexOnlyWordSpaces.test(city) || addressLine.length > 100) {
 			showMessage(divMessageAddressError, "Para la ciudad solo se permiten palabras con espacios");
 
 			return;
 		}
 
-		if (!regexOnlyWordSpaces.test(province)) {
+		if (!regexOnlyWordSpaces.test(province) || addressLine.length > 100) {
 			showMessage(divMessageAddressError, "Para la provincia solo se permiten palabras con espacios");
 
 			return;
