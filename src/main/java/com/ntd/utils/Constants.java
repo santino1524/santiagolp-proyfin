@@ -212,12 +212,18 @@ public class Constants {
 	private static final List<String> USER_ROLE = Arrays.asList("SELLER", "BUYER");
 
 	/** Endpoints protegidos */
-	private static final String[] AUTHENTICATED_ENDPOINTS = { "/pay", "/user-profile", "/userProfile", "/myOrders",
-			"/checkAuth", "/my-orders" };
+	private static final String[] AUTHENTICATED_ENDPOINTS = { "/pay", "/userProfile", "/myOrders", "/checkAuth",
+			"/sendReport", "/orders/save", "/orders/validateOrder", "/orders/searchByUser", "/orders/searchTopByUser",
+			"/orders/searchByUserDateDesc", "/addresses/save", "/addresses/delete", "/addresses/searchByUser",
+			"/addresses/searchById", "/productReview/save", "/report/save", "/users/verifyOldPasswd", "/users/update" };
 
 	/** Endpoints ADMIN */
 	private static final String[] ADMIN_ENDPOINTS = { "/admin", "/adminUsers", "/adminSendings", "/adminComplaints",
-			"/adminProducts", "/adminOrders", "/responsiveAdmin" };
+			"/adminProducts", "/orders/generateShippingLabel", "/orders/countByStatus", "/orders/updateStatusEnviado",
+			"/orders/updateStatusCancelado", "/orders/searchByCreado", "/category/save", "/category/delete",
+			"/products/generateProductLabel", "/products/deleteImages", "/products/delete",
+			"/productReview/countReviewReporter", "/report/countByReporter", "/report/searchByWithoutProcessing",
+			"/report/delete", "/users/searchByCriterio" };
 
 	/** Msg de order NotValid */
 	public static final String MSG_ORDER_NOT_VALID = "Producto vendido sin asignar a un pedido";

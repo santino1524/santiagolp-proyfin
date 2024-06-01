@@ -247,7 +247,6 @@ async function checkProducts() {
 			}
 		});
 	} else {
-		//window.location.href = '/login-page';
 		window.location.href = '/checkAuth';
 	}
 }

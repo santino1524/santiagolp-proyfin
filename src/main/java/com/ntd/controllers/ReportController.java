@@ -4,13 +4,11 @@ import java.util.Collections;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ntd.dto.ReportDTO;
 import com.ntd.dto.UserDTO;
@@ -122,42 +120,5 @@ public class ReportController {
 		reportMgmtService.deleteReport(reportDto.reportId());
 
 		return ResponseEntity.ok().build();
-	}
-
-	/**
-	 * Buscar todos los Reportes
-	 * 
-	 * @param model
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchAll")
-	public String showReport(final Model model) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Mostrar todos los Report");
-
-		// Retornar lista de Report
-		model.addAttribute("reviewsDto", reportMgmtService.searchAll());
-
-		return "VISTA BUSCAR TODOS LOS Report";
-	}
-
-	/**
-	 * Buscar por id
-	 * 
-	 * @param model
-	 * @param id
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/searchById")
-	public String searchById(@RequestParam @NotNull final Long id, final Model model) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Buscar Report por id");
-
-		// Retornar Report
-		model.addAttribute("reportDto", reportMgmtService.searchById(id));
-
-		return "VISTA BUSCAR Report POR id";
 	}
 }

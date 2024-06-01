@@ -24,27 +24,12 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	private static final String ADMINISTRATION = "administration";
 
 	/**
-	 * Mostrar AdminOrders
-	 * 
-	 * @return String
-	 */
-	@GetMapping(path = "adminOrders")
-	public String showAdminOrders(final Model model) {
-		if (log.isInfoEnabled())
-			log.info("Mostrar AdminOrders");
-
-		model.addAttribute("showOrders", true);
-
-		return ADMINISTRATION;
-	}
-
-	/**
 	 * Mostrar formulario de inicio
 	 * 
 	 * @return String
 	 */
 	@GetMapping(path = "login-page")
-	public String showLoginForm() {
+	public String showLoginPage() {
 		if (log.isInfoEnabled())
 			log.info("Mostrar pagina de login");
 
@@ -149,21 +134,6 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	 * 
 	 * @return String
 	 */
-//	@GetMapping(path = "adminSendings")
-//	public String showSendings(final Model model) {
-//		if (log.isInfoEnabled())
-//			log.info("Mostrar AdminSendings");
-//
-//		model.addAttribute("showSendings", true);
-//
-//		return "admin-sendings";
-//	}
-
-	/**
-	 * Mostrar AdminSendings
-	 * 
-	 * @return String
-	 */
 	@GetMapping(path = "adminSendings")
 	public String showSendings() {
 		if (log.isInfoEnabled())
@@ -199,19 +169,6 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 	}
 
 	/**
-	 * Redireccionar a pagina reset-password
-	 * 
-	 * @return String
-	 */
-	@GetMapping(path = "reset-password")
-	public String goResetPassword() {
-		if (log.isInfoEnabled())
-			log.info("Redireccionar a pagina reset-password");
-
-		return "reset-password";
-	}
-
-	/**
 	 * Redireccionar a pagina Acerca de
 	 * 
 	 * @return String
@@ -236,19 +193,6 @@ public class RedirectController extends SavedRequestAwareAuthenticationSuccessHa
 
 		return "register";
 	}
-
-//	/**
-//	 * Redireccionar a pagina Reiniciar contrasena
-//	 * 
-//	 * @return String
-//	 */
-//	@GetMapping(path = "recoverPassword")
-//	public String goRecoverPassword() {
-//		if (log.isInfoEnabled())
-//			log.info("Redireccionar a pagina Reiniciar contrasena");
-//
-//		return "recover-password";
-//	}
 
 	/**
 	 * Redireccionar a pagina Carrito de compras

@@ -24,21 +24,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailMgmtServiceImp implements EmailMgmtServiceI {
 
+	/** SMTP host */
 	@Value("${mail.smtp.host}")
 	private String host;
 
+	/** SMTP port */
 	@Value("${mail.smtp.port}")
 	private int port;
 
+	/** SMTP SSL */
 	@Value("${mail.smtp.ssl.enable}")
 	private boolean sslEnable;
 
+	/** SMTP autenticacion */
 	@Value("${mail.smtp.auth}")
 	private boolean auth;
 
+	/** SMTP usuario */
 	@Value("${mail.smtp.user}")
 	private String username;
 
+	/** SMTP contrasenna */
 	@Value("${mail.smtp.password}")
 	private String password;
 

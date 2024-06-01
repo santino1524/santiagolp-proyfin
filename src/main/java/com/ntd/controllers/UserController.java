@@ -60,17 +60,18 @@ public class UserController {
 	private final SessionRegistry sessionRegistry;
 
 	/** Dependencia AuthenticationManager */
-	private AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 
 	/** Dependencia EncryptionUtils */
 	private final EncryptionUtils encryptionUtils;
 
 	/** Depenencia EmailService */
-	private EmailMgmtServiceI emailService;
+	private final EmailMgmtServiceI emailService;
 
 	/** Depenencia TokenService */
-	private TokenMgmtServiceI tokenService;
+	private final TokenMgmtServiceI tokenService;
 
+	/** Dominio de la app */
 	@Value("${app.domain}")
 	private String domain;
 
@@ -273,6 +274,31 @@ public class UserController {
 	}
 
 	/**
+	 * Retornar preguntas de usuario en pagina de recuperacion de contrasenna
+	 * 
+	 * @param model
+	 * @return String
+	 * @throws InternalException
+	 */
+	@GetMapping(path = "/recoverPassword")
+	public String showUsers(@RequestParam @NotNull final Long userId, final Model model) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Retornar preguntas de usuario en pagina de recuperacion de contrasenna");
+
+		UserDTO userDto = userMgmtService.searchById(userId);
+
+		if (userDto != null && userDto.userId() != null && userDto.userId() != 1) {
+			// Retornar respuestas y usuario
+			model.addAttribute("userId", userDto.userId());
+			model.addAttribute("question1", encryptionUtils.decrypt(userDto.questions().get(0)));
+			model.addAttribute("question2", encryptionUtils.decrypt(userDto.questions().get(1)));
+			model.addAttribute("question3", encryptionUtils.decrypt(userDto.questions().get(2)));
+		}
+
+		return "recover-password";
+	}
+
+	/**
 	 * Actualizar usuario
 	 * 
 	 * @param userDto
@@ -308,39 +334,14 @@ public class UserController {
 	}
 
 	/**
-	 * Retornar preguntas de usuario en pagina de recuperacion de contrasenna
-	 * 
-	 * @param model
-	 * @return String
-	 * @throws InternalException
-	 */
-	@GetMapping(path = "/recoverPassword")
-	public String showUsers(@RequestParam @NotNull final Long userId, final Model model) throws InternalException {
-		if (log.isInfoEnabled())
-			log.info("Retornar preguntas de usuario en pagina de recuperacion de contrasenna");
-
-		UserDTO userDto = userMgmtService.searchById(userId);
-
-		if (userDto != null && userDto.userId() != null && userDto.userId() != 1) {
-			// Retornar respuestas y usuario
-			model.addAttribute("userId", userDto.userId());
-			model.addAttribute("question1", encryptionUtils.decrypt(userDto.questions().get(0)));
-			model.addAttribute("question2", encryptionUtils.decrypt(userDto.questions().get(1)));
-			model.addAttribute("question3", encryptionUtils.decrypt(userDto.questions().get(2)));
-		}
-
-		return "recover-password";
-	}
-
-	/**
-	 * Metodo para devolucion de los empleados buscados.
+	 * Devolucion de usuarios buscados
 	 * 
 	 * @param criterio
 	 * @param value
 	 * @throws InternalException
 	 */
 	@PostMapping("/searchByCriterio")
-	public ResponseEntity<Object> searchEmployees(@RequestParam @NotNull final String criterio,
+	public ResponseEntity<Object> searchUserByCriterio(@RequestParam @NotNull final String criterio,
 			@RequestParam @NotNull final String value) throws InternalException {
 
 		return ResponseEntity.ok()

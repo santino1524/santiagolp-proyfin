@@ -128,8 +128,8 @@
 						<div class="dropdown-menu dropdown-menu-right bg-dark"
 							aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white"
-								th:href="@{/userProfile}">Mis datos</a> <a
-								class="dropdown-item bg-dark text-white" th:href="@{/myOrders}">Mis
+								href="/userProfile#">Mis datos</a> <a
+								class="dropdown-item bg-dark text-white" href="/myOrders#}">Mis
 								compras</a> <a class="dropdown-item bg-dark text-white"
 								th:href="@{/logout}">Salir</a>
 						</div></li>
@@ -140,7 +140,7 @@
 			<div class="navbar-nav">
 				<div class="cart-container">
 					<a id="cartIcon" class="nav-link titleNav"
-						th:href="@{/shoppingCart}" title="Cesta de compras"> <i
+						href="/shoppingCart#" title="Cesta de compras"> <i
 						class="fas fa-shopping-cart fa-lg"></i>
 					</a> <span id="cartQuantity" class="badge badge-pill badge-danger"></span>
 				</div>
