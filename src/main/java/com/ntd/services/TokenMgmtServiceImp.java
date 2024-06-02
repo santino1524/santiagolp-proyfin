@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.ntd.dto.UserDTO;
 import com.ntd.dto.mapper.DTOMapperI;
+import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.ConfirmationToken;
 import com.ntd.persistence.ConfirmationTokenRepositoryI;
+import com.ntd.utils.ValidateParams;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +63,18 @@ public class TokenMgmtServiceImp implements TokenMgmtServiceI {
 			log.info("Buscar pr token");
 
 		return tokenRepository.findByToken(token);
+	}
+
+	@Override
+	public void deleteConfirmationToken(ConfirmationToken confirmationToken) throws InternalException {
+		if (log.isInfoEnabled())
+			log.info("Eliminar ConfirmationToken");
+
+		// Validar parametro
+		ValidateParams.isNullObject(confirmationToken);
+
+		// Eliminar por Id
+		tokenRepository.deleteById(confirmationToken.getConfirmId());
 	}
 
 }

@@ -216,9 +216,10 @@ public class UserController {
 	 * @param token
 	 * @param model
 	 * @return String
+	 * @throws InternalException
 	 */
 	@GetMapping(path = "/confirm")
-	public String confirmEmail(@RequestParam @NotNull final String token, final Model model) {
+	public String confirmEmail(@RequestParam @NotNull final String token, final Model model) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Habilitar nuevo usuario");
 
@@ -234,6 +235,9 @@ public class UserController {
 
 		userMgmtService.enableUser(user);
 		model.addAttribute(MESSAGE_STRING, "La confirmación de su cuenta de usuario se ha completado");
+
+		// Eliminar token de confirmacion
+		tokenService.deleteConfirmationToken(confirmationToken);
 
 		return LOGIN_PAGE;
 	}
@@ -304,9 +308,11 @@ public class UserController {
 	 * @param userDto
 	 * @return ResponseEntity
 	 * @throws InternalException
+	 * @throws MessagingException
 	 */
 	@PostMapping(path = "/update")
-	public ResponseEntity<Object> updateUser(@RequestBody @Valid final UserDTO userDto) throws InternalException {
+	public ResponseEntity<Object> updateUser(@RequestBody @Valid final UserDTO userDto)
+			throws InternalException, MessagingException {
 		if (log.isInfoEnabled())
 			log.info("Actualizar usuario");
 
@@ -318,11 +324,42 @@ public class UserController {
 			// Devolver una respuesta con codigo de estado 422
 			result = ResponseEntity.unprocessableEntity().build();
 		} else {
-			// Actualizar usuario
-			final UserDTO userUpdated = userMgmtService.updateUser(userDto);
+			boolean emailChange = false;
+
+			UserDTO oldUser = userMgmtService.searchById(userDto.userId());
+
+			// Usuario actualizado
+			UserDTO userUpdated = null;
+
+			if (oldUser != null && !oldUser.email().equals(userDto.email())) {
+				emailChange = true;
+				userUpdated = userMgmtService.updateUser(new UserDTO(userDto.userId(), userDto.name(),
+						userDto.surname(), userDto.secondSurname(), userDto.blocked(), false, userDto.dni(),
+						userDto.email(), userDto.passwd(), userDto.phoneNumber(), userDto.role(), userDto.questions(),
+						userDto.answers(), userDto.addressesDto(), userDto.ordersDto()));
+			} else {
+				userUpdated = userMgmtService.updateUser(userDto);
+			}
 
 			// Verificar retorno de actualizacion
 			if (userUpdated != null) {
+
+				if (emailChange) {
+					// Guardar el token en la base de datos junto con el usuario
+					String token = tokenService.save(userUpdated);
+
+					StringBuilder builder = new StringBuilder();
+					builder.append(
+							"Haga clic en el siguiente enlace para confirmar su cuenta de usuario en la Tienda Luz Fuego Destrucción: ");
+					builder.append(domain);
+					builder.append("/users/confirm?token=");
+					builder.append(token);
+
+					// Enviar correo de confirmacion
+					emailService.sendEmail(userUpdated.email(), "Confirmación de cuenta de usuario",
+							builder.toString());
+				}
+
 				result = ResponseEntity.ok().body(Collections.singletonMap("user", userUpdated));
 			} else {
 				// Devolver una respuesta con codigo de estado 500

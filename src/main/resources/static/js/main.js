@@ -40,6 +40,11 @@ function convertToUpperCase(input) {
 	input.value = input.value.toUpperCase();
 }
 
+// Convertir a minuscula el email
+function convertToLowerCase(input) {
+	input.value = input.value.toLowerCase();
+}
+
 // Validacion del DNI
 function validateDNI(input) {
 	let dni = input.value;
