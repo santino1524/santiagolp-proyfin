@@ -7,229 +7,230 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
-
-	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3">
-
-		<h2 class="mb-3">Perfil de usuario</h2>
-
-		<div class="row">
-			<div class="col-md-6">
-				<div class="card mb-4">
-					<div class="card-header">
-						<h5 class="card-title">Datos personales</h5>
-					</div>
-					<div class="card-body">
-						<div id="messagePersonalInformation"
-							class="alert alert-success d-none" role="alert"></div>
-						<p id="userName"></p>
-						<p id="surnames"></p>
-						<p id="userDni"></p>
-						<p id="phone"></p>
-						<p id="blocked" style="color: red; font-weight: bold;"></p>
-						<button class="btn btn-secondary" data-toggle="modal"
-							data-target="#personalInformation"
-							onclick='showPersonalInformation()'>Editar</button>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="card mb-4">
-					<div class="card-header">
-						<h5 class="card-title" id="email">
-							<strong>Email: </strong>
-						</h5>
-					</div>
-					<div class="card-body">
-						<button class="btn btn-secondary" data-toggle="modal"
-							data-target="#emailChange">Cambiar</button>
-					</div>
-				</div>
-
-				<div class="card mb-4">
-					<div class="card-header">
-						<h5 class="card-title">
-							<strong>Contraseña: </strong> ********
-						</h5>
-					</div>
-					<div class="card-body">
-						<div id="messagePasswd" class="alert alert-success d-none"
-							role="alert"></div>
-						<button class="btn btn-secondary" data-toggle="modal"
-							data-target="#changePasswd">Cambiar</button>
-					</div>
-				</div>
-			</div>
+	<div class="body-container">
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
 		</div>
 
-		<div class="row">
-			<div class="col-md-12">
-				<div class="card mb-4">
-					<div class="card-header">
-						<h5 class="card-title">Direcciones</h5>
+		<!-- CONTENIDO DE LA PAGINA -->
+		<div class="container text-center mt-4 mb-4 main">
+
+			<h2 class="mb-3">Perfil de usuario</h2>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="card mb-4">
+						<div class="card-header">
+							<h5 class="card-title">Datos personales</h5>
+						</div>
+						<div class="card-body">
+							<div id="messagePersonalInformation"
+								class="alert alert-success d-none" role="alert"></div>
+							<p id="userName"></p>
+							<p id="surnames"></p>
+							<p id="userDni"></p>
+							<p id="phone"></p>
+							<p id="blocked" style="color: red; font-weight: bold;"></p>
+							<button class="btn btn-secondary" data-toggle="modal"
+								data-target="#personalInformation"
+								onclick='showPersonalInformation()'>Editar</button>
+						</div>
 					</div>
-					<div class="card-body">
-						<!-- Listado de direcciones -->
-						<div class="list-group mb-5" id="addressesList"></div>
-
-						<!-- Boton para agregar direccion -->
-						<button class="btn btn-secondary" id="buttonAdd"
-							onclick="addAddress()">Añadir</button>
+				</div>
+				<div class="col-md-6">
+					<div class="card mb-4">
+						<div class="card-header">
+							<h5 class="card-title" id="email">
+								<strong>Email: </strong>
+							</h5>
+						</div>
+						<div class="card-body">
+							<button class="btn btn-secondary" data-toggle="modal"
+								data-target="#emailChange">Cambiar</button>
+						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 
-	<!-- data-target="#modalAddress" data-toggle="modal"-->
-	<!-- Modal para editar datos -->
-	<div class="modal fade" id="personalInformation">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Editar datos personales</h4>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-				<div class="modal-body">
-					<form id='formPersonalInformation'>
-						<div class="form-group">
-							<div class="alert alert-danger d-none"
-								id='messagePersonalInformationError' role="alert"></div>
-							<label for="userNameInput">Nombre:</label> <input type="text"
-								class="form-control" id="userNameInput" maxlength="50">
+					<div class="card mb-4">
+						<div class="card-header">
+							<h5 class="card-title">
+								<strong>Contraseña: </strong> ********
+							</h5>
 						</div>
-						<div class="form-group">
-							<label for="surNameInput">Primer apellido:</label> <input
-								type="text" class="form-control" id="surNameInput"
-								maxlength="50">
-						</div>
-						<div class="form-group">
-							<label for="secondSurNameInput">Segundo apellido:</label> <input
-								maxlength="50" type="text" class="form-control"
-								id="secondSurNameInput">
-						</div>
-						<div class="form-group">
-							<label for="phoneInput">Teléfono:</label> <input type="tel"
-								maxlength="9" class="form-control" id="phoneInput">
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button onclick="savePersonalInformationForm()"
-						class="btn btn-primary">Guardar cambios</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Modal para editar correo -->
-	<div class="modal fade" id="emailChange">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Cambiar correo electrónico</h4>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-				<div class="modal-body">
-					<form id="emailChangeForm">
-						<div class="form-group">
-							<div class="alert alert-danger d-none" id='messageEmailError'
+						<div class="card-body">
+							<div id="messagePasswd" class="alert alert-success d-none"
 								role="alert"></div>
-							<label for="newEmail">Nuevo correo electrónico:</label> <input
-								type="email" class="form-control" id="newEmail" name="newEmail"
-								maxlength="100" required oninput="convertToLowerCase(this)">
+							<button class="btn btn-secondary" data-toggle="modal"
+								data-target="#changePasswd">Cambiar</button>
 						</div>
-						<div class="form-group">
-							<label for="confirmEmail">Confirmar correo electrónico:</label> <input
-								type="email" class="form-control" id="confirmEmail" maxlength="100"
-								name="confirmEmail" required oninput="convertToLowerCase(this)">
-						</div>
-					</form>
+					</div>
 				</div>
-				<div class="modal-footer">
-					<button onclick="saveEmailForm()" class="btn btn-primary">Guardar
-						cambios</button>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card mb-4">
+						<div class="card-header">
+							<h5 class="card-title">Direcciones</h5>
+						</div>
+						<div class="card-body">
+							<!-- Listado de direcciones -->
+							<div class="list-group mb-5" id="addressesList"></div>
+
+							<!-- Boton para agregar direccion -->
+							<button class="btn btn-secondary" id="buttonAdd"
+								onclick="addAddress()">Añadir</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog"
-		aria-labelledby="titleLogoutModal" aria-hidden="true"
-		data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id='titleLogoutModal'>Aviso</h5>
-				</div>
-				<div class="modal-body">Es necesario cerrar sesión</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal"
-						onclick="logout()">Aceptar</button>
+		<!-- Modal para editar datos -->
+		<div class="modal fade" id="personalInformation">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Editar datos personales</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<form id='formPersonalInformation'>
+							<div class="form-group">
+								<div class="alert alert-danger d-none"
+									id='messagePersonalInformationError' role="alert"></div>
+								<label for="userNameInput">Nombre:</label> <input type="text"
+									class="form-control" id="userNameInput" maxlength="50">
+							</div>
+							<div class="form-group">
+								<label for="surNameInput">Primer apellido:</label> <input
+									type="text" class="form-control" id="surNameInput"
+									maxlength="50">
+							</div>
+							<div class="form-group">
+								<label for="secondSurNameInput">Segundo apellido:</label> <input
+									maxlength="50" type="text" class="form-control"
+									id="secondSurNameInput">
+							</div>
+							<div class="form-group">
+								<label for="phoneInput">Teléfono:</label> <input type="tel"
+									maxlength="9" class="form-control" id="phoneInput">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button onclick="savePersonalInformationForm()"
+							class="btn btn-primary">Guardar cambios</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<!-- Modal para editar contraseña -->
-	<div class="modal fade" id="changePasswd">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Cambiar contraseña</h4>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-				<div class="modal-body">
-					<form id='formChangePasswd'>
-						<div class="form-group">
-							<div class="alert alert-danger d-none" id='messagePasswdError'
-								role="alert"></div>
+		<!-- Modal para editar correo -->
+		<div class="modal fade" id="emailChange">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Cambiar correo electrónico</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<form id="emailChangeForm">
 							<div class="form-group">
-								<label for="oldPassword">Contraseña anterior</label> <input
-									type="password" class="form-control" id="oldPassword"
-									placeholder="Contraseña anterior" maxlength="255">
+								<div class="alert alert-danger d-none" id='messageEmailError'
+									role="alert"></div>
+								<label for="newEmail">Nuevo correo electrónico:</label> <input
+									type="email" class="form-control" id="newEmail" name="newEmail"
+									maxlength="100" required oninput="convertToLowerCase(this)">
 							</div>
 							<div class="form-group">
-								<label for="newPassword">Nueva contraseña</label> <input
-									type="password" class="form-control" id="newPassword"
-									placeholder="Nueva contraseña" maxlength="255">
+								<label for="confirmEmail">Confirmar correo electrónico:</label>
+								<input type="email" class="form-control" id="confirmEmail"
+									maxlength="100" name="confirmEmail" required
+									oninput="convertToLowerCase(this)">
 							</div>
-							<div class="form-group">
-								<label for="confirmPasswd">Confirmar contraseña</label> <input
-									type="password" class="form-control" id="confirmPasswd"
-									placeholder="Confirmar contraseña" maxlength="255">
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary"
-						onclick='savePasswdForm()'>Cambiar contraseña</button>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button onclick="saveEmailForm()" class="btn btn-primary">Guardar
+							cambios</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
+		<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog"
+			aria-labelledby="titleLogoutModal" aria-hidden="true"
+			data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id='titleLogoutModal'>Aviso</h5>
+					</div>
+					<div class="modal-body">Es necesario cerrar sesión</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal"
+							onclick="logout()">Aceptar</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+		<!-- Modal para editar contraseña -->
+		<div class="modal fade" id="changePasswd">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Cambiar contraseña</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<form id='formChangePasswd'>
+							<div class="form-group">
+								<div class="alert alert-danger d-none" id='messagePasswdError'
+									role="alert"></div>
+								<div class="form-group">
+									<label for="oldPassword">Contraseña anterior</label> <input
+										type="password" class="form-control" id="oldPassword"
+										placeholder="Contraseña anterior" maxlength="255">
+								</div>
+								<div class="form-group">
+									<label for="newPassword">Nueva contraseña</label> <input
+										type="password" class="form-control" id="newPassword"
+										placeholder="Nueva contraseña" maxlength="255">
+								</div>
+								<div class="form-group">
+									<label for="confirmPasswd">Confirmar contraseña</label> <input
+										type="password" class="form-control" id="confirmPasswd"
+										placeholder="Confirmar contraseña" maxlength="255">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							onclick='savePasswdForm()'>Cambiar contraseña</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-	<!-- Modal Address -->
-	<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 
-	<script type="text/javascript" th:src="@{/js/userProfile.js}"></script>
-	<script>
+		<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+
+		<!-- Modal Address -->
+		<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+
+		<script type="text/javascript" th:src="@{/js/userProfile.js}"></script>
+		<script>
 		// Obtener productos de la cesta 
 		window.onload = async function() {
 			await loadUserProfilePage();
 		}
 	</script>
-
+	</div>
 </body>
 
 </html>

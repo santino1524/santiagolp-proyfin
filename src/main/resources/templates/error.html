@@ -7,39 +7,39 @@
 </head>
 
 <body>
+	<div class="body-container">
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
+		</div>
 
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+		<div class="container mt-4 mb-4 main">
+			<div class="main-container">
+				<div class="container">
+					<div class="main-content text-center">
+						<i class="mt-5 mb-3 fas fa-exclamation-triangle"
+							style="font-size: 4rem; color: #ffc107;"></i>
 
-	<div class="container mt-3">
-		<div class="main-container">
-			<div class="container">
-				<div class="main-content text-center">
-					<i class="mt-5 mb-3 fas fa-exclamation-triangle"
-						style="font-size: 4rem; color: #ffc107;"></i>
+						<!-- MENSAJE DE ERROR-->
+						<h2 class="text-warning mb-3" th:text="${message}"></h2>
 
-					<!-- MENSAJE DE ERROR-->
-					<h2 class="text-warning mb-3" th:text="${message}"></h2>
+						<div class="col text-center">
+							<img src="/images/error.png" class="img-fluid"
+								style="max-height: 300px;" alt="Error" title="Error">
+						</div>
 
-					<div class="col text-center">
-						<img src="/images/error.png" class="img-fluid"
-							style="max-height: 300px;" alt="Error" title="Error">
+						<!-- VOLVER A MENU -->
+						<p class="mt-3 text-center mb-5">
+							<a th:href="@{/}" class="btn btn-dark">Volver</a>
+						</p>
 					</div>
-
-					<!-- VOLVER A MENU -->
-					<p class="mt-3 text-center mb-5">
-						<a th:href="@{/}" class="btn btn-dark">Volver</a>
-					</p>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 	</div>
-
 </body>
 
 </html>

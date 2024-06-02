@@ -52,7 +52,7 @@
 						onclick="listCategoriesInNav()"> Tienda </a>
 						<div class="dropdown-menu bg-dark" id="categoriesMenu"
 							aria-labelledby="navbarDropdown"></div></li>
-					<li class="nav-item mr-sm-4"><a class="nav-link titleNav"
+					<li class="nav-item mr-sm-4" id="itemAbout"><a class="nav-link titleNav"
 						href="/about#">Acerca de</a></li>
 					<li sec:authorize="hasRole('SELLER')" class="nav-item"><a
 						class="nav-link titleNav" href="/admin#" id="adminLink">Administración</a></li>
@@ -128,8 +128,8 @@
 						<div class="dropdown-menu dropdown-menu-right bg-dark"
 							aria-labelledby="navbarDropdown">
 							<a class="dropdown-item bg-dark text-white"
-								href="/userProfile#">Mis datos</a> <a
-								class="dropdown-item bg-dark text-white" href="/myOrders#}">Mis
+								href="/userProfile#">Mis datos</a> <a id="itemMyOrders"
+								class="dropdown-item bg-dark text-white" href="/myOrders#">Mis
 								compras</a> <a class="dropdown-item bg-dark text-white"
 								th:href="@{/logout}">Salir</a>
 						</div></li>
@@ -137,7 +137,7 @@
 				</ul>
 			</div>
 
-			<div class="navbar-nav">
+			<div class="navbar-nav" id="itemShoppingCart">
 				<div class="cart-container">
 					<a id="cartIcon" class="nav-link titleNav"
 						href="/shoppingCart#" title="Cesta de compras"> <i
@@ -171,7 +171,7 @@
 	</div>
 
 	<!-- MENU DE ADMINISTRACION DE LA APP -->
-	<div th:fragment="headerAdmin">
+	<div class="header" th:fragment="headerAdmin">
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -500,7 +500,7 @@
 
 	<!-- FRAGMENTO PARA CONTENIDO DE PIE DE LAS PAGINAS -->
 	<div
-		class="d-flex flex-wrap  bg-dark text-white text-center py-3 bottom"
+		class="d-flex flex-wrap bg-dark text-white text-center py-3 bottom footer"
 		th:fragment="footerContent" id="footer">
 		<div class="container">
 			<div class="row justify-content-between">

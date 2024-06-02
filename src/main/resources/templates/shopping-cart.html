@@ -7,73 +7,75 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
-
-	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-5 mb-5" id="carContainer">
-		<div class="col text-center mb-3">
-			<img src="/images/car.png" class="img-fluid"
-				style="max-height: 250px;" alt="Carrito de compras"
-				title="Carrito de compras">
-		</div>
-		<h2 class="mb-4">Carrito de compras</h2>
-		<div class="alert alert-danger d-none" role="alert"
-			id="messagePayError"></div>
-		<div class="table-responsive">
-			<table class="table">
-				<thead>
-					<tr>
-						<th>Imagen</th>
-						<th>Nombre</th>
-						<th>Cantidad</th>
-						<th>Precio Unitario</th>
-						<th>Precio Total</th>
-						<th>Eliminar</th>
-					</tr>
-				</thead>
-				<tbody id="tbodyProductsCar"></tbody>
-			</table>
-		</div>
-		<div class="text-right">
-			<h4 class="mb-5" id="carTotal"></h4>
-			<button onclick="checkProducts()" class="btn btn-success"
-				id="buyButton">
-				<i class="fa-solid fa-wallet mr-sm-2"></i>Realizar compra</a>
-		</div>
-	</div>
-
-	<div class="d-none mt-5 mb-5" id="msgNotFound">
-		<div class="text-center">
-			<p class="font-weight-bold" style="font-size: 24px;">¡Oops!
-				Parece que el carrito está vacío.</p>
+	<div class="body-container">
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
 		</div>
 
-		<div class="col text-center mt-5">
-			<img src="/images/not-found.png" class="img-fluid"
-				style="max-height: 400px;">
+		<!-- CONTENIDO DE LA PAGINA -->
+		<div class="main">
+			<div class="container text-center mt-4 mb-4" id="carContainer">
+				<div class="col text-center mb-3">
+					<img src="/images/car.png" class="img-fluid"
+						style="max-height: 250px;" alt="Carrito de compras"
+						title="Carrito de compras">
+				</div>
+				<h2 class="mb-4">Carrito de compras</h2>
+				<div class="alert alert-danger d-none" role="alert"
+					id="messagePayError"></div>
+				<div class="table-responsive">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Imagen</th>
+								<th>Nombre</th>
+								<th>Cantidad</th>
+								<th>Precio Unitario</th>
+								<th>Precio Total</th>
+								<th>Eliminar</th>
+							</tr>
+						</thead>
+						<tbody id="tbodyProductsCar"></tbody>
+					</table>
+				</div>
+				<div class="text-right">
+					<h4 class="mb-5" id="carTotal"></h4>
+					<button onclick="checkProducts()" class="btn btn-success"
+						id="buyButton">
+						<i class="fa-solid fa-wallet mr-sm-2"></i>Realizar compra</a>
+				</div>
+			</div>
+
+			<div class="d-none mt-5 mb-5" id="msgNotFound">
+				<div class="text-center">
+					<p class="font-weight-bold" style="font-size: 24px;">¡Oops!
+						Parece que el carrito está vacío.</p>
+				</div>
+
+				<div class="col text-center mt-5">
+					<img src="/images/not-found.png" class="img-fluid"
+						style="max-height: 400px;">
+				</div>
+			</div>
 		</div>
-	</div>
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
+		<!-- Loader -->
+		<div class="loader-wrapper" id="loader-wrapper">
+			<div class="loader"></div>
+		</div>
 
-	<!-- Loader -->
-	<div class="loader-wrapper" id="loader-wrapper">
-		<div class="loader"></div>
-	</div>
+		<!-- MODAL PRODUCT -->
+		<div th:replace="~{fragments/general-fragments :: modalProduct}">
+		</div>
 
-	<!-- MODAL PRODUCT -->
-	<div th:replace="~{fragments/general-fragments :: modalProduct}">
-	</div>
+		<!-- Modal Pay -->
+		<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
 
-	<!-- Modal Pay -->
-	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
-
-	<script type="text/javascript" th:src="@{/js/shoppingCart.js}"></script>
-	<script>
+		<script type="text/javascript" th:src="@{/js/shoppingCart.js}"></script>
+		<script>
 		// Obtener productos de la cesta 
 		window.onload = async function() {
 			// Activar loader
@@ -81,7 +83,8 @@
 			
 			await loadShoppingCart();
 		}
-	</script>
+		</script>
+	</div>
 </body>
 
 </html>

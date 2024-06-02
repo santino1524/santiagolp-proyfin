@@ -7,76 +7,81 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
-
-	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container mb-5 mt-5 text-center">
-		<div class="col mb-3">
-			<img src="/images/ball-pay.png" class="img-fluid"
-				style="max-height: 150px;" alt="Pay Balls" title="Pay Balls">
-		</div>
-		<h2 class="mb-5">Proceso de pago</h2>
-
-		<!-- Lista de Direcciones -->
-		<div class="row mt-4">
-			<div class="col-md-8">
-				<div class="address-list">
-					<h5 class="mb-4">Seleccione la dirección para el envío</h5>
-
-					<div class="alert alert-danger d-none" role="alert"
-						id="messageNotFoundAddresses"></div>
-
-					<div class="list-group mb-4" id="addresses"></div>
-
-					<button class="btn btn-primary mt-3 mb-5" id="addAddress"
-						onclick="addAddress()">
-						<i class="fa-solid fa-plus mr-sm-2"></i>Agregar nueva dirección
-					</button>
-				</div>
-			</div>
-
-			<div class="col-md-4 d-none" id="paymentMethods">
-				<h5 class="mb-4">Método de pago</h5>
-
-				<div class="mb-3 mt-3" id="paypalButton">
-					<div id="paypal-button-container" class="text-right"></div>
-					<p id="result-message"></p>
-				</div>
-
-				<div class="alert alert-warning mt-5 mb-5" role="alert" id="moneyToPay"></div>
-			</div>
-
+	<div class="body-container">
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
 		</div>
 
-	</div>
+		<!-- CONTENIDO DE LA PAGINA -->
+		<div class="container mb-4 mt-4 text-center main">
+			<div class="col mb-3">
+				<img src="/images/ball-pay.png" class="img-fluid"
+					style="max-height: 150px;" alt="Pay Balls" title="Pay Balls">
+			</div>
+			<h2 class="mb-5">Proceso de pago</h2>
 
-	<!-- Loader -->
-	<div class="loader-wrapper" id="loader-wrapper">
-		<div class="loader"></div>
-	</div>
+			<!-- Lista de Direcciones -->
+			<div class="row mt-4">
+				<div class="col-md-8">
+					<div class="address-list">
+						<h5 class="mb-4">Seleccione la dirección para el envío</h5>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
+						<div class="alert alert-danger d-none" role="alert"
+							id="messageNotFoundAddresses"></div>
 
-	<!-- Modal Address -->
-	<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+						<div class="list-group mb-4" id="addresses"></div>
 
-	<!-- Modal Pay -->
-	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+						<button class="btn btn-primary mt-3 mb-5" id="addAddress"
+							onclick="addAddress()">
+							<i class="fa-solid fa-plus mr-sm-2"></i>Agregar nueva dirección
+						</button>
+					</div>
+				</div>
 
-	<script
-		src="https://www.paypal.com/sdk/js?client-id=AVjPbUXEqSsbBbRzgJnIIEbUC3wzKx0mdApkailsUgO1vLgKceUabHYzHCjgJAvP0Iboru-WfAQcW7ix&buyer-country=ES&currency=EUR&components=buttons&enable-funding=venmo"
-		data-sdk-integration-source="developer-studio"></script>
-	<script type="text/javascript" th:src="@{/js/pay.js}"></script>
-	<script>
+				<div class="col-md-4 d-none" id="paymentMethods">
+					<h5 class="mb-4">Método de pago</h5>
+
+					<div class="mb-3 mt-3" id="paypalButton">
+						<div id="paypal-button-container" class="text-right"></div>
+						<p id="result-message"></p>
+					</div>
+
+					<div class="alert alert-warning mt-5 mb-5" role="alert"
+						id="moneyToPay"></div>
+				</div>
+
+			</div>
+
+			<!-- Loader -->
+			<div class="loader-wrapper" id="loader-wrapper">
+				<div class="loader"></div>
+			</div>
+
+		</div>
+
+
+
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
+
+		<!-- Modal Address -->
+		<div th:replace="~{fragments/general-fragments :: modalAddress}"></div>
+
+		<!-- Modal Pay -->
+		<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+
+		<script
+			src="https://www.paypal.com/sdk/js?client-id=AVjPbUXEqSsbBbRzgJnIIEbUC3wzKx0mdApkailsUgO1vLgKceUabHYzHCjgJAvP0Iboru-WfAQcW7ix&buyer-country=ES&currency=EUR&components=buttons&enable-funding=venmo"
+			data-sdk-integration-source="developer-studio"></script>
+		<script type="text/javascript" th:src="@{/js/pay.js}"></script>
+		<script>
 		// Cargar pagina de pago
 		window.onload = async function() {			
 			await loadPayPage();
 		}
 	</script>
+	</div>
 </body>
 
 </html>

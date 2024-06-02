@@ -7,53 +7,52 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+	<div class="body-container">
 
-	<!-- PANEL DE ADMINISTRACION -->
-	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
-	</div>
-
-	<div class="container text-center mt-5 mb-5 d-none" id="ordersFound">
-		<h2 class="mb-5 mt-5">Gestionar envío de pedidos</h2>
-		<div class="table-responsive">
-			<table class="table" id="ordersTable">
-				<thead>
-					<tr>
-						<th>Pedido</th>
-						<th>Transacción</th>
-						<th>Fecha</th>
-						<th>Total</th>
-						<th>Procesar</th>
-						<th>Cancelar</th>
-					</tr>
-				</thead>
-				<tbody id="tbodyOrders"></tbody>
-			</table>
-		</div>
-	</div>
-
-	<div class="d-none" id="msgNotFound">
-		<div class="text-center mt-5">
-			<p class="font-weight-bold" style="font-size: 24px;">No hay
-				pedidos pendientes a procesar.</p>
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
 		</div>
 
-		<div class="col text-center">
-			<img src="/images/not-found.png" class="img-fluid"
-				style="max-height: 400px;">
+		<!-- PANEL DE ADMINISTRACION -->
+		<div th:replace="~{fragments/general-fragments :: headerAdmin}">
 		</div>
-	</div>
 
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
+		<div class="main">
+			<div class="container text-center mt-4 mb-4 d-none" id="ordersFound">
+				<h2 class="mb-5 mt-5">Gestionar envío de pedidos</h2>
+				<div class="table-responsive">
+					<table class="table" id="ordersTable">
+						<thead>
+							<tr>
+								<th>Pedido</th>
+								<th>Transacción</th>
+								<th>Fecha</th>
+								<th>Total</th>
+								<th>Procesar</th>
+								<th>Cancelar</th>
+							</tr>
+						</thead>
+						<tbody id="tbodyOrders"></tbody>
+					</table>
+				</div>
+			</div>
 
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
+			<div class="d-none" id="msgNotFound">
+				<div class="text-center mt-5">
+					<p class="font-weight-bold" style="font-size: 24px;">No hay
+						pedidos pendientes a procesar.</p>
+				</div>
 
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
+				<div class="col text-center">
+					<img src="/images/not-found.png" class="img-fluid"
+						style="max-height: 400px;">
+				</div>
+			</div>
 
-	<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
-	<script>
+		</div>
+
+		<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
+		<script>
 		// Cargar nuevos pedidos a enviar
 		window.onload = async function() {
 			// Activar loader
@@ -62,17 +61,18 @@
 			await loadAlerts();
 			await loadNewOrders();
 		}
-	</script>
+		</script>
 
-	<!-- Loader -->
-	<div class="loader-wrapper" id="loader-wrapper">
-		<div class="loader"></div>
-	</div>
+		<!-- Loader -->
+		<div class="loader-wrapper" id="loader-wrapper">
+			<div class="loader"></div>
+		</div>
 
-	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+		<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 	</div>
 </body>
 

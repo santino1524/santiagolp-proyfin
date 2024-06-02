@@ -7,56 +7,60 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+	<div class="body-container">
 
-	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3">
-		<div class="col text-center">
-			<img src="/images/dragon-ball.png" class="img-fluid"
-				style="max-height: 150px;" alt="Dragon Ball" title="Acerca de">
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
 		</div>
-		<h3>Bienvenido a "Luz Fuego Destrucción"</h3>
-		<div class="mb-5" id="about">
-			<p>En un momento crucial tras el legado de Akira Toriyama, "Luz
-				Fuego Destrucción" emerge como una plataforma diseñada para todos
-				los apasionados del universo de Dragon Ball. Con la reciente partida
-				del creador de esta icónica franquicia, el interés renovado en
-				Dragon Ball ha despertado una nueva ola de entusiasmo entre los fans
-				de todo el mundo.</p>
-			<p>En nuestra aplicación, hemos reunido una amplia gama de
-				productos temáticos de Dragon Ball, ofreciendo a los usuarios una
-				experiencia de compra única y emocionante. Desde figuras
-				coleccionables hasta ropa, accesorios y mucho más, "Luz Fuego
-				Destrucción" es tu destino definitivo para encontrar los artículos
-				más exclusivos y codiciados del universo Dragon Ball.</p>
-			<p>Nuestra misión es proporcionar una plataforma de comercio
-				electrónico especializada donde los fans puedan acceder fácilmente a
-				su mercancía favorita, ya sea como visitantes curiosos o como
-				compradores ávidos. Con un enfoque en la calidad, la autenticidad y
-				la satisfacción del cliente, nos esforzamos por ser el destino
-				definitivo para todos los seguidores de Dragon Ball.</p>
-			<p>Estamos comprometidos con la excelencia en todos los aspectos
-				de nuestra plataforma, desde la facilidad de uso hasta la seguridad
-				de las transacciones. Con un diseño estéticamente coherente que
-				refleja la esencia de Dragon Ball, "Luz Fuego Destrucción" garantiza
-				una experiencia de usuario intuitiva y satisfactoria, adaptada tanto
-				a ordenadores de escritorio como a dispositivos móviles.</p>
-			<p>Únete a nosotros en este emocionante viaje a través del
-				universo de Dragon Ball. ¡Explora, compra y comparte tu pasión por
-				la saga más legendaria del anime en "Luz Fuego Destrucción"!</p>
-			<p>
-				Para cualquier consulta, no dudes en contactarnos en <a
-					href="mailto:pagos.luzfuegodestruccion@gmail.com">Atención al cliente</a>.
-			</p>
+
+		<!-- CONTENIDO DE LA PAGINA -->
+		<div class="container text-center mt-4 mb-4 main">
+			<div class="col text-center">
+				<img src="/images/dragon-ball.png" class="img-fluid"
+					style="max-height: 150px;" alt="Dragon Ball" title="Acerca de">
+			</div>
+			<h3 class="mt-4 mb-4">Bienvenido a "Luz Fuego Destrucción"</h3>
+			<div id="about">
+				<p>En un momento crucial tras el legado de Akira Toriyama, "Luz
+					Fuego Destrucción" emerge como una plataforma diseñada para todos
+					los apasionados del universo de Dragon Ball. Con la reciente
+					partida del creador de esta icónica franquicia, el interés renovado
+					en Dragon Ball ha despertado una nueva ola de entusiasmo entre los
+					fans de todo el mundo.</p>
+				<p>En nuestra aplicación, hemos reunido una amplia gama de
+					productos temáticos de Dragon Ball, ofreciendo a los usuarios una
+					experiencia de compra única y emocionante. Desde figuras
+					coleccionables hasta ropa, accesorios y mucho más, "Luz Fuego
+					Destrucción" es tu destino definitivo para encontrar los artículos
+					más exclusivos y codiciados del universo Dragon Ball.</p>
+				<p>Nuestra misión es proporcionar una plataforma de comercio
+					electrónico especializada donde los fans puedan acceder fácilmente
+					a su mercancía favorita, ya sea como visitantes curiosos o como
+					compradores ávidos. Con un enfoque en la calidad, la autenticidad y
+					la satisfacción del cliente, nos esforzamos por ser el destino
+					definitivo para todos los seguidores de Dragon Ball.</p>
+				<p>Estamos comprometidos con la excelencia en todos los aspectos
+					de nuestra plataforma, desde la facilidad de uso hasta la seguridad
+					de las transacciones. Con un diseño estéticamente coherente que
+					refleja la esencia de Dragon Ball, "Luz Fuego Destrucción"
+					garantiza una experiencia de usuario intuitiva y satisfactoria,
+					adaptada tanto a ordenadores de escritorio como a dispositivos
+					móviles.</p>
+				<p>Únete a nosotros en este emocionante viaje a través del
+					universo de Dragon Ball. ¡Explora, compra y comparte tu pasión por
+					la saga más legendaria del anime en "Luz Fuego Destrucción"!</p>
+				<p>
+					Para cualquier consulta, no dudes en contactarnos en <a
+						href="mailto:pagos.luzfuegodestruccion@gmail.com">Atención al
+						cliente</a>.
+				</p>
+			</div>
+		</div>
+
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
 		</div>
 	</div>
-
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
-
 </body>
 
 </html>
