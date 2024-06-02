@@ -7,40 +7,42 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+	<div class="body-container">
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
+		</div>
 
-	<!-- CONTENIDO DE LA PAGINA -->
-	<div class="container text-center mt-3 mb-4" id="ordersContainer">
-		<h2 class="mb-3">Mis pedidos</h2>
+		<!-- CONTENIDO DE LA PAGINA -->
+		<div class="main">
+			<div class="container text-center mt-4 mb-4" id="ordersMain">
+				<h2 class="mb-3">Mis pedidos</h2>
 
-		<div id="ordersContainer"></div>
+				<div id="ordersContainer"></div>
+			</div>
 
-	</div>
+			<div class="container text-center mt-3 mb-4 d-none"
+				id="showAllOrders">
+				<button class="btn btn-primary" onclick="showAllOrdersByUser()">
+					Ver todos los pedidos</a>
+			</div>
 
-	<div class="container text-center mt-3 mb-4 d-none" id="showAllOrders">
-		<button class="btn btn-primary" onclick="showAllOrdersByUser()">
-			Ver todos los pedidos</a>
-	</div>
+			<div class="col text-center d-none" id="not-found">
+				<h3 class="mb-4 mt-4">Todavía no has realizado ningún pedido.</h3>
+				<img src="/images/not-found.png" class="img-fluid"
+					style="max-height: 400px;">
+			</div>
+		</div>
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 
-	<div class="col text-center d-none" id="not-found">
-		<h3 class="mb-3">Todavía no has realizado ningún pedido.</h3>
-		<img src="/images/not-found.png" class="img-fluid"
-			style="max-height: 400px;">
-	</div>
+		<!-- Loader -->
+		<div class="loader-wrapper" id="loader-wrapper">
+			<div class="loader"></div>
+		</div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
-
-	<!-- Loader -->
-	<div class="loader-wrapper" id="loader-wrapper">
-		<div class="loader"></div>
-	</div>
-
-	<script type="text/javascript" th:src="@{/js/myOrders.js}"></script>
-	<script>
+		<script type="text/javascript" th:src="@{/js/myOrders.js}"></script>
+		<script>
 		// Obtener productos de la cesta 
 		window.onload = async function() {
 			// Activar loader
@@ -49,6 +51,7 @@
 			await loadOrdersPage();
 		}
 	</script>
+	</div>
 </body>
 
 </html>

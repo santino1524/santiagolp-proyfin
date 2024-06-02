@@ -7,198 +7,198 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+	<div class="body-container">
 
-	<!-- PANEL DE ADMINISTRACION -->
-	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
-	</div>
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
+		</div>
 
-	<div class="container text-center mt-5 mb-2">
-		<h2 class="mb-5 mt-5">Gestionar usuarios</h2>
+		<!-- PANEL DE ADMINISTRACION -->
+		<div th:replace="~{fragments/general-fragments :: headerAdmin}">
+		</div>
 
-		<div id="messageError" class="m-3 alert alert-danger d-none"
-			role="alert"></div>
+		<div class="container text-center mt-4 mb-4 mb-2 main">
+			<h2 class="mb-4 mt-4">Gestionar usuarios</h2>
 
-		<!-- FORMULARIO DE BUSQUEDA -->
-		<div class="container mt-3">
-			<div class="row d-flex justify-content-center mb-5">
-				<div class="col-md-12">
-					<div class="card p-3 py-4">
-						<div class="row">
-							<div class="col-md-3">
-								<select class="form-control selectpicker" id="criterio">
-									<option value="" disabled selected>Términos de
-										búsqueda</option>
-									<option value="dni">DNI/NIE</option>
-									<option value="email">Email</option>
-									<option value="numberPhone">Teléfono</option>
+			<div id="messageError" class="m-3 alert alert-danger d-none"
+				role="alert"></div>
+
+			<!-- FORMULARIO DE BUSQUEDA -->
+			<div class="container mt-3">
+				<div class="row d-flex justify-content-center mb-5">
+					<div class="col-md-12">
+						<div class="card p-3 py-4">
+							<div class="row">
+								<div class="col-md-3">
+									<select class="form-control selectpicker" id="criterio">
+										<option value="" disabled selected>Términos de
+											búsqueda</option>
+										<option value="dni">DNI/NIE</option>
+										<option value="email">Email</option>
+										<option value="numberPhone">Teléfono</option>
+									</select>
+								</div>
+								<div class="col-md-6">
+									<input type="text" class="form-control" id="value">
+								</div>
+								<div class="col-md-3">
+									<button type="button" class="btn btn-secondary btn-block"
+										onclick="searchUser()">Buscar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- DATOS USUARIO -->
+			<div class="row">
+				<input type="hidden" id="userId"> <input type="hidden"
+					id="userRole">
+				<div class="card-body d-none" id="dataUser">
+					<p id="userName"></p>
+					<p id="surnames"></p>
+					<p id="userDni"></p>
+					<p id="phone"></p>
+					<p id="blocked" style="color: red; font-weight: bold;"></p>
+				</div>
+			</div>
+
+			<!-- CAMBIAR ROL DE USUARIO -->
+			<div id="adminCards">
+				<div class="row p-3">
+					<div class="col-md-6">
+						<div class="card mb-4">
+							<div class="card-header">
+								<h5 class="card-title" id="role">
+									<strong>Rol de usuario: </strong>
+								</h5>
+							</div>
+							<div class="card-body">
+								<div id="messageRole" class="alert alert-success d-none"
+									role="alert"></div>
+								<button class="btn btn-secondary" data-toggle="modal"
+									id="btnRoleChange" data-target="#roleChange"
+									onclick="setValueSelect()" disabled>Cambiar</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- CAMBIAR CONTRASENNA DE USUARIO -->
+					<div class="col-md-6">
+						<div class="card mb-4">
+							<div class="card-header">
+								<h5 class="card-title">
+									<strong>Contraseña: </strong> <span class="d-none"
+										id="passwdVisual">********</span>
+								</h5>
+							</div>
+							<div class="card-body">
+								<div id="messagePasswd" class="alert alert-success d-none"
+									role="alert"></div>
+								<button class="btn btn-secondary" data-toggle="modal" disabled
+									id="btnChangePasswd" data-target="#changePasswd">Cambiar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal para editar contraseña -->
+		<div class="modal fade" id="changePasswd">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Cambiar contraseña</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<form id='formChangePasswd'>
+							<div class="form-group">
+								<div class="alert alert-danger d-none" id='messagePasswdError'
+									role="alert"></div>
+								<div class="alert alert-success d-none" id='messagePasswd'
+									role="alert"></div>
+								<div class="form-group">
+									<label for="newPassword">Nueva contraseña</label> <input
+										type="password" class="form-control" id="newPassword"
+										placeholder="Nueva contraseña">
+								</div>
+								<div class="form-group">
+									<label for="confirmPasswd">Confirmar contraseña</label> <input
+										type="password" class="form-control" id="confirmPasswd"
+										placeholder="Confirmar contraseña">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							onclick="savePasswd()">Cambiar contraseña</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal para role -->
+		<div class="modal fade" id="roleChange">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Cambiar rol de usuario</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<form id="roleChangeForm">
+							<div class="form-group">
+								<div class="alert alert-danger d-none" id='messageRoleError'
+									role="alert"></div>
+								<div class="alert alert-danger d-none" id='messageRole'
+									role="alert"></div>
+								<label>Seleccione el rol</label> <select
+									onchange="actionButtonRole()" class="form-control selectpicker"
+									id="roles">
+									<option value=1>Vendedor</option>
+									<option value=2>Comprador</option>
 								</select>
 							</div>
-							<div class="col-md-6">
-								<input type="text" class="form-control" id="value">
-							</div>
-							<div class="col-md-3">
-								<button type="button" class="btn btn-secondary btn-block"
-									onclick="searchUser()">Buscar</button>
-							</div>
-						</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button onclick="saveRole()" class="btn btn-primary"
+							id="buttonRole" disabled>Guardar cambios</button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- DATOS USUARIO -->
-		<div class="row">
-			<input type="hidden" id="userId"> <input type="hidden"
-				id="userRole">
-			<div class="card-body d-none" id="dataUser">
-				<p id="userName"></p>
-				<p id="surnames"></p>
-				<p id="userDni"></p>
-				<p id="phone"></p>
-				<p id="blocked" style="color: red; font-weight: bold;"></p>
+		<div class="d-none" id="msgNotFoundUsers">
+			<div class="text-center">
+				<p class="font-weight-bold" style="font-size: 24px;">No se ha
+					encontrado ningún usuario.</p>
+			</div>
+
+			<div class="col text-center">
+				<img src="/images/not-found.png" class="img-fluid"
+					style="max-height: 400px;">
 			</div>
 		</div>
 
-		<!-- CAMBIAR ROL DE USUARIO -->
-		<div id="adminCards">
-			<div class="row p-3">
-				<div class="col-md-6">
-					<div class="card mb-4">
-						<div class="card-header">
-							<h5 class="card-title" id="role">
-								<strong>Rol de usuario: </strong>
-							</h5>
-						</div>
-						<div class="card-body">
-							<div id="messageRole" class="alert alert-success d-none"
-								role="alert"></div>
-							<button class="btn btn-secondary" data-toggle="modal"
-								id="btnRoleChange" data-target="#roleChange"
-								onclick="setValueSelect()" disabled>Cambiar</button>
-						</div>
-					</div>
-				</div>
-
-				<!-- CAMBIAR CONTRASENNA DE USUARIO -->
-				<div class="col-md-6">
-					<div class="card mb-4">
-						<div class="card-header">
-							<h5 class="card-title">
-								<strong>Contraseña: </strong> <span class="d-none"
-									id="passwdVisual">********</span>
-							</h5>
-						</div>
-						<div class="card-body">
-							<div id="messagePasswd" class="alert alert-success d-none"
-								role="alert"></div>
-							<button class="btn btn-secondary" data-toggle="modal" disabled
-								id="btnChangePasswd" data-target="#changePasswd">Cambiar</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Modal para editar contraseña -->
-	<div class="modal fade" id="changePasswd">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Cambiar contraseña</h4>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-				<div class="modal-body">
-					<form id='formChangePasswd'>
-						<div class="form-group">
-							<div class="alert alert-danger d-none" id='messagePasswdError'
-								role="alert"></div>
-							<div class="alert alert-success d-none" id='messagePasswd'
-								role="alert"></div>
-							<div class="form-group">
-								<label for="newPassword">Nueva contraseña</label> <input
-									type="password" class="form-control" id="newPassword"
-									placeholder="Nueva contraseña">
-							</div>
-							<div class="form-group">
-								<label for="confirmPasswd">Confirmar contraseña</label> <input
-									type="password" class="form-control" id="confirmPasswd"
-									placeholder="Confirmar contraseña">
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary"
-						onclick="savePasswd()">Cambiar contraseña</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Modal para role -->
-	<div class="modal fade" id="roleChange">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Cambiar rol de usuario</h4>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-				<div class="modal-body">
-					<form id="roleChangeForm">
-						<div class="form-group">
-							<div class="alert alert-danger d-none" id='messageRoleError'
-								role="alert"></div>
-							<div class="alert alert-danger d-none" id='messageRole'
-								role="alert"></div>
-							<label>Seleccione el rol</label> <select
-								onchange="actionButtonRole()" class="form-control selectpicker"
-								id="roles">
-								<option value=1>Vendedor</option>
-								<option value=2>Comprador</option>
-							</select>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button onclick="saveRole()" class="btn btn-primary"
-						id="buttonRole" disabled>Guardar cambios</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="d-none" id="msgNotFoundUsers">
-		<div class="text-center">
-			<p class="font-weight-bold" style="font-size: 24px;">No se ha
-				encontrado ningún usuario.</p>
-		</div>
-
-		<div class="col text-center">
-			<img src="/images/not-found.png" class="img-fluid"
-				style="max-height: 400px;">
-		</div>
-	</div>
-
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
-
-	<script type="text/javascript" th:src="@{/js/adminUser.js}"></script>
-	<script>
+		<script type="text/javascript" th:src="@{/js/adminUser.js}"></script>
+		<script>
 		// Cargar nuevos pedidos a enviar
 		window.onload = async function() {
 			await loadAlerts();
 		}
-	</script>
+		</script>
 
-	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+		<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 	</div>
-
 </body>
 
 </html>

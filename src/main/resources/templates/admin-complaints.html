@@ -7,66 +7,69 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+	<div class="body-container">
 
-	<!-- PANEL DE ADMINISTRACION -->
-	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
-	</div>
-
-	<div class="container text-center mt-5 mb-5 d-none"
-		id="complaintsFound">
-		<h2 class="mb-5 mt-5">Gestionar denuncias</h2>
-		<div class="table-responsive">
-			<table class="table" id="complaintsTable">
-				<thead>
-					<tr>
-						<th colspan="3">Usuario denunciante</th>
-						<th colspan="3">Usuario denunciado</th>
-					</tr>
-					<tr>
-						<th>Nombre/Usuario</th>
-						<th>Denuncias</th>
-						<th>Bloquear denunciante/</br>Eliminar denuncia
-						</th>
-
-						<th>Nombre/Usuario</th>
-						<th>Comentario</th>
-						<th>Bloquear denunciado/</br>Eliminar comentario
-						</th>
-					</tr>
-				</thead>
-				<tbody id="tbodyComplaints"></tbody>
-			</table>
-		</div>
-	</div>
-
-	<div class="d-none" id="msgNotFound">
-		<div class="text-center mt-5">
-			<p class="font-weight-bold" style="font-size: 24px;">No hay
-				denuncias pendientes a revisar.</p>
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
 		</div>
 
-		<div class="col text-center">
-			<img src="/images/not-found.png" class="img-fluid"
-				style="max-height: 400px;">
+		<!-- PANEL DE ADMINISTRACION -->
+		<div th:replace="~{fragments/general-fragments :: headerAdmin}">
 		</div>
-	</div>
 
-	<!-- Loader -->
-	<div class="loader-wrapper" id="loader-wrapper">
-		<div class="loader"></div>
-	</div>
+		<div class="main">
+			<div class="container text-center mt-5 mb-5 d-none"
+				id="complaintsFound">
+				<h2 class="mb-5 mt-5">Gestionar denuncias</h2>
+				<div class="table-responsive">
+					<table class="table" id="complaintsTable">
+						<thead>
+							<tr>
+								<th colspan="3">Usuario denunciante</th>
+								<th colspan="3">Usuario denunciado</th>
+							</tr>
+							<tr>
+								<th>Nombre/Usuario</th>
+								<th>Denuncias</th>
+								<th>Bloquear denunciante/</br>Eliminar denuncia
+								</th>
 
-	<div th:replace="~{fragments/general-fragments :: footSpace}"></div>
+								<th>Nombre/Usuario</th>
+								<th>Comentario</th>
+								<th>Bloquear denunciado/</br>Eliminar comentario
+								</th>
+							</tr>
+						</thead>
+						<tbody id="tbodyComplaints"></tbody>
+					</table>
+				</div>
+			</div>
 
-	<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+			<div class="d-none" id="msgNotFound">
+				<div class="text-center mt-5">
+					<p class="font-weight-bold" style="font-size: 24px;">No hay
+						denuncias pendientes a revisar.</p>
+				</div>
 
-	<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+				<div class="col text-center">
+					<img src="/images/not-found.png" class="img-fluid"
+						style="max-height: 400px;">
+				</div>
+			</div>
 
-	<script type="text/javascript" th:src="@{/js/adminComplaints.js}"></script>
-	<script>
+			<!-- Loader -->
+			<div class="loader-wrapper" id="loader-wrapper">
+				<div class="loader"></div>
+			</div>
+
+		</div>
+
+		<div th:replace="~{fragments/general-fragments :: adminModal}"></div>
+
+		<div th:replace="~{fragments/general-fragments :: modalPay}"></div>
+
+		<script type="text/javascript" th:src="@{/js/adminComplaints.js}"></script>
+		<script>
 		// Cargar nuevos pedidos a enviar
 		window.onload = async function() {
 			// Activar loader
@@ -75,10 +78,11 @@
 			await loadAlerts();
 			await loadComplaints();
 		}
-	</script>
+		</script>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
 	</div>
 </body>
 

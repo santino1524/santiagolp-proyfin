@@ -20,7 +20,7 @@ async function layoutOrders(orders, user) {
 
 	if (!orders || orders.length === 0 || orders[0] === null) {
 		document.getElementById('not-found').classList.remove('d-none');
-
+		document.getElementById('ordersMain').classList.add('d-none');
 		return;
 	}
 

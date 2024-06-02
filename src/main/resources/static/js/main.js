@@ -1,4 +1,4 @@
-	//Expresiones regulares
+//Expresiones regulares
 const regexOnlyWordSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]*$/;
 const postalCodeRegExp = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
 const onlyWordsNumbersSpaces = /^[a-zA-ZÀ-ÖØ-öø-ÿ\d\s.,;:]*$/;
@@ -23,7 +23,7 @@ const maxSizeInBytes = 500 * 1024;
 document.addEventListener("DOMContentLoaded", function() {
 	let submitButton = document.getElementById("submitButtonRegister");
 	let inputDni = document.getElementById("dni");
-	
+
 	if (submitButton) {
 		submitButton.addEventListener("click", function(event) {
 			let password = document.getElementById("passwd").value;
@@ -33,6 +33,23 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		});
 	}
+});
+
+// Ocultar opciones para usuario predeterminado
+document.addEventListener('DOMContentLoaded', async function() {
+	let email = document.getElementById("authenticatedUser");
+
+	if (email && email.textContent) {
+		// Obtener datos de usuario
+		let userData = await searchByEmail(email.textContent);
+
+		if (userData.userId === 1) {
+			document.getElementById('itemMyOrders').classList.add('d-none');
+			document.getElementById('itemShoppingCart').classList.add('d-none');
+			document.getElementById('itemAbout').classList.add('d-none');
+		}
+	}
+
 });
 
 // Convertir a mayuscula la letra del DNI
@@ -53,7 +70,7 @@ function validateDNI(input) {
 
 	if (!/^[XYZ]?\d{7,8}[A-Z]$/.test(dni)) {
 		showMessage(dniError, message);
-		
+
 		return false;
 	}
 
@@ -77,7 +94,7 @@ function validateDNI(input) {
 
 	if (calculatedLetter !== letter) {
 		showMessage(dniError, message);
-		
+
 		return false;
 	}
 
@@ -1089,7 +1106,7 @@ async function searchByEmail(email) {
 		let response = await fetch("/users/searchByEmail?email=" + encodeURIComponent(email), {
 			method: "GET"
 		});
-		console.log("Received response:", response);
+
 		let data;
 
 		if (response.status === 200) {

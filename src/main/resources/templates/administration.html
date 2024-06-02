@@ -8,31 +8,35 @@
 </head>
 
 <body>
-	<!-- CONTENIDO DE CABECERA DE LA APP -->
-	<div th:replace="~{fragments/general-fragments :: headerContent}">
-	</div>
+	<div class="body-container">
 
-	<!-- PANEL DE ADMINISTRACION -->
-	<div th:replace="~{fragments/general-fragments :: headerAdmin}">
-	</div>
+		<!-- CONTENIDO DE CABECERA DE LA APP -->
+		<div th:replace="~{fragments/general-fragments :: headerContent}">
+		</div>
 
-	<div class="col text-center mb-5 mt-5">
-		<img src="/images/admin.png" class="img-fluid"
-			style="max-height: 420px;" alt="Panel de administración"
-			title="Gestiona en las diferentes opciones la tienda" id="adminImage">
-	</div>
+		<!-- PANEL DE ADMINISTRACION -->
+		<div th:replace="~{fragments/general-fragments :: headerAdmin}">
+		</div>
 
-	<!-- CONTENIDO DE PIE DE PAGINA -->
-	<div th:replace="~{fragments/general-fragments :: footerContent}">
-	</div>
+		<div class="col text-center mb-5 mt-5 main">
+			<img src="/images/admin.png" class="img-fluid"
+				style="max-height: 420px;" alt="Panel de administración"
+				title="Gestiona en las diferentes opciones la tienda"
+				id="adminImage">
+		</div>
 
-	<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
-	<script>
+		<!-- CONTENIDO DE PIE DE PAGINA -->
+		<div th:replace="~{fragments/general-fragments :: footerContent}">
+		</div>
+
+		<script type="text/javascript" th:src="@{/js/adminSendings.js}"></script>
+		<script>
 		// Cargar notificaciones 
 		window.onload = async function() {
 			await loadAlerts();
 		}
 	</script>
+	</div>
 </body>
 
 </html>
