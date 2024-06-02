@@ -140,12 +140,12 @@
 								role="alert"></div>
 							<label for="newEmail">Nuevo correo electrónico:</label> <input
 								type="email" class="form-control" id="newEmail" name="newEmail"
-								maxlength="100" required>
+								maxlength="100" required oninput="convertToLowerCase(this)">
 						</div>
 						<div class="form-group">
 							<label for="confirmEmail">Confirmar correo electrónico:</label> <input
 								type="email" class="form-control" id="confirmEmail" maxlength="100"
-								name="confirmEmail" required>
+								name="confirmEmail" required oninput="convertToLowerCase(this)">
 						</div>
 					</form>
 				</div>

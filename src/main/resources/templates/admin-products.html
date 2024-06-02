@@ -92,7 +92,7 @@
 								maxlength="50" class="form-control mb-3" name="productSize"
 								id="productSize" placeholder="Ingrese la talla"
 								th:value="${productDto != null ? productDto.productSize() : ''}">
-							<label for="productQuantity">Cantidad *</label> <input
+							<label for="productQuantity">Cantidad (Fuera de venta [-]) *</label> <input
 								type="number" class="form-control mb-3" name="productQuantity"
 								id="productQuantity" placeholder="Ingrese la cantidad"
 								th:value="${productDto != null ? productDto.productQuantity() : ''}">

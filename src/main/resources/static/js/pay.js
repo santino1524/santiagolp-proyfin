@@ -1,3 +1,15 @@
+// Loader
+document.addEventListener("DOMContentLoaded", function() {
+	// Activar loader
+	loaderActive();
+
+	// Esperar a que todo el contenido se cargue
+	window.addEventListener("load", function() {
+		// Desactivar loader
+		loaderDeactivate();
+	});
+});
+
 // Guardar orden
 async function saveOrder(orderDto) {
 	let data;
@@ -107,19 +119,13 @@ async function loadPayPage() {
 
 	if (addresses === null || addresses.length === 0) {
 		let message = "No hay registrada ninguna dirección de envío.";
-		showMessage(document.getElementById("messageNotFoundAddresses"), message)
+		showMessage(document.getElementById("messageNotFoundAddresses"), message);
 
-		// Desactivar loader
-		loaderDeactivate();
-		
 		return;
 	} else {
 		// Maquetar direcciones
 		layoutAddresses(addresses);
 	}
-
-	// Desactivar loader
-	loaderDeactivate();
 }
 
 // Maquetar direcciones

@@ -2,7 +2,10 @@
 package com.ntd.services;
 
 import com.ntd.dto.UserDTO;
+import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.ConfirmationToken;
+
+import jakarta.transaction.Transactional;
 
 /**
  * Servicio token
@@ -32,4 +35,13 @@ public interface TokenMgmtServiceI {
 	 * @return ConfirmationToken
 	 */
 	public ConfirmationToken findByToken(final String token);
+
+	/**
+	 * Eliminar ConfirmationToken
+	 * 
+	 * @param confirmationToken
+	 * @throws InternalException
+	 */
+	@Transactional
+	public void deleteConfirmationToken(ConfirmationToken confirmationToken) throws InternalException;
 }

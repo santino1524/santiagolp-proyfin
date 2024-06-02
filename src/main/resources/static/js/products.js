@@ -24,118 +24,122 @@ async function layoutProducts(products) {
 
 	// Buscar productos
 	for (const product of products) {
-		// Verificar si el categoryId de este producto es diferente al del primer producto
-		if (product.categoryId !== currentIdCategory && oneCategory) {
-			oneCategory = false;
-		}
 
-		// Card
-		let divProducts = document.createElement('div');
-		divProducts.classList.add('col-md-3', 'col-sm-6');
+		if (product.productQuantity >= 0) {
 
-		let divProductsGrid = document.createElement('div');
-		divProductsGrid.classList.add('product-grid', 'mb-4');
+			// Verificar si el categoryId de este producto es diferente al del primer producto
+			if (product.categoryId !== currentIdCategory && oneCategory) {
+				oneCategory = false;
+			}
 
-		// Imagenes
-		let divProductsImage = document.createElement('div');
-		divProductsImage.classList.add('product-image');
-		let aImage = document.createElement('a');
-		aImage.classList.add('image');
-		aImage.href = '#';
-		aImage.onclick = () => {
-			// Mostrar Modal con Product
-			showModalProduct(product);
-		};
-		let img1 = document.createElement('img');
-		img1.classList.add('pic-1');
-		img1.alt = `Producto ${product.productNumber}`;
-		img1.title = `Producto ${product.productNumber}`;
-		let img2 = document.createElement('img');
-		img2.classList.add('pic-2');
-		img2.alt = `Producto ${product.productNumber}`;
-		img2.title = `Producto ${product.productNumber}`;
-		// Crea una URL de datos (data URL) 
-		let dataUrl = 'data:image/jpeg;base64,' + product.images[0];
-		let dataUrl2;
-		let sizeImages = product.images.length
-		if (sizeImages > 1) {
-			dataUrl2 = 'data:image/jpeg;base64,' + product.images[sizeImages - 1];
-			img1.src = dataUrl;
-			img2.src = dataUrl2;
-		} else {
-			img1.src = dataUrl;
-			img2.src = dataUrl;
-		}
-		aImage.append(img1);
-		aImage.append(img2);
-		divProductsImage.append(aImage);
+			// Card
+			let divProducts = document.createElement('div');
+			divProducts.classList.add('col-md-3', 'col-sm-6');
 
-		// Rating y boton carrito
-		let divProductsRating = document.createElement('div');
-		divProductsRating.classList.add('product-rating');
-		let ul = document.createElement('ul');
-		ul.classList.add('rating');
+			let divProductsGrid = document.createElement('div');
+			divProductsGrid.classList.add('product-grid', 'mb-4');
 
-		let sum = 0;
-		if (product.reviewsDto && product.reviewsDto.length > 0) {
-			// Calcular promedio rating
-			let reviews = 0;
-			for (let i = 0; i < product.reviewsDto.length; i++) {
-				let review = product.reviewsDto[i];
-				if (review.rating > 0 && !review.reported) {
-					reviews++;
-					sum += product.reviewsDto[i].rating;
+			// Imagenes
+			let divProductsImage = document.createElement('div');
+			divProductsImage.classList.add('product-image');
+			let aImage = document.createElement('a');
+			aImage.classList.add('image');
+			aImage.href = '#';
+			aImage.onclick = () => {
+				// Mostrar Modal con Product
+				showModalProduct(product);
+			};
+			let img1 = document.createElement('img');
+			img1.classList.add('pic-1');
+			img1.alt = `Producto ${product.productNumber}`;
+			img1.title = `Producto ${product.productNumber}`;
+			let img2 = document.createElement('img');
+			img2.classList.add('pic-2');
+			img2.alt = `Producto ${product.productNumber}`;
+			img2.title = `Producto ${product.productNumber}`;
+			// Crea una URL de datos (data URL) 
+			let dataUrl = 'data:image/jpeg;base64,' + product.images[0];
+			let dataUrl2;
+			let sizeImages = product.images.length
+			if (sizeImages > 1) {
+				dataUrl2 = 'data:image/jpeg;base64,' + product.images[sizeImages - 1];
+				img1.src = dataUrl;
+				img2.src = dataUrl2;
+			} else {
+				img1.src = dataUrl;
+				img2.src = dataUrl;
+			}
+			aImage.append(img1);
+			aImage.append(img2);
+			divProductsImage.append(aImage);
+
+			// Rating y boton carrito
+			let divProductsRating = document.createElement('div');
+			divProductsRating.classList.add('product-rating');
+			let ul = document.createElement('ul');
+			ul.classList.add('rating');
+
+			let sum = 0;
+			if (product.reviewsDto && product.reviewsDto.length > 0) {
+				// Calcular promedio rating
+				let reviews = 0;
+				for (let i = 0; i < product.reviewsDto.length; i++) {
+					let review = product.reviewsDto[i];
+					if (review.rating > 0 && !review.reported) {
+						reviews++;
+						sum += product.reviewsDto[i].rating;
+					}
+				}
+
+				// Si hay resennas
+				if (sum) {
+					ave = sum / reviews;
+
+					for (let i = 0; i < parseInt(ave); i++) {
+						let li = document.createElement('li');
+						li.classList.add('fas', 'fa-star');
+						ul.append(li);
+					}
 				}
 			}
 
-			// Si hay resennas
-			if (sum) {
-				ave = sum / reviews;
+			let aCart = document.createElement('a');
+			aCart.classList.add('add-to-cart');
+			aCart.href = '#';
+			aCart.onclick = function() {
+				addCart(product.productId, 1);
+			};
+			aCart.append('Añadir al carrito');
+			divProductsRating.append(ul);
+			divProductsRating.append(aCart);
+			divProductsImage.append(divProductsRating);
+			divProductsGrid.append(divProductsImage);
 
-				for (let i = 0; i < parseInt(ave); i++) {
-					let li = document.createElement('li');
-					li.classList.add('fas', 'fa-star');
-					ul.append(li);
-				}
-			}
+			// Producto y precio
+			let divProductContent = document.createElement('div');
+			divProductContent.classList.add('product-content');
+			let h3Content = document.createElement('h3');
+			h3Content.classList.add('title');
+			let aTitle = document.createElement('a');
+			aTitle.href = '#';
+			aTitle.onclick = () => {
+				// Mostrar Modal con Product
+				showModalProduct(product);
+			};
+			aTitle.append(product.productName);
+			let divPrice = document.createElement('div');
+			divPrice.classList.add('price');
+			divPrice.append(product.pvpPrice + '€');
+			h3Content.append(aTitle);
+			divProductContent.append(h3Content);
+			divProductContent.append(divPrice);
+			divProductsGrid.append(divProductContent);
+
+			// Conformar card
+			divProducts.append(divProductsGrid);
+			divContainerProducts.append(divProducts);
+			divContainer.append(divContainerProducts);
 		}
-
-		let aCart = document.createElement('a');
-		aCart.classList.add('add-to-cart');
-		aCart.href = '#';
-		aCart.onclick = function() {
-			addCart(product.productId, 1);
-		};
-		aCart.append('Añadir al carrito');
-		divProductsRating.append(ul);
-		divProductsRating.append(aCart);
-		divProductsImage.append(divProductsRating);
-		divProductsGrid.append(divProductsImage);
-
-		// Producto y precio
-		let divProductContent = document.createElement('div');
-		divProductContent.classList.add('product-content');
-		let h3Content = document.createElement('h3');
-		h3Content.classList.add('title');
-		let aTitle = document.createElement('a');
-		aTitle.href = '#';
-		aTitle.onclick = () => {
-			// Mostrar Modal con Product
-			showModalProduct(product);
-		};
-		aTitle.append(product.productName);
-		let divPrice = document.createElement('div');
-		divPrice.classList.add('price');
-		divPrice.append(product.pvpPrice + '€');
-		h3Content.append(aTitle);
-		divProductContent.append(h3Content);
-		divProductContent.append(divPrice);
-		divProductsGrid.append(divProductContent);
-
-		// Conformar card
-		divProducts.append(divProductsGrid);
-		divContainerProducts.append(divProducts);
-		divContainer.append(divContainerProducts);
 	}
 
 	// Conformar categoria con productos

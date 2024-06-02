@@ -87,7 +87,10 @@ public class UserMgmtServiceImp implements UserMgmtServiceI {
 		User user = DTOMapperI.MAPPER.mapDTOToUser(userDto);
 
 		// Encriptar contrasenna
-		user.setPasswd(passwordEncoder.encode(userDto.passwd()));
+		User oldUser = userRepository.findById(userDto.userId()).orElseThrow(InternalException::new);
+		if (oldUser != null && !oldUser.getPasswd().equals(userDto.passwd())) {
+			user.setPasswd(passwordEncoder.encode(userDto.passwd()));
+		}
 
 		// Mapear DTO y actualizar
 		user = userRepository.save(user);

@@ -155,30 +155,23 @@ public class ProductController {
 	 * Eliminar imagenes
 	 * 
 	 * @param productId
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping(path = "/deleteImages/{productId}")
-	public ResponseEntity<Void> deleteImages(@PathVariable final Long productId, final Model model)
-			throws InternalException {
+	public ResponseEntity<Void> deleteImages(@PathVariable final Long productId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar imagenes");
 
 		// Validar id
 		ValidateParams.isNullObject(productId);
 
-		try {
-			// Validar id
-			ValidateParams.isNullObject(productId);
+		// Validar id
+		ValidateParams.isNullObject(productId);
 
-			// Eliminar imagen
-			productMgmtService.deleteImages(productId);
-
-		} catch (InternalException e) {
-			throw new InternalException();
-		}
+		// Eliminar imagen
+		productMgmtService.deleteImages(productId);
 
 		return ResponseEntity.ok().build();
 	}
@@ -187,27 +180,20 @@ public class ProductController {
 	 * Eliminar producto
 	 * 
 	 * @param productId
-	 * @param model
-	 * @return String
+	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
 	@Transactional
 	@DeleteMapping(path = "/delete/{productId}")
-	public ResponseEntity<Void> deleteProduct(@PathVariable final Long productId, final Model model)
-			throws InternalException {
+	public ResponseEntity<Void> deleteProduct(@PathVariable final Long productId) throws InternalException {
 		if (log.isInfoEnabled())
 			log.info("Eliminar producto");
 
-		try {
-			// Validar id
-			ValidateParams.isNullObject(productId);
+		// Validar id
+		ValidateParams.isNullObject(productId);
 
-			// Eliminar producto
-			productMgmtService.deleteProduct(productId);
-
-		} catch (InternalException e) {
-			throw new InternalException();
-		}
+		// Eliminar producto
+		productMgmtService.deleteProduct(productId);
 
 		return ResponseEntity.ok().build();
 	}

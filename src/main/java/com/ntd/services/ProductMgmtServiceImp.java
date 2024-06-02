@@ -20,6 +20,8 @@ import com.ntd.dto.mapper.DTOMapperI;
 import com.ntd.exceptions.InternalException;
 import com.ntd.persistence.Product;
 import com.ntd.persistence.ProductRepositoryI;
+import com.ntd.persistence.ProductSold;
+import com.ntd.persistence.ProductSoldRepositoryI;
 import com.ntd.utils.QRCode;
 import com.ntd.utils.ValidateParams;
 
@@ -38,13 +40,18 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 	/** Dependencia de ProductRepository */
 	private final ProductRepositoryI productRepository;
 
+	/** Dependencia de ProductSoldRepository */
+	private final ProductSoldRepositoryI productSoldRepository;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param productRepository
+	 * @param productSoldRepository
 	 */
-	public ProductMgmtServiceImp(ProductRepositoryI productRepository) {
+	public ProductMgmtServiceImp(ProductRepositoryI productRepository, ProductSoldRepositoryI productSoldRepository) {
 		this.productRepository = productRepository;
+		this.productSoldRepository = productSoldRepository;
 	}
 
 	@Override
@@ -85,8 +92,18 @@ public class ProductMgmtServiceImp implements ProductMgmtServiceI {
 		// Validar parametro
 		ValidateParams.isNullObject(id);
 
-		// Eliminar por Id
-		productRepository.deleteById(id);
+		List<ProductSold> soldProducts = productSoldRepository
+				.findByProduct(new Product(id, null, null, null, null, null, 0, null, null, null, null, null, null));
+
+		if (soldProducts.isEmpty()) {
+			// Eliminar por Id
+			productRepository.deleteById(id);
+		} else {
+			// Sacar producto de la venta
+			Product product = productRepository.findById(id).orElseThrow(InternalException::new);
+			product.setProductQuantity(-1);
+			productRepository.save(product);
+		}
 	}
 
 	@Override
