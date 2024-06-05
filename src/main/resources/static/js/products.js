@@ -103,15 +103,18 @@ async function layoutProducts(products) {
 				}
 			}
 
-			let aCart = document.createElement('a');
-			aCart.classList.add('add-to-cart');
-			aCart.href = '#';
-			aCart.onclick = function() {
-				addCart(product.productId, 1);
-			};
-			aCart.append('Añadir al carrito');
+			if (product.productQuantity > 0) {
+				let aCart = document.createElement('a');
+				aCart.classList.add('add-to-cart');
+				aCart.href = '#';
+				aCart.onclick = function() {
+					addCart(product.productId, 1);
+				};
+				aCart.append('Añadir al carrito');
+				divProductsRating.append(aCart);
+			}
+
 			divProductsRating.append(ul);
-			divProductsRating.append(aCart);
 			divProductsImage.append(divProductsRating);
 			divProductsGrid.append(divProductsImage);
 
