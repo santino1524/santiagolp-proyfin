@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.ntd.exceptions.CustomExceptions;
 import com.ntd.utils.Constants;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,6 +87,23 @@ public class ExceptionController {
 
 		if (log.isErrorEnabled())
 			log.error(e.getMessage());
+
+		return Constants.URL_ERROR_VIEW;
+	}
+
+	/**
+	 * Controlar excepciones de correo
+	 * 
+	 * @param e
+	 * @param model
+	 * @return String
+	 */
+	@ExceptionHandler(MessagingException.class)
+	public String mailException(final MessagingException e, final Model model) {
+
+		// Retornar mensaje del error
+		model.addAttribute(Constants.VIEW_ERROR_MESSAGE,
+				"Ha ocurrido un problema al conectarse al servidor de correos");
 
 		return Constants.URL_ERROR_VIEW;
 	}

@@ -386,6 +386,9 @@ async function searchByCategoryPageProducts(categoryId) {
 
 // Mostrar producto en modal 
 async function showModalProduct(product) {
+	// Actualizar datos de producto
+	product = await searchProductById(product.productId);
+	
 	let divUserId = document.getElementById('userId');
 	let email = document.getElementById("authenticatedUser");
 	document.getElementById('addToCartButton').disabled = false;
@@ -787,7 +790,7 @@ async function layoutReviews(reviewsDto) {
 			// Button denuncia
 			// Comprobar si se ha logado el usuario
 			let email = document.getElementById("authenticatedUser");
-			if (email && email.textContent && !verifyReviewUser(review) && !verifyBlockedUser(email.textContent)) {
+			if (email && email.textContent && !verifyReviewUser(review) &&  !await verifyBlockedUser(email.textContent)) {
 
 				let buttonReport = document.createElement('button');
 				buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
@@ -821,7 +824,7 @@ async function layoutReviews(reviewsDto) {
 						let url = '/sendReport';
 
 						// Opciones de la nueva ventana
-						let options = 'width=700,height=500,top=100,left=100,resizable=yes ,scrollbars=yes';
+						let options = 'width=700,height=400,top=100,left=100,resizable=yes ,scrollbars=yes';
 
 						// Abrir la nueva ventana
 						window.open(url, '_blank', options);
@@ -843,7 +846,7 @@ async function layoutReviews(reviewsDto) {
 async function verifyBlockedUser(email) {
 	let user = await searchByEmail(email.textContent);
 
-	return user.blocked;
+	return user && user.blocked;
 }
 
 // Verificar si la resenna es del usuario
