@@ -368,7 +368,7 @@
 											class="mb-2 col-md-4 col-lg-4 col-xl-3 d-flex align-items-center">
 
 											<button data-mdb-button-init data-mdb-ripple-init
-												class="btn btn-link px-2"
+												class="btn btn-link px-2" id="stepDown"
 												onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
 												<i class="fas fa-minus"></i>
 											</button>
@@ -378,7 +378,7 @@
 												style="max-width: 80px;" placeholder="1"
 												oninput="limitInput(this)" min="1" max="99">
 
-											<button data-mdb-button-init data-mdb-ripple-init
+											<button data-mdb-button-init data-mdb-ripple-init id="stepUp"
 												class="btn btn-link px-2"
 												onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
 												<i class="fas fa-plus"></i>

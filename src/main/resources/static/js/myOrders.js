@@ -162,7 +162,9 @@ async function showAllOrdersByUser() {
 	orders = await listOrdersDesc(user.userId);
 
 	//Maquetar
-	layoutOrders(orders, user);
+	await layoutOrders(orders, user);
+	
+	document.getElementById("showAllOrders").classList.add('d-none');
 }
 
 // Obtener ultimo pedido por usuario

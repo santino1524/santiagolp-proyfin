@@ -111,7 +111,7 @@ async function layoutTableCar(cartLfd) {
 		input.id = `inputQuantity_${productCar.productId}`;
 		input.value = productCar.quantity;
 		input.min = 1;
-		input.max = 99;
+		input.max = product.productQuantity > 99 ? 99 : product.productQuantity;
 		input.style.width = "50px";
 		input.type = "number";
 		input.placeholder = "1";
