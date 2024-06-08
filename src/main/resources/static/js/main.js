@@ -388,11 +388,14 @@ async function searchByCategoryPageProducts(categoryId) {
 async function showModalProduct(product) {
 	// Actualizar datos de producto
 	product = await searchProductById(product.productId);
-	
+
 	let divUserId = document.getElementById('userId');
 	let email = document.getElementById("authenticatedUser");
 	document.getElementById('addToCartButton').disabled = false;
+	document.getElementById('stepUp').disabled = false;
+	document.getElementById('stepDown').disabled = false;
 	document.getElementById('quantity').disabled = false;
+	document.getElementById('quantity').max = product.productQuantity > 99 ? 99 : product.productQuantity;
 
 	if (email) {
 		let user = await searchByEmail(email.textContent);
@@ -468,6 +471,8 @@ async function showModalProduct(product) {
 		document.getElementById('messageProductQuantity').innerText = "Este producto está temporalmente agotado";
 		document.getElementById('messageProductQuantity').classList.remove('d-none');
 		document.getElementById('addToCartButton').disabled = true;
+		document.getElementById('stepUp').disabled = true;
+		document.getElementById('stepDown').disabled = true;
 		document.getElementById('quantity').disabled = true;
 	} else if (product.productQuantity < 5) {
 		document.getElementById('messageProductQuantity').innerText = "Solo quedan " + product.productQuantity + " productos en stock";
@@ -790,7 +795,7 @@ async function layoutReviews(reviewsDto) {
 			// Button denuncia
 			// Comprobar si se ha logado el usuario
 			let email = document.getElementById("authenticatedUser");
-			if (email && email.textContent && !verifyReviewUser(review) &&  !await verifyBlockedUser(email.textContent)) {
+			if (email && email.textContent && !verifyReviewUser(review) && !await verifyBlockedUser(email.textContent)) {
 
 				let buttonReport = document.createElement('button');
 				buttonReport.classList.add('btn', 'btn-danger', 'btn-sm');
@@ -844,7 +849,7 @@ async function layoutReviews(reviewsDto) {
 
 // Verificar si la resenna es del usuario
 async function verifyBlockedUser(email) {
-	let user = await searchByEmail(email.textContent);
+	let user = await searchByEmail(email);
 
 	return user && user.blocked;
 }
