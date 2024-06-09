@@ -24,7 +24,7 @@ public interface TokenMgmtServiceI {
 	/**
 	 * Guardar token y usuario
 	 * 
-	 * @param user
+	 * @param userDto
 	 */
 	public String save(final UserDTO userDto);
 

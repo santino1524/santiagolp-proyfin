@@ -37,6 +37,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Ocultar opciones para usuario predeterminado
 document.addEventListener('DOMContentLoaded', async function() {
+	if (await isGokuUser()) {
+		document.getElementById('itemMyOrders').classList.add('d-none');
+		document.getElementById('itemShoppingCart').classList.add('d-none');
+		document.getElementById('itemAbout').classList.add('d-none');
+	}
+});
+
+// Ocultar opciones de anndir productos para goku
+async function hideQuantityControl() {
+	if (await isGokuUser()) {
+		document.getElementById('quantityControl').classList.add('d-none');
+	}
+}
+
+// Identificar usuario goku
+async function isGokuUser() {
 	let email = document.getElementById("authenticatedUser");
 
 	if (email && email.textContent) {
@@ -44,13 +60,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 		let userData = await searchByEmail(email.textContent);
 
 		if (userData.userId === 1) {
-			document.getElementById('itemMyOrders').classList.add('d-none');
-			document.getElementById('itemShoppingCart').classList.add('d-none');
-			document.getElementById('itemAbout').classList.add('d-none');
+			return true;
+		} else {
+			return false;
 		}
+
 	}
 
-});
+}
 
 // Convertir a mayuscula la letra del DNI
 function convertToUpperCase(input) {
@@ -386,6 +403,9 @@ async function searchByCategoryPageProducts(categoryId) {
 
 // Mostrar producto en modal 
 async function showModalProduct(product) {
+	// Ocultar opciones de anndir productos para goku
+	hideQuantityControl();
+
 	// Actualizar datos de producto
 	product = await searchProductById(product.productId);
 

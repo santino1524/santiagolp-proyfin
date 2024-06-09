@@ -58,7 +58,6 @@ public class ProductController {
 	 * Registrar producto
 	 * 
 	 * @param productDto
-	 * @param model
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 * @throws SQLException
@@ -115,7 +114,6 @@ public class ProductController {
 	/**
 	 * Actualizar producto
 	 * 
-	 * @param model
 	 * @param productDto
 	 * @return ResponseEntity
 	 * @throws InternalException
@@ -469,7 +467,7 @@ public class ProductController {
 	/**
 	 * Buscar por numero producto
 	 * 
-	 * @param productDTO
+	 * @param productNum
 	 * @return String
 	 * @throws InternalException
 	 */

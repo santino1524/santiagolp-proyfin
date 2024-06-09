@@ -87,7 +87,6 @@ public class PostalAddressController {
 	 * Eliminar relacion de direccion con usuario
 	 * 
 	 * @param addressId
-	 * @param userId
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */
