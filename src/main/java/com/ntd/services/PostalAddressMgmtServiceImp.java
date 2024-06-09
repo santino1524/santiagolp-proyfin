@@ -31,7 +31,6 @@ public class PostalAddressMgmtServiceImp implements PostalAddressMgmtServiceI {
 	 * Constructor
 	 * 
 	 * @param postalAddressRepository
-	 * @param userRepository
 	 */
 	public PostalAddressMgmtServiceImp(final PostalAddressRepositoryI postalAddressRepository) {
 		this.postalAddressRepository = postalAddressRepository;

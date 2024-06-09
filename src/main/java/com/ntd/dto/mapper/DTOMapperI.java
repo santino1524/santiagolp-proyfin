@@ -67,7 +67,7 @@ public interface DTOMapperI {
 	/**
 	 * Mapear DTO a Reporte
 	 * 
-	 * @param reportDTO
+	 * @param reportDto
 	 * @return Report
 	 */
 	@Mapping(target = "review", source = "reviewDto")

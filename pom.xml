@@ -164,5 +164,29 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<developers>
+		<developer>
+			<id>slp</id>
+			<name>Santiago</name>
+			<email>sloppin454@g.educaand.es</email>
+			<organization>IES Sotero Hernández</organization>
+			<roles>
+				<role>Estudiante</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<maxmemory>512</maxmemory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>

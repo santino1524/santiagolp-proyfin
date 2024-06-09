@@ -161,7 +161,7 @@ public class ProductCategoryController {
 	/**
 	 * Buscar por id
 	 * 
-	 * @param id
+	 * @param categoryId
 	 * @return ResponseEntity
 	 * @throws InternalException
 	 */

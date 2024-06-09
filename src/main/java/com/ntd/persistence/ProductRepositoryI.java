@@ -155,7 +155,6 @@ public interface ProductRepositoryI extends JpaRepository<Product, Long> {
 	 * Eliminar imagenes
 	 * 
 	 * @param productId
-	 * @return List
 	 */
 	@Transactional
 	@Modifying
