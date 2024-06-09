@@ -1,5 +1,5 @@
 // Mostrar productos de la cesta
-function loadShoppingCart() {
+async function loadShoppingCart() {
 	// Obtener el carrito de la cesta del localStorage
 	let cartLfd = JSON.parse(localStorage.getItem('cartLfd')) || [];
 
@@ -8,7 +8,7 @@ function loadShoppingCart() {
 		showEmptyCar();
 	} else {
 		// Maquetar tabla con productos
-		layoutTableCar(cartLfd);
+		await layoutTableCar(cartLfd);
 	}
 
 	// Desactivar loader
