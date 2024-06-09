@@ -8,7 +8,7 @@ async function loadOrdersPage() {
 	let orders = await lastOrder(user.userId);
 
 	//Maquetar
-	layoutOrders(orders, user);
+	await layoutOrders(orders, user);
 
 	// Desactivar loader
 	loaderDeactivate();
