@@ -776,7 +776,7 @@ async function layoutReviews(reviewsDto) {
 	let isComment = false;
 
 	for (let review of reviewsDto) {
-		if (review.comment && review.rating > 0) {
+		if (!review.reported && review.comment && review.rating > 0) {
 			if (!isComment) {
 				isComment = true;
 			}
@@ -849,7 +849,7 @@ async function layoutReviews(reviewsDto) {
 						let url = '/sendReport';
 
 						// Opciones de la nueva ventana
-						let options = 'width=700,height=400,top=100,left=100,resizable=yes ,scrollbars=yes';
+						let options = 'width=700,height=600,top=100,left=100,resizable=yes ,scrollbars=yes';
 
 						// Abrir la nueva ventana
 						window.open(url, '_blank', options);
