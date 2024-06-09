@@ -45,7 +45,7 @@ public interface PostalAddressMgmtServiceI {
 	/**
 	 * Buscar direccion por usuario
 	 * 
-	 * @param userId
+	 * @param user
 	 * @return List
 	 * @throws InternalException
 	 */

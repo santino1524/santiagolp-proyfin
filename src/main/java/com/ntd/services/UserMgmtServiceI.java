@@ -27,7 +27,6 @@ public interface UserMgmtServiceI {
 	 * Actualizar usuario tras confirmacion de email
 	 * 
 	 * @param user
-	 * @throws InternalException
 	 */
 	public void enableUser(final User user);
 

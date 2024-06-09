@@ -29,7 +29,7 @@ public class ProductCategoryMgmtServiceImp implements ProductCategoryMgmtService
 	/**
 	 * Constructor
 	 * 
-	 * @param categoryMgmtService
+	 * @param categoryRepository
 	 */
 	public ProductCategoryMgmtServiceImp(final ProductCategoryRepositoryI categoryRepository) {
 		this.categoryRepository = categoryRepository;

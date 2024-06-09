@@ -190,7 +190,7 @@ public interface ProductMgmtServiceI {
 	/**
 	 * Comprobar existencia por numero de producto
 	 * 
-	 * @param productNumber
+	 * @param productName
 	 * @return boolean
 	 * @throws InternalException
 	 */
@@ -221,7 +221,7 @@ public interface ProductMgmtServiceI {
 	/**
 	 * Contar las ocurrencias de productos de una categoria
 	 * 
-	 * @param productCategory
+	 * @param productCategoryDto
 	 * @return long
 	 * @throws InternalException
 	 */

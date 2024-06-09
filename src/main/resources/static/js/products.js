@@ -103,7 +103,7 @@ async function layoutProducts(products) {
 				}
 			}
 
-			if (product.productQuantity > 0) {
+			if (product.productQuantity > 0 && ! await isGokuUser()) {
 				let aCart = document.createElement('a');
 				aCart.classList.add('add-to-cart');
 				aCart.href = '#';
