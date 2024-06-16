@@ -337,7 +337,6 @@ function showCategories() {
 
 // Enviar formulario Producto
 async function submitFormProduct(form) {
-	successfulSave = 0;
 	let productId = document.getElementById('productId').value;
 	let divMessageProductError = document.getElementById('messageProductError');
 	let productName = document.getElementById('productName').value;
@@ -353,7 +352,7 @@ async function submitFormProduct(form) {
 	let foundImages = document.getElementById('foundImages').value;
 
 	if (productName && productNumber && selectedCategory && selectedCategory
-		&& productSize && productQuantity && (images || foundImages) && iva && basePrice) {
+		&& productSize && productQuantity && ((images && images.length > 0) || foundImages) && iva && basePrice) {
 
 		// Validar los valores usando el patron
 		let isValidProductName = onlyWordsNumbersSpaces.test(productName);
